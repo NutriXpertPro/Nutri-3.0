@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Nutri 3.0{% endblock %}</title>
+    {% load tailwind_tags static %}
+    {% tailwind_css %}
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="font-sans antialiased">
+    {% block content %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load tailwind_tags static %}
+{% block title %}Bem-vindo ao Nutri Xpert Pro{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-gray-900 text-white font-sans relative">
+
+    <!-- Imagem de Fundo -->
+    <div class="absolute inset-0 z-0">
+        <img src="{% static 'images/background.png' %}" alt="Background" class="w-full h-full object-cover">
+    </div>
+
+    <!-- Logo Superior Esquerdo (Faded) -->
+    <header class="absolute top-0 left-0 p-4 md:p-6 z-20">
+        <img src="{% static 'images/logo.png' %}" alt="Nutri Xpert Pro Logo Pequeno" class="h-20 w-auto"> 
+    </header>
+
+    <!-- Conteúdo Principal Centralizado -->
+    <main class="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 text-center">
+        
+        <!-- Imagens Centrais -->
+        <div class="flex items-center justify-center gap-0 mb-4">
+            <img src="{% static 'images/adipometro.png' %}" alt="Adipômetro" class="h-16 w-auto -mr-16 z-10 translate-y-8 -translate-x-4">
+            <img src="{% static 'images/nutri.png' %}" alt="Nutri Xpert Pro Logo" class="w-[26rem]">
+        </div>
+
+        <!-- Slogan -->
+        <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl">
+            Sistema Profissional de Gestão Nutricional com Inteligência Artificial
+        </p>
+
+        <!-- Botões de Ação -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 w-full max-w-md">
+            <a href="#" class="w-full sm:w-auto px-8 py-3 font-bold bg-white text-black rounded-full transition-all duration-300 ease-in-out border-2 border-white hover:bg-transparent hover:text-white hover:border-white">
+                Sou Nutricionista
+            </a>
+            <a href="#" class="w-full sm:w-auto px-8 py-3 font-bold bg-transparent text-white border-2 border-white rounded-full transition-all duration-300 ease-in-out hover:bg-white hover:text-black hover:border-black">
+                Sou Paciente
+            </a>
+        </div>
+
+        <!-- Ícones de Confiança -->
+        <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-gray-400">
+            <div class="flex items-center gap-2">
+                <span>⚡</span>
+                <span>Sistema Ativo</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span>🔬</span>
+                <span>High Tech Nutrition</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span>🔒</span>
+                <span>Seguro & Privado</span>
+            </div>
+        </div>
+
+    </main>
+
+</div>
+{% endblock %}
