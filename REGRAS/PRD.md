@@ -18,12 +18,31 @@ Criar uma plataforma para nutricionistas que centralize _anamneses, **painel de 
 
 ## 2. Funcionalidades do Sistema
 
-### 2.1. Cadastro e Login  
-#### 2.1.1. _Login de Nutricionista_: Sistema de autenticação com email e senha.  
-#### 2.1.2. _Login de Paciente_: Acesso via email e senha.
+### 2.1. Gestão de Usuários, Autenticação e Papéis
 
-### 2.2. Gestão de Pacientes  
-#### 2.2.1. _Cadastro de Paciente_: O nutricionista pode cadastrar pacientes com dados pessoais (nome, idade, sexo, profissão, etc.).  
+#### 2.1.1. _Modelo de Usuário Unificado_
+- O sistema utilizará um modelo de usuário único para todas as entidades que necessitam de autenticação (Administradores, Nutricionistas, Pacientes).
+- Um campo `user_type` diferenciará os papéis e controlará as permissões de acesso.
+
+#### 2.1.2. _Fluxo de Cadastro e Login do Nutricionista_
+- **Cadastro:** Nutricionistas se cadastrarão através de um formulário próprio (email, senha, nome). Após o cadastro, a conta ficará pendente de aprovação de pagamento.
+- **Login:** Acesso via email e senha a uma página de login específica para nutricionistas.
+- **Aprovação:** O acesso ao dashboard principal será concedido após a confirmação do pagamento da assinatura, que pode ser aprovada manualmente pelo Superusuário.
+
+#### 2.1.3. _Fluxo de Cadastro e Login do Paciente_
+- **Cadastro:** O paciente não se cadastra diretamente. Ele é convidado ou cadastrado pelo seu nutricionista responsável através do dashboard do nutricionista. Neste momento, uma conta de usuário do tipo "paciente" é criada para ele.
+- **Login:** O paciente usará seu email e uma senha (definida no momento do convite/cadastro) para acessar seu próprio dashboard através de uma página de login profissional.
+
+### 2.2. Gestão de Pacientes
+
+#### 2.2.1. _Criação de Pacientes_
+- O nutricionista pode criar um novo paciente em seu dashboard.
+- Ao criar um paciente, o sistema irá:
+    1. Criar um novo registro na tabela de `users` com `user_type = 'paciente'`, definindo o email e uma senha inicial para o paciente.
+    2. Criar um `patient_profile` associado a este novo usuário, contendo informações adicionais (data de nascimento, telefone, etc.).
+    3. Vincular o perfil do paciente ao nutricionista responsável.
+- Isso garante que cada paciente tenha suas próprias credenciais de login e um perfil de dados separado.
+
 #### 2.2.2. _Atendimento Presencial ou Virtual_:
 
 - O _atendimento presencial_ ocorre no consultório, e o nutricionista preenche a _Ficha de Anamnese_ junto ao paciente.
@@ -90,6 +109,18 @@ Criar uma plataforma para nutricionistas que centralize _anamneses, **painel de 
 
 - Acesso ao _formulário de anamnese, \*\*avaliações quinzenais_ e _histórico de evolução_.
 - Envio de _fotos e medidas_ para o nutricionista.
+
+---
+
+### 2.10. Administração do Sistema (Superusuário)
+
+#### 2.10.1. Papel do Superusuário
+- O sistema contará com um papel de **Superusuário** (Super Admin), que terá acesso irrestrito a todos os dados e funcionalidades da plataforma através do painel de administração do Django (`/admin/`).
+- Este usuário é destinado ao administrador principal do sistema.
+
+#### 2.10.2. Funcionalidades do Superusuário
+- **Gestão de Acesso:** O superusuário terá a capacidade de aprovar manualmente o acesso de novos nutricionistas à plataforma (por exemplo, após a confirmação de um pagamento), alterando o status de suas contas.
+- **Gestão de Cupons de Desconto:** O superusuário poderá criar, gerenciar e distribuir cupons de desconto para os planos de assinatura dos nutricionistas.
 
 ---
 

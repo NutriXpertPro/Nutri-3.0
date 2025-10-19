@@ -26,33 +26,49 @@
     - [x] Criar a API para buscar notificações não lidas.
     - [x] Integrar um resumo das notificações no Dashboard.
 
-## Etapa 4: Construção da Subpágina "Detalhes do Paciente"
+## Etapa 4: Autenticação e Fluxos de Usuário
 
-- [ ] 4.1: Criar a View e o Template para a página de detalhes de um paciente.
-- [ ] 4.2: **Bloco "Anamnese"**:
+- [ ] 4.1: **Estrutura de Usuários:**
+    - [ ] Estender o modelo de usuário (`User`) com um campo `user_type` (Nutricionista/Paciente).
+    - [ ] Definir as novas URLs para login/cadastro (`/login/nutricionista/`, etc.).
+- [ ] 4.2: **Fluxo do Nutricionista:**
+    - [ ] Criar as páginas de Cadastro e Login do Nutricionista.
+    - [ ] Implementar a lógica de "pagamento pendente" para liberar o acesso.
+    - [ ] Configurar o envio de email de boas-vindas após a confirmação do pagamento.
+- [ ] 4.3: **Fluxo do Paciente:**
+    - [ ] Implementar a funcionalidade para o nutricionista convidar/cadastrar pacientes.
+    - [ ] Criar a página de login profissional para o paciente.
+    - [ ] Criar a view e o template para o dashboard do paciente.
+- [ ] 4.4: **Conectar Página Inicial:**
+    - [ ] Atualizar os links dos botões "Sou Nutricionista" e "Sou Paciente".
+
+## Etapa 5: Construção da Subpágina "Detalhes do Paciente"
+
+- [ ] 5.1: Criar a View e o Template para a página de detalhes de um paciente.
+- [ ] 5.2: **Bloco "Anamnese"**:
     - [ ] Criar a API para buscar os dados da anamnese do paciente.
     - [ ] Exibir os dados da anamnese na tela.
-- [ ] 4.3: **Bloco "Histórico de Avaliações"**:
+- [ ] 5.3: **Bloco "Histórico de Avaliações"**:
     - [ ] Criar a API para o histórico de avaliações.
     - [ ] Exibir a lista de avaliações passadas.
     - [ ] Integrar uma biblioteca de gráficos (Chart.js) para os gráficos de evolução.
-- [ ] 4.4: **Bloco "Nova Avaliação"**:
+- [ ] 5.4: **Bloco "Nova Avaliação"**:
     - [ ] Criar o formulário para adicionar uma nova avaliação.
     - [ ] Implementar o envio do formulário com HTMX.
 
-## Etapa 5: Construção da Subpágina "Gestão de Dietas"
+## Etapa 6: Construção da Subpágina "Gestão de Dietas"
 
-- [ ] 5.1: Criar a View e o Template para a criação/edição de dietas.
-- [ ] 5.2: Criar a API para salvar e carregar os dados de uma dieta.
-- [ ] 5.3: Implementar a funcionalidade de gerar o PDF da dieta.
+- [ ] 6.1: Criar a View e o Template para a criação/edição de dietas.
+- [ ] 6.2: Criar a API para salvar e carregar os dados de uma dieta.
+- [ ] 6.3: Implementar a funcionalidade de gerar o PDF da dieta.
 
-## Etapa 6: Funcionalidades Adicionais
+## Etapa 7: Funcionalidades Adicionais
 
-- [ ] 6.1: **Agendamentos:** Implementar a API e a interface do calendário.
-- [ ] 6.2: **Pagamentos:** Integrar com a API da Asaas.
-- [ ] 6.3: **Tarefas Automáticas:** Configurar o Celery/Redis para o envio de e-mails agendados.
+- [ ] 7.1: **Agendamentos:** Implementar a API e a interface do calendário.
+- [ ] 7.2: **Pagamentos:** Integrar com a API da Asaas.
+- [ ] 7.3: **Tarefas Automáticas:** Configurar o Celery/Redis para o envio de e-mails agendados.
 
-## Etapa 7: Finalização
+## Etapa 8: Finalização
 
-- [ ] 7.1: Escrever testes para as principais funcionalidades.
-- [ ] 7.2: Preparar o projeto para o ambiente de produção.
+- [ ] 8.1: Escrever testes para as principais funcionalidades.
+- [ ] 8.2: Preparar o projeto para o ambiente de produção.
