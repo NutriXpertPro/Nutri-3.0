@@ -12,8 +12,14 @@ class EvaluationModelTest(TestCase):
         self.user = User.objects.create_user(
             email="nutri@test.com", password="testpass123", name="Test Nutri"
         )
+        self.patient_user = User.objects.create_user(
+            email="joao.silva@example.com",
+            password="testpass123",
+            name="João da Silva",
+        )
         self.patient = Patient.objects.create(
-            user=self.user, name="João da Silva", email="joao.silva@example.com"
+            patient_user=self.patient_user,
+            nutritionist=self.user,
         )
 
     def test_create_evaluation(self):
@@ -37,5 +43,5 @@ class EvaluationModelTest(TestCase):
         self.assertEqual(saved_evaluation.body_measurements["waist"], 90.5)
         self.assertEqual(saved_evaluation.date, evaluation_date)
         date_str = formats.date_format(evaluation_date, "d/m/Y")
-        expected_str = f"Avaliação de {self.patient.name} em {date_str}"
+        expected_str = f"Avaliação de {self.patient.patient_user.name} em {date_str}"
         self.assertEqual(str(saved_evaluation), expected_str)

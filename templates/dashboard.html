@@ -4,10 +4,16 @@
 <h1 class="text-2xl font-bold">Dashboard do Nutricionista</h1>
 <p>Bem-vindo ao seu painel de controle.</p>
 
+<div class="mt-8 mb-4">
+    <a href="{% url 'patients:create' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Cadastrar Paciente
+    </a>
+</div>
+
 <h2 class="text-xl font-bold mt-8">Meus Pacientes</h2>
 
-<form hx-get="{% url 'users:dashboard' %}" hx-target="#patient-list-container" hx-swap="outerHTML">
-    <input type="search" name="search" placeholder="Buscar pacientes..." value="{{ search_query|default:'' }}">
+<form hx-get="{% url 'users:dashboard' %}" hx-target="#patient-list-container" hx-swap="outerHTML" hx-trigger="submit, keyup[debounce:500ms]">
+    <input type="search" name="search" placeholder="Buscar pacientes..." value="{{ search_query|default:'' }}" hx-trigger="keyup[debounce:500ms]">
     <button type="submit">Buscar</button>
 </form>
 

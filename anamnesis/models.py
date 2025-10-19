@@ -17,4 +17,4 @@ class Anamnesis(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Anamnese de {self.patient.name}"
+        return f"Anamnese de {self.patient.patient_user.name}"

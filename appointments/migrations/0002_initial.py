@@ -9,18 +9,17 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("evaluations", "0001_initial"),
+        ("appointments", "0001_initial"),
         ("patients", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="evaluation",
+            model_name="appointment",
             name="patient",
             field=models.ForeignKey(
-                null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name="evaluations",
+                related_name="appointments",
                 to="patients.patient",
             ),
         ),

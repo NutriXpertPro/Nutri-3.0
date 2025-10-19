@@ -25,7 +25,9 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path("users/", include("users.urls", namespace="users")),
-    path("api/", include("patients.urls")),
+    path(
+        "api/", include("patients.urls", namespace="patients")
+    ),  # Fix: Adicionado namespace='patients'
     path("api/", include("notifications.urls", namespace="notification")),
     path("", include("theme.urls", namespace="theme")),
     path("admin/", admin.site.urls),

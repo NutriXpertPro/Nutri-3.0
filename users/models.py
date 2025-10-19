@@ -37,8 +37,19 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     """Modelo de usuário customizado que usa email como login."""
 
+    USER_TYPE_CHOICES = (
+        ("nutricionista", "Nutricionista"),
+        ("paciente", "Paciente"),
+        ("admin", "Admin"),  # Adicionado para o superusuário
+    )
+
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255)
+    user_type = models.CharField(
+        max_length=20,
+        choices=USER_TYPE_CHOICES,
+        default="paciente",  # Valor padrão para novos usuários
+    )
     is_staff = models.BooleanField(default=False)  # Necessário para acesso ao admin
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -47,7 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = "email"  # Define o campo de login
-    REQUIRED_FIELDS = ["name"]  # Campos pedidos no 'createsuperuser'
+    REQUIRED_FIELDS = ["name", "user_type"]  # user_type agora é um campo obrigatório
 
     def __str__(self):
         return self.email

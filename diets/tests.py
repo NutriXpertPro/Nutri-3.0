@@ -11,8 +11,14 @@ class DietModelTest(TestCase):
         self.user = User.objects.create_user(
             email="nutri@test.com", password="testpass123", name="Test Nutri"
         )
+        self.patient_user = User.objects.create_user(
+            email="joao.silva@example.com",
+            password="testpass123",
+            name="João da Silva",
+        )
         self.patient = Patient.objects.create(
-            user=self.user, name="João da Silva", email="joao.silva@example.com"
+            patient_user=self.patient_user,
+            nutritionist=self.user,
         )
 
     def test_create_diet(self):
@@ -39,5 +45,6 @@ class DietModelTest(TestCase):
         self.assertEqual(len(saved_diet.meals), 2)
         self.assertEqual(saved_diet.meals[0]["items"], ["Ovos mexidos", "Pão integral"])
         self.assertEqual(
-            str(saved_diet), f"Dieta de Emagrecimento - {self.patient.name}"
+            str(saved_diet),
+            f"Dieta de Emagrecimento - {self.patient.patient_user.name}",
         )
