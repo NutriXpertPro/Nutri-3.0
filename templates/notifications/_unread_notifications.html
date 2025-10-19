@@ -1,0 +1,12 @@
+<div id="unread-notifications-block">
+    <h3 class="text-lg font-semibold mb-2">Notificações Não Lidas</h3>
+    {% if notifications %}
+        <ul class="list-disc pl-5">
+            {% for notification in notifications %}
+                <li class="mb-1">{{ notification.message }} - {{ notification.sent_at|date:"d/m H:i" }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhuma notificação não lida.</p>
+    {% endif %}
+</div>
