@@ -13,7 +13,7 @@
 
 - [x] 2.1: Instalar e configurar o Tailwind CSS no projeto.
 - [x] 2.2: Criar os templates base do projeto (ex: `base.html` com menu lateral e topo).
-- [ ] 2.3: Configurar a API (Django REST Framework) e a autenticação por Token (JWT).
+- [x] 2.3: Configurar a API (Django REST Framework) e a autenticação por Token (JWT).
 
 ## Etapa 3: Construção do "Dashboard do Nutricionista" (Tela Principal)
 
