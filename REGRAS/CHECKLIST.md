@@ -21,7 +21,7 @@
 - [x] 3.2: **Bloco "Meus Pacientes"**:
     - [x] Criar a API para listar e buscar pacientes.
     - [x] Integrar a lista de pacientes no Dashboard.
-    - [ ] Adicionar busca e paginação com HTMX (sem recarregar a página).
+    - [x] Adicionar busca e paginação com HTMX (sem recarregar a página).
 - [ ] 3.3: **Bloco "Notificações"**:
     - [ ] Criar a API para buscar notificações não lidas.
     - [ ] Integrar um resumo das notificações no Dashboard.
