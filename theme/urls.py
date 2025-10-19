@@ -1,8 +1,10 @@
 from django.urls import path
-from .views import landing_page_view
+from . import views
+
+app_name = "theme"
 
 app_name = "theme"
 
 urlpatterns = [
-    path("", landing_page_view, name="landing_page"),
+    path("", views.home, name="home"),
 ]

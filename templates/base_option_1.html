@@ -1,0 +1,49 @@
+
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutri Xpert Pro</title>
+    {% tailwind_css %}
+</head>
+<body class="bg-gray-100 flex">
+
+    <!-- Opção 1: Layout Atual (Barra Lateral Fixa + Barra Superior) -->
+    <div id="layout-option-1" class="flex w-full">
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 text-white w-64 min-h-screen p-4">
+            <h2 class="text-2xl font-bold mb-4">Nutri Xpert Pro</h2>
+            <nav>
+                <ul>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-700">Dashboard</a></li>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-700">Pacientes</a></li>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-700">Agenda</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Topbar -->
+            <header class="bg-white shadow p-4 flex justify-between items-center">
+                <div>
+                    <h1 class="text-xl font-semibold">Dashboard</h1>
+                </div>
+                <div>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">Sair</a>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="p-6">
+                {% block content %}
+                <h1 class="text-2xl font-bold text-center text-blue-500">Conteúdo da Opção 1</h1>
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+</body>
+</html>
