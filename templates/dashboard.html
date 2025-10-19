@@ -15,9 +15,4 @@
     {% include '_patient_list.html' %}
 </div>
 
-<h2 class="text-xl font-bold mt-8">Notificações</h2>
-<div id="unread-notifications-container" hx-get="{% url 'notification:unread_notifications_htmx' %}" hx-trigger="load, every 30s">
-    <p>Carregando notificações...</p>
-</div>
-
 {% endblock content %}

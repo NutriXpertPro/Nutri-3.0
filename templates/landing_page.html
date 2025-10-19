@@ -1,7 +1,10 @@
-{% extends 'base.html' %}
 {% load tailwind_tags static %}
-{% block title %}Bem-vindo ao Nutri Xpert Pro{% endblock %}
-{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bem-vindo ao Nutri Xpert Pro{% endblock %}</title>
+    {% tailwind_css %}
+</head>
 <div class="min-h-screen bg-gray-900 text-white font-sans relative">
 
     <!-- Imagem de Fundo -->
@@ -19,8 +22,8 @@
         
         <!-- Imagens Centrais -->
         <div class="flex items-center justify-center gap-0 mb-4">
-            <img src="{% static 'images/adipometro.png' %}" alt="Adipômetro" class="h-16 w-auto -mr-16 z-10 translate-y-8 -translate-x-4">
-            <img src="{% static 'images/nutri.png' %}" alt="Nutri Xpert Pro Logo" class="w-[26rem]">
+            <img src="{% static 'images/adipometro.png' %}" alt="Adipômetro" class="h-[3.6rem] w-auto z-10 translate-y-12 -translate-x-6">
+            <img src="{% static 'images/nutri.png' %}" alt="Nutri Xpert Pro Logo" class="w-[31.2rem] -ml-16">
         </div>
 
         <!-- Slogan -->
@@ -30,10 +33,10 @@
 
         <!-- Botões de Ação -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 w-full max-w-md">
-            <a href="#" class="w-full sm:w-auto px-8 py-3 font-bold bg-white text-black rounded-full transition-all duration-300 ease-in-out border-2 border-white hover:bg-transparent hover:text-white hover:border-white">
+            <a href="#" class="w-full sm:w-auto px-8 py-3 bg-white text-black rounded-full transition-all duration-300 ease-in-out border-2 border-white hover:bg-transparent hover:text-white hover:border-white">
                 Sou Nutricionista
             </a>
-            <a href="#" class="w-full sm:w-auto px-8 py-3 font-bold bg-transparent text-white border-2 border-white rounded-full transition-all duration-300 ease-in-out hover:bg-white hover:text-black hover:border-black">
+            <a href="#" class="w-full sm:w-auto px-8 py-3 bg-transparent text-white border-2 border-white rounded-full transition-all duration-300 ease-in-out hover:bg-white hover:text-black hover:border-black">
                 Sou Paciente
             </a>
         </div>
@@ -57,4 +60,3 @@
     </main>
 
 </div>
-{% endblock %}
