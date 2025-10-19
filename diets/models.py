@@ -11,17 +11,5 @@ class Diet(models.Model):
     substitutions = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def add_substitution(self, substitution_data):
-        if not isinstance(self.substitutions, dict):
-            self.substitutions = {}
-        self.substitutions.update(substitution_data)
-        self.save()
-
-    def add_meal(self, meal_data):
-        if not isinstance(self.meals, list):
-            self.meals = []
-        self.meals.append(meal_data)
-        self.save()
-
     def __str__(self):
         return f"{self.name} - {self.patient.name}"
