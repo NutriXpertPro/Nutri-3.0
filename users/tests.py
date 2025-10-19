@@ -14,8 +14,9 @@ class DashboardViewTest(TestCase):
         )
         self.client.login(email="test@example.com", password="testpassword")
         # Criar pacientes para o usuário logado
-        self.patient1 = Patient.objects.create(user=self.user, name="Paciente Um")
-        self.patient2 = Patient.objects.create(user=self.user, name="Paciente Dois")
+        self.patient1 = Patient.objects.create(user=self.user, name="Paciente Alfa")
+        self.patient2 = Patient.objects.create(user=self.user, name="Paciente Beta")
+        self.patient3 = Patient.objects.create(user=self.user, name="Outro Paciente")
 
     def test_dashboard_view_status_code(self):
         response = self.client.get(reverse("users:dashboard"))
@@ -29,3 +30,21 @@ class DashboardViewTest(TestCase):
         response = self.client.get(reverse("users:dashboard"))
         self.assertContains(response, self.patient1.name)
         self.assertContains(response, self.patient2.name)
+        self.assertContains(response, self.patient3.name)
+
+    def test_dashboard_search_patients(self):
+        response = self.client.get(reverse("users:dashboard"), {"search": "Alfa"})
+        self.assertContains(response, self.patient1.name)
+        self.assertNotContains(response, self.patient2.name)
+        self.assertNotContains(response, self.patient3.name)
+
+    def test_dashboard_pagination(self):
+        # Criar mais pacientes para testar a paginação
+        for i in range(10):
+            Patient.objects.create(user=self.user, name=f"Paciente {i}")
+
+        # Assumindo que a paginação padrão é 10 itens por página
+        response = self.client.get(reverse("users:dashboard"), {"page": 2})
+        # Verifica se a resposta contém pacientes da segunda página (se houver)
+        # Este teste será mais robusto quando a paginação for implementada na view
+        self.assertEqual(response.status_code, 200)

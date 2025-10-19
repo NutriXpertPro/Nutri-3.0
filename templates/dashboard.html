@@ -5,14 +5,14 @@
 <p>Bem-vindo ao seu painel de controle.</p>
 
 <h2 class="text-xl font-bold mt-8">Meus Pacientes</h2>
-{% if patients %}
-    <ul>
-        {% for patient in patients %}
-            <li>{{ patient.name }} ({{ patient.email }})</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Nenhum paciente cadastrado ainda.</p>
-{% endif %}
+
+<form hx-get="{% url 'users:dashboard' %}" hx-target="#patient-list-container" hx-swap="outerHTML">
+    <input type="search" name="search" placeholder="Buscar pacientes..." value="{{ search_query|default:'' }}">
+    <button type="submit">Buscar</button>
+</form>
+
+<div id="patient-list-container">
+    {% include '_patient_list.html' %}
+</div>
 
 {% endblock content %}
