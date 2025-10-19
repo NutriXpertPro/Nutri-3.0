@@ -20,7 +20,7 @@
 - [x] 3.1: Criar a View e o Template principal para o Dashboard.
 - [x] 3.2: **Bloco "Meus Pacientes"**:
     - [x] Criar a API para listar e buscar pacientes.
-    - [ ] Integrar a lista de pacientes no Dashboard.
+    - [x] Integrar a lista de pacientes no Dashboard.
     - [ ] Adicionar busca e paginação com HTMX (sem recarregar a página).
 - [ ] 3.3: **Bloco "Notificações"**:
     - [ ] Criar a API para buscar notificações não lidas.
