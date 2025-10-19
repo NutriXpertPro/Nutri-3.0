@@ -17,7 +17,7 @@
 
 ## Etapa 3: Construção do "Dashboard do Nutricionista" (Tela Principal)
 
-- [ ] 3.1: Criar a View e o Template principal para o Dashboard.
+- [x] 3.1: Criar a View e o Template principal para o Dashboard.
 - [ ] 3.2: **Bloco "Meus Pacientes"**:
     - [ ] Criar a API para listar e buscar pacientes.
     - [ ] Integrar a lista de pacientes no Dashboard.
