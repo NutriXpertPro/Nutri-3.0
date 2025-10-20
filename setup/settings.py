@@ -151,8 +151,8 @@ INTERNAL_IPS = [
 ]
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
     BASE_DIR / "theme/static",
+    BASE_DIR / "static",
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
