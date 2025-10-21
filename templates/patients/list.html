@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1 class="text-2xl font-bold">Meus Pacientes</h1>
-
-  <div class="mt-8 mb-4">
-      <a href="{% url 'patients:create' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Cadastrar Novo Paciente
-      </a>
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-white">Meus Pacientes</h1>
+    <a href="{% url 'patients:create' %}" class="bg-accent-blue hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors">
+        Cadastrar Novo Paciente
+    </a>
   </div>
 
   <div id="patient-list-container">

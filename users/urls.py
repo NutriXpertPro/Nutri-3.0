@@ -14,5 +14,11 @@ urlpatterns = [
         views.nutricionista_register_view,
         name="nutricionista_register",
     ),
+    path("login/paciente/", views.paciente_login_view, name="login_paciente"),
+    path(
+        "register/paciente/",
+        views.paciente_register_view,
+        name="cadastro_paciente",
+    ),
     path("dashboard/", views.dashboard_view, name="dashboard"),
 ]

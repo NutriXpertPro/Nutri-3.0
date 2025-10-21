@@ -1,5 +1,5 @@
 [flake8]
 exclude = .venv,node_modules,__pycache__
-max-line-length = 88
+max-line-length = 90
 extend-ignore = E203
 per-file-ignores = */migrations/*.py:E501

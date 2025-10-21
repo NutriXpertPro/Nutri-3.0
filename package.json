@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:django": "python manage.py runserver",
+    "start:django": "python manage.py runserver 0.0.0.0:8000",
     "start:tailwind": "npx tailwindcss -i .\/theme\/static\/src\/input.css -o .\/theme\/static\/css\/dist\/styles.css --watch",
     "dev": "npm-run-all --parallel start:django start:tailwind",
     "build": "npx tailwindcss -i .\/theme\/static\/src\/input.css -o .\/theme\/static\/css\/dist\/styles.css --minify",

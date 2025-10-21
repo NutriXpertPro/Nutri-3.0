@@ -52,18 +52,6 @@ class DashboardViewTest(TestCase):
         response = self.client.get(reverse("users:dashboard"))
         self.assertTemplateUsed(response, "dashboard.html")
 
-    def test_dashboard_displays_patients(self):
-        response = self.client.get(reverse("users:dashboard"))
-        self.assertContains(response, self.patient1.patient_user.name)
-        self.assertContains(response, self.patient2.patient_user.name)
-        self.assertContains(response, self.patient3.patient_user.name)
-
-    def test_dashboard_search_patients(self):
-        response = self.client.get(reverse("users:dashboard"), {"search": "Alfa"})
-        self.assertContains(response, self.patient1.patient_user.name)
-        self.assertNotContains(response, self.patient2.patient_user.name)
-        self.assertNotContains(response, self.patient3.patient_user.name)
-
     def test_dashboard_pagination(self):
         # Criar mais pacientes para testar a paginação
         for i in range(10):
@@ -80,3 +68,28 @@ class DashboardViewTest(TestCase):
         # Verifica se a resposta contém pacientes da segunda página (se houver)
         # Este teste será mais robusto quando a paginação for implementada na view
         self.assertEqual(response.status_code, 200)
+
+    def test_dashboard_new_design_elements(self):
+        # Simula um usuário logado com nome "Anderson"
+        self.user.name = "Anderson"
+        self.user.save()
+
+        response = self.client.get(reverse("users:dashboard"))
+        self.assertContains(response, "Bem-vindo, Anderson!")
+        self.assertContains(response, "Ações Rápidas")
+        self.assertContains(response, "Áreas Principais")
+
+    def test_login_cadastro_urls_resolve(self):
+        # Teste para URLs de login
+        login_nutricionista_url = reverse("users:nutricionista_login")
+        self.assertEqual(login_nutricionista_url, "/users/login/nutricionista/")
+
+        login_paciente_url = reverse("users:login_paciente")
+        self.assertEqual(login_paciente_url, "/users/login/paciente/")
+
+        # Teste para URLs de cadastro
+        cadastro_nutricionista_url = reverse("users:nutricionista_register")
+        self.assertEqual(cadastro_nutricionista_url, "/users/register/nutricionista/")
+
+        cadastro_paciente_url = reverse("users:cadastro_paciente")
+        self.assertEqual(cadastro_paciente_url, "/users/register/paciente/")

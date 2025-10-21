@@ -29,8 +29,8 @@
 ## Etapa 4: Autenticação e Fluxos de Usuário
 
 - [ ] 4.1: **Estrutura de Usuários:**
-    - [ ] Estender o modelo de usuário (`User`) com um campo `user_type` (Nutricionista/Paciente).
-    - [ ] Definir as novas URLs para login/cadastro (`/login/nutricionista/`, etc.).
+    - [x] Estender o modelo de usuário (`User`) com um campo `user_type` (Nutricionista/Paciente).
+    - [x] Definir as novas URLs para login/cadastro (`/login/nutricionista/`, etc.).
 - [ ] 4.2: **Fluxo do Nutricionista:**
     - [ ] Criar as páginas de Cadastro e Login do Nutricionista.
     - [ ] Implementar a lógica de "pagamento pendente" para liberar o acesso.
