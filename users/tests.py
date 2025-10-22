@@ -1,7 +1,44 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from patients.models import Patient  # Importar o modelo Patient
+from patients.models import Patient
+from django.core import mail
+from payments.models import Payment
+
+
+class PaymentSignalTest(TestCase):
+    def setUp(self):
+        self.nutricionista = User.objects.create_user(
+            email="test_nutri@example.com",
+            password="testpassword",
+            name="Test Nutricionista",
+            user_type="nutricionista",
+            is_active=False,
+        )
+
+    def test_user_activated_and_email_sent_on_payment_paid(self):
+        # Create a payment for the nutricionista
+        payment = Payment.objects.create(
+            user=self.nutricionista,
+            asaas_id="test_asaas_id",
+            amount=100.00,
+            status="PENDING",
+        )
+
+        # Mark the payment as paid
+        payment.status = "PAID"
+        payment.save()
+
+        # Refresh the user from the database
+        self.nutricionista.refresh_from_db()
+
+        # Check if the user is active
+        self.assertTrue(self.nutricionista.is_active)
+
+        # Check if the email was sent
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, "Bem-vindo ao Nutri Xpert Pro!")
+
 
 User = get_user_model()
 

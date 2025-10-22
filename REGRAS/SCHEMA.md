@@ -1,4 +1,4 @@
--- Schema MariaDB/MySQL - Nutri Xpert Pro (v2 - Escalável)
+-- Schema MariaDB - Nutri Xpert Pro (v2 - Escalável)
 -- Este schema reflete uma estrutura de usuários unificada, que é uma prática recomendada para escalabilidade.
 
 -- Tabela users (todos os tipos de usuário: admin, nutricionista, paciente)

@@ -98,9 +98,7 @@ if DATABASE_URL_FROM_ENV and DATABASE_URL_FROM_ENV.startswith('mysql+pymysql://'
     DATABASE_URL_FROM_ENV = DATABASE_URL_FROM_ENV.replace('mysql+pymysql://', 'mysql://', 1)
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=DATABASE_URL_FROM_ENV
-    )
+    'default': dj_database_url.parse(DATABASE_URL_FROM_ENV)
 }
 
 
@@ -198,3 +196,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

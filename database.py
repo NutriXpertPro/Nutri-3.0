@@ -4,32 +4,38 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-print("--- DEBUG: Loading database.py (unique identifier) ---")
+print("--- Carregando configuração do banco de dados ---")
 
-# Load environment variables from .env file
+# Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# Get DATABASE_URL from environment variables
+# Obter DATABASE_URL das variáveis de ambiente
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Check if DATABASE_URL is set and override to SQLite for local dev (no MySQL needed)
-if not DATABASE_URL or "mysql" in DATABASE_URL.lower():
-    DATABASE_URL = "sqlite:///./db.sqlite3"
-    print("--- DEBUG: Overrode to SQLite for local development ---")
-
-# Check if DATABASE_URL is now set
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable not set.")
+    raise ValueError("DATABASE_URL não está definida no arquivo .env")
 
+print(f"--- Conectando ao banco: {DATABASE_URL.split('@')[1] if '@' in DATABASE_URL else 'local'} ---")
+
+# Criar engine do SQLAlchemy
 engine = create_engine(
-    DATABASE_URL, pool_size=20, max_overflow=10
+    DATABASE_URL,
+    pool_pre_ping=True,  # Verifica conexão antes de usar
+    pool_recycle=3600,   # Recicla conexões a cada hora
+    echo=False           # Mude para True para ver as queries SQL no console
 )
 
+# Criar SessionLocal para interagir com o banco
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base para os models
 Base = declarative_base()
 
-
+# Dependency para FastAPI
 def get_db():
+    """
+    Cria uma sessão do banco de dados e garante que seja fechada após o uso
+    """
     db = SessionLocal()
     try:
         yield db

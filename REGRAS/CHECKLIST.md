@@ -34,7 +34,7 @@
 - [ ] 4.2: **Fluxo do Nutricionista:**
     - [x] Criar as páginas de Cadastro e Login do Nutricionista.
     - [x] Implementar a lógica de "pagamento pendente" para liberar o acesso.
-    - [ ] Configurar o envio de email de boas-vindas após a confirmação do pagamento.
+    - [x] Configurar o envio de email de boas-vindas após a confirmação do pagamento.
 - [ ] 4.3: **Fluxo do Paciente:**
     - [ ] Implementar a funcionalidade para o nutricionista convidar/cadastrar pacientes.
     - [ ] Criar a página de login profissional para o paciente.
