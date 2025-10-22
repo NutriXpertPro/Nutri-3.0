@@ -32,8 +32,8 @@
     - [x] Estender o modelo de usuário (`User`) com um campo `user_type` (Nutricionista/Paciente).
     - [x] Definir as novas URLs para login/cadastro (`/login/nutricionista/`, etc.).
 - [ ] 4.2: **Fluxo do Nutricionista:**
-    - [ ] Criar as páginas de Cadastro e Login do Nutricionista.
-    - [ ] Implementar a lógica de "pagamento pendente" para liberar o acesso.
+    - [x] Criar as páginas de Cadastro e Login do Nutricionista.
+    - [x] Implementar a lógica de "pagamento pendente" para liberar o acesso.
     - [ ] Configurar o envio de email de boas-vindas após a confirmação do pagamento.
 - [ ] 4.3: **Fluxo do Paciente:**
     - [ ] Implementar a funcionalidade para o nutricionista convidar/cadastrar pacientes.

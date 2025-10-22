@@ -1,104 +1,108 @@
--- Schema PostgreSQL - Nutri Xpert Pro (v2 - Escalável)
+-- Schema MariaDB/MySQL - Nutri Xpert Pro (v2 - Escalável)
 -- Este schema reflete uma estrutura de usuários unificada, que é uma prática recomendada para escalabilidade.
 
 -- Tabela users (todos os tipos de usuário: admin, nutricionista, paciente)
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     password VARCHAR(255) NOT NULL,  -- Criptografado
-    last_login TIMESTAMP,
+    last_login DATETIME(6) NULL,
     is_superuser BOOLEAN NOT NULL DEFAULT FALSE,
     email VARCHAR(255) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     is_staff BOOLEAN NOT NULL DEFAULT FALSE,
-    date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_joined DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     user_type VARCHAR(20) NOT NULL CHECK (user_type IN ('admin', 'nutricionista', 'paciente'))
-);
-COMMENT ON TABLE users IS 'Tabela unificada para todos os usuários que podem fazer login no sistema.';
+) COMMENT='Tabela unificada para todos os usuários que podem fazer login no sistema.';
 
 -- Tabela de perfis de pacientes
 CREATE TABLE patient_profiles (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Link para o usuário paciente (One-to-One)
-    nutritionist_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Link para o usuário nutricionista
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNIQUE NOT NULL, -- Link para o usuário paciente (One-to-One)
+    nutritionist_id INT NOT NULL, -- Link para o usuário nutricionista
     birth_date DATE,
     phone VARCHAR(50),
     address TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    -- O nome e email do paciente agora residem na tabela `users`.
-    -- Outros campos específicos do paciente podem ser adicionados aqui.
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
-    CONSTRAINT fk_nutritionist FOREIGN KEY (nutritionist_id) REFERENCES users(id)
-);
-COMMENT ON TABLE patient_profiles IS 'Armazena informações de perfil específicas para usuários do tipo "paciente".';
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (nutritionist_id) REFERENCES users(id) ON DELETE CASCADE
+) COMMENT='Armazena informações de perfil específicas para usuários do tipo "paciente".';
 CREATE INDEX idx_patient_profiles_user_id ON patient_profiles(user_id);
 CREATE INDEX idx_patient_profiles_nutritionist_id ON patient_profiles(nutritionist_id);
 
-
--- NOTA: As tabelas abaixo precisam ser ajustadas para refletir a nova estrutura.
--- O campo `patient_id` deve ser substituído por `patient_profile_id` ou um link direto para `users(id)` do paciente.
-
--- Tabela diets (Exemplo de como ficaria)
+-- Tabela diets
 CREATE TABLE diets (
-    id SERIAL PRIMARY KEY,
-    patient_profile_id INTEGER NOT NULL REFERENCES patient_profiles(id) ON DELETE CASCADE,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_profile_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
-    meals JSONB NOT NULL,
-    substitutions JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_patient_profile FOREIGN KEY (patient_profile_id) REFERENCES patient_profiles(id)
+    meals JSON NOT NULL,
+    substitutions JSON,
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (patient_profile_id) REFERENCES patient_profiles(id) ON DELETE CASCADE
 );
 CREATE INDEX idx_diets_patient_profile_id ON diets(patient_profile_id);
 
-
--- Tabela anamneses (A ser ajustada)
+-- Tabela anamneses
 CREATE TABLE anamneses (
-    id SERIAL PRIMARY KEY,
-    patient_id INTEGER NOT NULL, -- MUDAR para patient_profile_id
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_profile_id INT NOT NULL,
     weight DECIMAL(5,2),
     height DECIMAL(4,2),
-    medical_conditions JSONB,
-    food_preferences JSONB,
-    allergies JSONB,
+    medical_conditions JSON,
+    food_preferences JSON,
+    allergies JSON,
     photo_url VARCHAR(500),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (patient_profile_id) REFERENCES patient_profiles(id) ON DELETE CASCADE
 );
+CREATE INDEX idx_anamneses_patient_profile_id ON anamneses(patient_profile_id);
 
--- Tabela evaluations (A ser ajustada)
+-- Tabela evaluations
 CREATE TABLE evaluations (
-    id SERIAL PRIMARY KEY,
-    patient_id INTEGER NOT NULL, -- MUDAR para patient_profile_id
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_profile_id INT NOT NULL,
     weight DECIMAL(5,2),
-    body_measurements JSONB,
-    date TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    body_measurements JSON,
+    date DATETIME(6) NOT NULL,
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (patient_profile_id) REFERENCES patient_profiles(id) ON DELETE CASCADE
 );
+CREATE INDEX idx_evaluations_patient_profile_id ON evaluations(patient_profile_id);
 
--- Tabela appointments (A ser ajustada)
+-- Tabela appointments
 CREATE TABLE appointments (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL, -- Este deve ser o ID do nutricionista
-    patient_id INTEGER NOT NULL, -- MUDAR para patient_profile_id
-    date TIMESTAMP NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nutritionist_id INT NOT NULL, -- ID do nutricionista
+    patient_profile_id INT NOT NULL,
+    date DATETIME(6) NOT NULL,
     notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (nutritionist_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (patient_profile_id) REFERENCES patient_profiles(id) ON DELETE CASCADE
 );
+CREATE INDEX idx_appointments_nutritionist_id ON appointments(nutritionist_id);
+CREATE INDEX idx_appointments_patient_profile_id ON appointments(patient_profile_id);
 
--- Tabela payments (A ser ajustada)
+-- Tabela payments
 CREATE TABLE payments (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL, -- Este pode ser o nutricionista ou o paciente
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL, -- ID do nutricionista que paga
     asaas_id VARCHAR(255) NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
     status VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+CREATE INDEX idx_payments_user_id ON payments(user_id);
 
--- Tabela notifications (A ser ajustada)
+-- Tabela notifications
 CREATE TABLE notifications (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL, -- Para qual usuário é a notificação?
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL, -- Para qual usuário é a notificação
     type VARCHAR(50) NOT NULL,
     message TEXT NOT NULL,
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    sent_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);

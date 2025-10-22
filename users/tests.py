@@ -93,3 +93,48 @@ class DashboardViewTest(TestCase):
 
         cadastro_paciente_url = reverse("users:cadastro_paciente")
         self.assertEqual(cadastro_paciente_url, "/users/register/paciente/")
+
+
+class NutricionistaLoginTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.login_url = reverse("users:nutricionista_login")
+
+        # Create an inactive nutricionista user (pending payment)
+        self.inactive_nutricionista = User.objects.create_user(
+            email="inactive@example.com",
+            password="testpassword",
+            name="Inactive Nutricionista",
+            user_type="nutricionista",
+            is_active=False,
+        )
+
+        # Create an active nutricionista user
+        self.active_nutricionista = User.objects.create_user(
+            email="active@example.com",
+            password="testpassword",
+            name="Active Nutricionista",
+            user_type="nutricionista",
+            is_active=True,
+        )
+
+    def test_inactive_nutricionista_cannot_login(self):
+        response = self.client.post(
+            self.login_url,
+            {"email": "inactive@example.com", "password": "testpassword"},
+        )
+        self.assertContains(response, "Conta pendente de aprovação de pagamento.")
+        self.assertNotContains(
+            response, "Bem-vindo"
+        )  # Should not redirect to dashboard
+        self.assertTemplateUsed(
+            response, "users/nutricionista_login.html"
+        )  # Should stay on login page
+
+    def test_active_nutricionista_can_login(self):
+        response = self.client.post(
+            self.login_url, {"email": "active@example.com", "password": "testpassword"}
+        )
+        self.assertRedirects(
+            response, reverse("users:dashboard")
+        )  # Should redirect to dashboard

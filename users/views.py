@@ -68,21 +68,31 @@ def nutricionista_login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        user = authenticate(
-            request, username=email, password=password
-        )  # Use 'username=email' se backend custom
+
+        # First, check if the user exists and is a nutricionista
+        try:
+            user = User.objects.get(email=email, user_type="nutricionista")
+        except User.DoesNotExist:
+            messages.error(request, "Email ou senha inválidos.")
+            return render(request, "users/nutricionista_login.html")
+
+        # Check if the user is active
+        if not user.is_active:
+            messages.error(
+                request,
+                "Conta pendente de aprovação de pagamento.",
+            )
+            return render(request, "users/nutricionista_login.html")
+
+        # Now, authenticate the user
+        user = authenticate(request, username=email, password=password)
 
         if user is not None:
-            if user.user_type == "nutricionista":
-                login(request, user)
-                return redirect(
-                    "users:dashboard"
-                )  # Redirecionar para o dashboard do nutricionista
-            else:
-                messages.error(
-                    request, "Você não tem permissão para acessar como nutricionista."
-                )
+            login(request, user)
+            return redirect("users:dashboard")
         else:
+            # This else block should ideally not be reached if password is correct and user is active
+            # But it's a fallback for incorrect password for an an active user
             messages.error(request, "Email ou senha inválidos.")
     return render(request, "users/nutricionista_login.html")
 
@@ -113,7 +123,8 @@ def nutricionista_register_view(request):
             is_active=False,  # Nutricionista precisa de aprovação de pagamento
         )
         messages.success(
-            request, "Cadastro realizado com sucesso! Aguarde a aprovação do pagamento."
+            request,
+            ("Cadastro realizado com sucesso! " "Aguarde a aprovação do pagamento."),
         )
         return redirect(
             "users:nutricionista_login"
