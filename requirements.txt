@@ -9,3 +9,6 @@ python-decouple
 django
 djangorestframework
 djangorestframework-simplejwt
+django-tailwind
+django-browser-reload
+whitenoise
