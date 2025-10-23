@@ -62,7 +62,8 @@ class PatientProfile(Base):
 
 
 # NOTA: As tabelas abaixo precisam ser ajustadas para refletir a nova estrutura.
-# O campo `patient_id` deve ser substituído por `patient_profile_id` ou um link direto para `users(id)` do paciente.
+# O campo `patient_id` deve ser substituído por `patient_profile_id`
+# ou um link direto para `users(id)` do paciente.
 
 
 class Diet(Base):
