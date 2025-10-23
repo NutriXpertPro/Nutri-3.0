@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+
 from django.contrib import messages  # Para mensagens de erro/sucesso
+from django.contrib.auth import login
 from django.contrib.auth.hashers import make_password  # Para criptografar a senha
 from django.contrib.auth.decorators import login_required
 from patients.models import Patient
@@ -69,31 +70,24 @@ def nutricionista_login_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        # First, check if the user exists and is a nutricionista
         try:
-            user = User.objects.get(email=email, user_type="nutricionista")
+            user = User.objects.get(email=email)
+            if hasattr(user, "user_type") and user.user_type == "nutricionista":
+                if user.check_password(password):
+                    if user.is_active:
+                        login(request, user)
+                        return redirect("users:dashboard")
+                    else:
+                        messages.error(
+                            request, "Conta pendente de aprovação de pagamento."
+                        )
+                else:
+                    messages.error(request, "Email ou senha inválidos.")
+            else:
+                messages.error(request, "Email ou senha inválidos.")
         except User.DoesNotExist:
             messages.error(request, "Email ou senha inválidos.")
-            return render(request, "users/nutricionista_login.html")
 
-        # Check if the user is active
-        if not user.is_active:
-            messages.error(
-                request,
-                "Conta pendente de aprovação de pagamento.",
-            )
-            return render(request, "users/nutricionista_login.html")
-
-        # Now, authenticate the user
-        user = authenticate(request, username=email, password=password)
-
-        if user is not None:
-            login(request, user)
-            return redirect("users:dashboard")
-        else:
-            # This else block should ideally not be reached if password is correct and user is active
-            # But it's a fallback for incorrect password for an an active user
-            messages.error(request, "Email ou senha inválidos.")
     return render(request, "users/nutricionista_login.html")
 
 
