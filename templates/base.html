@@ -1,42 +1,45 @@
+
 {% load static tailwind_tags %}
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nutri Xpert Pro</title>
-    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
-    <style>
-        body {
-            background-image: url('{% static "images/background.png" %}');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-    </style>
+    {% tailwind_css %}
 </head>
-<body class="bg-gray-900 text-gray-200 font-sans">
+<body class="bg-gray-100">
 
-    {% block full_width_header %}{% endblock %}
-
-    <div class="flex">
-        <!-- Sidebar (se necessário no futuro) -->
-        <!-- <aside class="w-64 bg-gray-800 text-white p-4">
+    <!-- Opção 4: Layout de Grade (Grid Layout) -->
+    <div id="layout-option-4" class="grid grid-cols-12 grid-rows-6 min-h-screen">
+        <header class="col-span-12 row-span-1 bg-gray-800 text-white shadow p-4 flex justify-between items-center">
+            <h2 class="text-2xl font-bold">Nutri Xpert Pro</h2>
             <nav>
-                <ul>
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-700">Dashboard</a></li>
+                <ul class="flex space-x-4">
+                    <li><a href="#" class="hover:text-gray-300">Dashboard</a></li>
+                    <li><a href="#" class="hover:text-gray-300">Pacientes</a></li>
+                    <li><a href="#" class="hover:text-gray-300">Agenda</a></li>
+                    <li><a href="#" class="hover:text-gray-300">Sair</a></li>
                 </ul>
             </nav>
-        </aside> -->
+        </header>
 
-        <!-- Conteúdo Principal -->
-        <main class="flex-1 p-6 md:p-8">
+        <aside class="col-span-2 row-span-5 bg-gray-700 text-white p-4">
+            <nav>
+                <ul>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-600">Dashboard</a></li>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-600">Pacientes</a></li>
+                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-600">Agenda</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="col-span-10 row-span-5 p-6">
             {% block content %}
+            <h1 class="text-2xl font-bold text-center text-blue-500">Conteúdo da Opção 4</h1>
             {% endblock %}
         </main>
     </div>
 
-    {% block extra_js %}{% endblock %}
 </body>
 </html>
