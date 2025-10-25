@@ -1,45 +1,419 @@
-
-{% load static tailwind_tags %}
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutri Xpert Pro</title>
-    {% tailwind_css %}
+    <title>{% block title %}NutriVida Pro{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .gradient-accent {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .gradient-success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        .accent-blue {
+            background-color: #3b82f6; /* A vibrant blue */
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .bg-pattern {
+            background-image: url('static/images/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .sidebar-item {
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-item:hover {
+            padding-left: 1.5rem;
+        }
+        
+        .notification-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50 bg-pattern min-h-screen">
+    <!-- Header -->
+    <header class="text-white bg-gradient-to-b from-blue-500 to-blue-900 shadow-lg shadow-blue-500/20 fixed w-full top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <button id="menuToggle" class="md:hidden text-gray-600 hover:text-gray-900 focus:outline-none mr-4">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <a href="/" class="flex items-center">
+                        <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-[4.5rem] w-auto mr-3 -ml-8">
+                        <span class="text-xl font-bold text-white mt-10 -ml-4 [text-shadow:2px_2px_4px_rgba(0,0,0,0.2)]">NUTRI XPERT PRO</span>
+                    </a>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8">
+                    <div class="relative w-full">
+                        <input type="text" placeholder="Buscar pacientes, planos, receitas..." 
+                               class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-purple-500 focus:ring-purple-500 focus:ring-2">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Side Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button id="notificationBellBtn" class="relative p-2 text-white hover:text-gray-900 focus:outline-none">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notificationDot" class="notification-dot absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full"></span>
+                        </button>
+                        <!-- Dropdown de Notificações -->
+                        <div id="notificationDropdown" class="hidden origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-1" id="notificationList">
+                                <!-- Notificações serão carregadas aqui via JS -->
+                                <div class="px-4 py-2 text-sm text-gray-700">Carregando notificações...</div>
+                            </div>
+                            <div class="border-t border-gray-200 flex justify-between items-center px-4 py-2">
+                                <a href="#" id="markAllAsReadBtn" class="text-sm text-indigo-600 hover:text-indigo-800">Marcar todas como lidas</a>
+                                <button id="muteNotificationSoundBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                                    <i class="fas fa-volume-up text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Messages -->
+                    <a href="{% url 'messages:inbox' %}" class="p-2 text-white hover:text-gray-900 focus:outline-none">
+                        <i class="fas fa-envelope text-xl"></i>
+                    </a>
+                    
+                    <!-- User Profile -->
+                    <div class="relative">
+                        <button id="profileMenuBtn" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            <img class="h-10 w-10 rounded-full object-cover" src="https://picsum.photos/seed/nutricionista/100/100.jpg" alt="Perfil">
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="profileMenu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-1">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Meu Perfil</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Configurações</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Ajuda</a>
+                                <hr class="my-1">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Container -->
+    <div class="flex pt-16">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="glass-effect w-64 min-h-screen border-r border-gray-200 fixed md:relative md:translate-x-0 -translate-x-full transition-transform duration-300 z-40">
+            <nav class="mt-5 px-2">
+                <a href="{% url 'users:dashboard' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-white bg-gradient-to-b from-blue-500 to-blue-900 mb-2 shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-home mr-3"></i>
+                    Dashboard
+                </a>
+                
+                <a href="{% url 'patients:list' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-users mr-3"></i>
+                    Pacientes
+                </a>
+                
+                <a href="{% url 'appointments:list' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-calendar-alt mr-3"></i>
+                    Consultas
+                </a>
+                
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-utensils mr-3"></i>
+                    Planos Alimentares
+                </a>
+                
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-user-plus mr-3"></i>
+                    Novo Cliente
+                </a>
 
-    <!-- Opção 4: Layout de Grade (Grid Layout) -->
-    <div id="layout-option-4" class="grid grid-cols-12 grid-rows-6 min-h-screen">
-        <header class="col-span-12 row-span-1 bg-gray-800 text-white shadow p-4 flex justify-between items-center">
-            <h2 class="text-2xl font-bold">Nutri Xpert Pro</h2>
-            <nav>
-                <ul class="flex space-x-4">
-                    <li><a href="#" class="hover:text-gray-300">Dashboard</a></li>
-                    <li><a href="#" class="hover:text-gray-300">Pacientes</a></li>
-                    <li><a href="#" class="hover:text-gray-300">Agenda</a></li>
-                    <li><a href="#" class="hover:text-gray-300">Sair</a></li>
-                </ul>
-            </nav>
-        </header>
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-utensils mr-3"></i>
+                    Criar Dieta
+                </a>
 
-        <aside class="col-span-2 row-span-5 bg-gray-700 text-white p-4">
-            <nav>
-                <ul>
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-600">Dashboard</a></li>
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-600">Pacientes</a></li>
-                    <li><a href="#" class="block py-2 px-4 rounded hover:bg-gray-600">Agenda</a></li>
-                </ul>
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-clipboard-list mr-3"></i>
+                    Avaliação
+                </a>
+
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-file-medical mr-3"></i>
+                    Anamnese
+                </a>
+
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    Relatórios
+                </a>
+                
+                <a href="{% url 'users:resources' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-book mr-3"></i>
+                    Recursos
+                </a>
+                
+                <div class="mt-8 pt-8 border-t border-gray-200">
+                    <a href="{% url 'users:settings' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                        <i class="fas fa-cog mr-3"></i>
+                        Configurações
+                    </a>
+                </div>
             </nav>
         </aside>
-
-        <main class="col-span-10 row-span-5 p-6">
+        
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-0 p-4 md:p-6 lg:p-8">
             {% block content %}
-            <h1 class="text-2xl font-bold text-center text-blue-500">Conteúdo da Opção 4</h1>
             {% endblock %}
         </main>
     </div>
+    
+    <script>
+        // Profile Menu Toggle
+        document.getElementById('profileMenuBtn').addEventListener('click', function() {
+            document.getElementById('profileMenu').classList.toggle('hidden');
+        });
+        
+        // Close profile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const profileMenuBtn = document.getElementById('profileMenuBtn');
+            const profileMenu = document.getElementById('profileMenu');
+            
+            if (!profileMenuBtn.contains(event.target) && !profileMenu.contains(event.target)) {
+                profileMenu.classList.add('hidden');
+            }
+        });
+        
+        // Mobile Menu Toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        });
 
+        // --- Lógica de Notificações ---
+        const notificationBellBtn = document.getElementById('notificationBellBtn');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationList = document.getElementById('notificationList');
+        const notificationDot = document.getElementById('notificationDot');
+        const markAllAsReadBtn = document.getElementById('markAllAsReadBtn');
+        const notificationSound = document.getElementById('notificationSound');
+        const muteNotificationSoundBtn = document.getElementById('muteNotificationSoundBtn');
+        const muteIcon = muteNotificationSoundBtn.querySelector('i');
+
+        let lastNotificationCount = 0; // Para controlar novas notificações
+        let isSoundMuted = localStorage.getItem('notificationSoundMuted') === 'true'; // Carrega o estado do localStorage
+
+        // Função para atualizar o ícone do mudo
+        function updateMuteIcon() {
+            if (isSoundMuted) {
+                muteIcon.classList.remove('fa-volume-up');
+                muteIcon.classList.add('fa-volume-mute');
+            } else {
+                muteIcon.classList.remove('fa-volume-mute');
+                muteIcon.classList.add('fa-volume-up');
+            }
+        }
+
+        // Inicializa o ícone do mudo ao carregar a página
+        updateMuteIcon();
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function fetchNotifications() {
+            try {
+                const response = await fetch('/api/notifications/', {
+                    headers: {
+                        'Authorization': `Bearer ${getCookie('access_token')}` // Assumindo que você usa JWT
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const notifications = await response.json();
+                renderNotifications(notifications);
+                updateNotificationDot(notifications.length);
+
+                // Tocar som se houver novas notificações e não estiver silenciado
+                if (notifications.length > lastNotificationCount && notifications.length > 0 && !isSoundMuted) {
+                    if (notificationSound) {
+                        notificationSound.play();
+                    }
+                }
+                lastNotificationCount = notifications.length;
+
+            } catch (error) {
+                console.error('Erro ao buscar notificações:', error);
+                notificationList.innerHTML = '<div class="px-4 py-2 text-sm text-red-600">Erro ao carregar.</div>';
+            }
+        }
+
+        function renderNotifications(notifications) {
+            notificationList.innerHTML = ''; // Limpa a lista atual
+            if (notifications.length === 0) {
+                notificationList.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">Nenhuma notificação nova.</div>';
+                return;
+            }
+
+            notifications.forEach(notif => {
+                const div = document.createElement('div');
+                div.className = 'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100';
+                div.textContent = notif.message;
+                notificationList.appendChild(div);
+            });
+        }
+
+        function updateNotificationDot(count) {
+            if (count > 0) {
+                notificationDot.classList.remove('hidden');
+            } else {
+                notificationDot.classList.add('hidden');
+            }
+        }
+
+        async function markAllAsRead() {
+            try {
+                const csrftoken = getCookie('csrftoken');
+                const response = await fetch('/api/notifications/mark_all_as_read/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getCookie('access_token')}` // Assumindo que você usa JWT
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                // Após marcar como lido, atualiza a UI
+                notificationList.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">Nenhuma notificação nova.</div>';
+                notificationDot.classList.add('hidden');
+                lastNotificationCount = 0; // Resetar a contagem após marcar como lido
+            } catch (error) {
+                console.error('Erro ao marcar notificações como lidas:', error);
+            }
+        }
+
+        notificationBellBtn.addEventListener('click', async function(event) {
+            event.stopPropagation(); // Impede que o clique feche o dropdown imediatamente
+            notificationDropdown.classList.toggle('hidden');
+            if (!notificationDropdown.classList.contains('hidden')) {
+                await fetchNotifications();
+            }
+        });
+
+        markAllAsReadBtn.addEventListener('click', async function(event) {
+            event.preventDefault();
+            await markAllAsRead();
+        });
+
+        muteNotificationSoundBtn.addEventListener('click', function(event) {
+            event.stopPropagation(); // Impede que o clique feche o dropdown
+            isSoundMuted = !isSoundMuted;
+            localStorage.setItem('notificationSoundMuted', isSoundMuted);
+            updateMuteIcon();
+        });
+
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', function(event) {
+            if (!notificationBellBtn.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                notificationDropdown.classList.add('hidden');
+            }
+        });
+
+        // Inicializar o estado do ponto de notificação ao carregar a página
+        // fetchNotifications(); // Pode ser chamado aqui se quiser carregar ao iniciar
+
+    </script>
 </body>
 </html>

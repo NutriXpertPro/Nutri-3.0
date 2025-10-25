@@ -25,10 +25,10 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path("users/", include("users.urls", namespace="users")),
-    path(
-        "api/", include("patients.urls", namespace="patients")
-    ),  # Fix: Adicionado namespace='patients'
+    path("patients/", include("patients.urls", namespace="patients")),
+    path("appointments/", include("appointments.urls", namespace="appointments")),
     path("api/", include("notifications.urls", namespace="notification")),
+    path("messages/", include("messages.urls", namespace="messages")),
     path("", include("theme.urls", namespace="theme")),
     path("admin/", admin.site.urls),
     path("django-browser-reload/", include("django_browser_reload.urls")),

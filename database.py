@@ -15,14 +15,17 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL não está definida no arquivo .env")
 
-print(f"--- Conectando ao banco: {DATABASE_URL.split('@')[1] if '@' in DATABASE_URL else 'local'} ---")
+print(
+    f"--- Conectando ao banco: "
+    f"{DATABASE_URL.split('@')[1] if '@' in DATABASE_URL else 'local'} ---"
+)
 
 # Criar engine do SQLAlchemy
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,  # Verifica conexão antes de usar
-    pool_recycle=3600,   # Recicla conexões a cada hora
-    echo=False           # Mude para True para ver as queries SQL no console
+    pool_recycle=3600,  # Recicla conexões a cada hora
+    echo=False,  # Mude para True para ver as queries SQL no console
 )
 
 # Criar SessionLocal para interagir com o banco
@@ -30,6 +33,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Base para os models
 Base = declarative_base()
+
 
 # Dependency para FastAPI
 def get_db():

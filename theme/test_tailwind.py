@@ -6,20 +6,17 @@ from django.template.loader import get_template
 def test_tailwind_base_html():
     template = get_template("base.html")
     html = template.render({})
-    assert 'class="bg-gray-100"' in html
+    assert 'class="bg-gray-50 bg-pattern min-h-screen"' in html
 
 
 @pytest.mark.django_db
-def test_base_html_layout_option_4():
+def test_base_html_structure():
     template = get_template("base.html")
     html = template.render({})
-    assert (
-        '<div id="layout-option-4" class="grid grid-cols-12 grid-rows-6 min-h-screen">'
-        in html
+    expected_header = (
+        '<header class="text-white bg-gradient-to-b from-blue-500 to-blue-900 '
+        'shadow-lg shadow-blue-500/20 fixed w-full top-0 z-50">'
     )
-    assert (
-        '<header class="col-span-12 row-span-1 bg-gray-800 text-white shadow p-4 '
-        'flex justify-between items-center">' in html
-    )
-    assert '<aside class="col-span-2 row-span-5 bg-gray-700 text-white p-4">' in html
-    assert '<main class="col-span-10 row-span-5 p-6">' in html
+    assert expected_header in html
+    assert '<aside id="sidebar"' in html
+    assert '<main class="flex-1 md:ml-0 p-4 md:p-6 lg:p-8">' in html

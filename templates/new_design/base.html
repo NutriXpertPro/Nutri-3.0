@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NutriVida Pro{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .gradient-accent {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .gradient-success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .bg-pattern {
+            background-image: url('static/images/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .sidebar-item {
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-item:hover {
+            padding-left: 1.5rem;
+        }
+        
+        .notification-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 bg-pattern min-h-screen">
+    <!-- Header -->
+    <header class="glass-effect border-b border-gray-200 fixed w-full top-0 z-50">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <button id="menuToggle" class="md:hidden text-gray-600 hover:text-gray-900 focus:outline-none mr-4">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <a href="/" class="flex items-center">
+                        <img src="static/images/nutri.png" alt="NutriVida Pro" class="h-10 w-auto mr-3">
+                        <span class="text-xl font-semibold text-gray-800">NutriVida<span class="text-gradient">Pro</span></span>
+                    </a>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8">
+                    <div class="relative w-full">
+                        <input type="text" placeholder="Buscar pacientes, planos, receitas..." 
+                               class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-purple-500 transition-colors">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Side Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <button class="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="notification-dot absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    
+                    <!-- Messages -->
+                    <button class="p-2 text-gray-600 hover:text-gray-900 focus:outline-none">
+                        <i class="fas fa-envelope text-xl"></i>
+                    </button>
+                    
+                    <!-- User Profile -->
+                    <div class="relative">
+                        <button id="profileMenuBtn" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            <img class="h-10 w-10 rounded-full object-cover" src="https://picsum.photos/seed/nutricionista/100/100.jpg" alt="Perfil">
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="profileMenu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-1">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Meu Perfil</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Configurações</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Ajuda</a>
+                                <hr class="my-1">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Container -->
+    <div class="flex pt-16">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="glass-effect w-64 min-h-screen border-r border-gray-200 fixed md:relative md:translate-x-0 -translate-x-full transition-transform duration-300 z-40">
+            <nav class="mt-5 px-2">
+                <a href="{% url 'dashboard' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-500 to-indigo-600 mb-2">
+                    <i class="fas fa-home mr-3"></i>
+                    Dashboard
+                </a>
+                
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-users mr-3"></i>
+                    Pacientes
+                </a>
+                
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-calendar-alt mr-3"></i>
+                    Consultas
+                </a>
+                
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-utensils mr-3"></i>
+                    Planos Alimentares
+                </a>
+                
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    Relatórios
+                </a>
+                
+                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                    <i class="fas fa-book mr-3"></i>
+                    Recursos
+                </a>
+                
+                <div class="mt-8 pt-8 border-t border-gray-200">
+                    <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+                        <i class="fas fa-cog mr-3"></i>
+                        Configurações
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-0 p-4 md:p-6 lg:p-8">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+    
+    <script>
+        // Profile Menu Toggle
+        document.getElementById('profileMenuBtn').addEventListener('click', function() {
+            document.getElementById('profileMenu').classList.toggle('hidden');
+        });
+        
+        // Close profile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const profileMenuBtn = document.getElementById('profileMenuBtn');
+            const profileMenu = document.getElementById('profileMenu');
+            
+            if (!profileMenuBtn.contains(event.target) && !profileMenu.contains(event.target)) {
+                profileMenu.classList.add('hidden');
+            }
+        });
+        
+        // Mobile Menu Toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        });
+    </script>
+</body>
+</html>

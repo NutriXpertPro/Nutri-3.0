@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "appointments.apps.AppointmentsConfig",
     "payments.apps.PaymentsConfig",
     "notifications.apps.NotificationsConfig",
+    "messages.apps.MessagesConfig",  # New app for internal messaging
 ]
 
 MIDDLEWARE = [
@@ -92,14 +93,14 @@ WSGI_APPLICATION = "setup.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASE_URL_FROM_ENV = config('DATABASE_URL')
+DATABASE_URL_FROM_ENV = config("DATABASE_URL")
 # dj_database_url does not understand 'mysql+pymysql', so replace it with 'mysql'
-if DATABASE_URL_FROM_ENV and DATABASE_URL_FROM_ENV.startswith('mysql+pymysql://'):
-    DATABASE_URL_FROM_ENV = DATABASE_URL_FROM_ENV.replace('mysql+pymysql://', 'mysql://', 1)
+if DATABASE_URL_FROM_ENV and DATABASE_URL_FROM_ENV.startswith("mysql+pymysql://"):
+    DATABASE_URL_FROM_ENV = DATABASE_URL_FROM_ENV.replace(
+        "mysql+pymysql://", "mysql://", 1
+    )
 
-DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL_FROM_ENV)
-}
+DATABASES = {"default": dj_database_url.parse(DATABASE_URL_FROM_ENV)}
 
 
 # Password validation
