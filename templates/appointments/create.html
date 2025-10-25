@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Agendar Nova Consulta - NutriVida Pro{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 36px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+    }
+</style>
+
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow p-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Agendar Nova Consulta</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="space-y-4">
+            <div>
+                <label for="{{ form.patient.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.patient.label }}</label>
+                {{ form.patient }}
+                {% if form.patient.errors %}
+                    <div class="text-red-500 text-sm mt-1">{{ form.patient.errors|striptags }}</div>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="{{ form.date.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.date.label }}</label>
+                    {{ form.date }}
+                    {% if form.date.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.date.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.time.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.time.label }}</label>
+                    {{ form.time }}
+                    {% if form.time.errors %}
+                        <div class="text-red-500 text-sm mt-1">{{ form.time.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.notes.label }}</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                    <div class="text-red-500 text-sm mt-1">{{ form.notes.errors|striptags }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-8 flex justify-end space-x-4">
+            <a href="{% url 'appointments:list' %}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+                Cancelar
+            </a>
+            <button type="submit" class="px-4 py-2 text-white rounded-lg bg-gradient-to-b from-blue-500 to-blue-900 shadow-lg hover:from-blue-600 hover:to-blue-900 transition-all">
+                <i class="fas fa-save mr-2"></i> Salvar Agendamento
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#{{ form.patient.id_for_label }}').select2({
+            placeholder: "Selecione um paciente",
+            allowClear: true
+        });
+    });
+</script>
+{% endblock %}

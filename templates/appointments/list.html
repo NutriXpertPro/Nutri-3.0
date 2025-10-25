@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendário de Consultas - NutriVida Pro{% endblock %}
+
+{% block content %}
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<style>
+    #calendar {
+        max-width: 1100px;
+        margin: 40px auto;
+    }
+    .fc-button-primary {
+        background: linear-gradient(to bottom, #3b82f6, #1e3a8a) !important; /* from-blue-500 to-blue-900 */
+        border-color: #1e3a8a !important;
+        color: white !important;
+        border-radius: 0.5rem !important; /* rounded-lg */
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important; /* shadow-lg */
+        transition: all 0.2s ease-in-out;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        transform: translateZ(0);
+        text-transform: capitalize !important;
+    }
+
+    .fc-button-primary:hover {
+        background: linear-gradient(to bottom, #2563eb, #1e40af) !important; /* from-blue-600 to-blue-900 */
+    }
+
+    .fc-button-primary:active, .fc-button-active {
+        background: linear-gradient(to bottom, #1d4ed8, #1e3a8a) !important; /* A darker shade for active state */
+    }
+
+    .fc-button-primary:focus {
+        outline: none !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5) !important;
+    }
+
+    .fc-today-button {
+        text-transform: capitalize !important;
+    }
+</style>
+
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Calendário de Consultas</h1>
+        <a href="{% url 'appointments:create' %}" class="px-4 py-2 text-white rounded-lg bg-gradient-to-b from-blue-500 to-blue-900 shadow-lg hover:from-blue-600 hover:to-blue-900 transition-all">
+            <i class="fas fa-calendar-plus mr-2"></i> Nova Consulta
+        </a>
+    </div>
+
+    <div id='calendar-container' class="bg-white rounded-lg shadow p-4">
+        <div id='calendar'></div>
+    </div>
+</div>
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/pt-br.js'></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'pt-br',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: '/appointments/api/list/', // URL to fetch events
+            eventClick: function(info) {
+                if (info.event.url) {
+                    window.location.href = info.event.url;
+                }
+            },
+            dateClick: function(info) {
+                window.location.href = `{% url 'appointments:create' %}?date=${info.dateStr}`;
+            },
+            datesSet: function() {
+                // Force the today button to always be enabled
+                const todayButton = document.querySelector('.fc-today-button');
+                if (todayButton) {
+                    todayButton.disabled = false;
+                }
+            }
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}
