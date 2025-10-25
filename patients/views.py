@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -59,12 +59,11 @@ def patient_create(request):
 
                 # Cria User paciente
                 patient_user = User.objects.create_user(
-                    username=patient_email,  # Ou gere username único se necessário
                     email=patient_email,
                     password=patient_password,
                     name=patient_name,
                     user_type="paciente",
-                    is_active=True,  # Ativo por padrão; ajuste se precisar aprovação
+                    is_active=True,
                 )
 
                 # Salva Patient com dados do form
@@ -93,3 +92,10 @@ def patient_list(request):
     # Exemplo: lista para redirect
     patients = Patient.objects.filter(nutritionist=request.user)
     return render(request, "patients/list.html", {"patients": patients})
+
+
+@login_required
+def patient_detail(request, patient_id):
+    patient = get_object_or_404(Patient, pk=patient_id, nutritionist=request.user)
+    context = {"patient": patient}
+    return render(request, "patients/detail.html", context)

@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from datetime import date
 
 # Create your models here.
 
@@ -27,6 +28,19 @@ class Patient(models.Model):  # Renomear para PatientProfile no futuro
     phone = models.CharField(max_length=50, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_age(self):
+        if self.birth_date:
+            today = date.today()
+            return (
+                today.year
+                - self.birth_date.year
+                - (
+                    (today.month, today.day)
+                    < (self.birth_date.month, self.birth_date.day)
+                )
+            )
+        return None
 
     def __str__(self):
         return self.patient_user.name  # Retorna o nome do usuário paciente

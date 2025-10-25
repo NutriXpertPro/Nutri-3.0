@@ -10,6 +10,6 @@ urlpatterns = [
     path(
         "create/", views.patient_create, name="create"
     ),  # Rota pro cadastro (link no template)
-    # path('<int:pk>/', views.patient_detail, name='detail'),  # Exemplo: detalhes
+    path("<int:patient_id>/", views.patient_detail, name="detail"),
     # Adicione outras rotas conforme seu app (ex.: update, delete)
 ]
