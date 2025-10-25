@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Recursos - NutriVida Pro{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Recursos</h1>
+    <p class="text-gray-600 mb-8">Esta seção será sua biblioteca de ferramentas e materiais para agilizar o seu trabalho.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Biblioteca de Conteúdo -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Biblioteca de Conteúdo</h2>
+            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>Artigos e posts sobre nutrição para compartilhar.</li>
+                <li>Receitas saudáveis filtráveis por objetivo ou restrição.</li>
+                <li>Materiais educativos (infográficos, PDFs) para pacientes.</li>
+            </ul>
+        </div>
+
+        <!-- Ferramentas de Apoio -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Ferramentas de Apoio</h2>
+            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>Calculadoras de necessidades calóricas.</li>
+                <li>Cálculo de IMC e percentual de gordura.</li>
+                <li>Banco de dados de alimentos para consulta rápida.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

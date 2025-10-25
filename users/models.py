@@ -43,12 +43,38 @@ class User(AbstractBaseUser, PermissionsMixin):
         ("admin", "Admin"),  # Adicionado para o superusuário
     )
 
+    PROFESSIONAL_TITLE_CHOICES = [
+        ("DR", "Dr."),
+        ("DRA", "Dra."),
+        ("PHD", "PhD"),
+        ("MTR", "Mestre"),
+        ("ESP", "Especialista"),
+        ("NUT", "Nutricionista"),
+    ]
+
+    GENDER_CHOICES = [
+        ("M", "Masculino"),
+        ("F", "Feminino"),
+    ]
+
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=255)
     user_type = models.CharField(
         max_length=20,
         choices=USER_TYPE_CHOICES,
         default="paciente",  # Valor padrão para novos usuários
+    )
+    professional_title = models.CharField(
+        max_length=3,
+        choices=PROFESSIONAL_TITLE_CHOICES,
+        blank=True,
+        null=True,
+    )
+    gender = models.CharField(
+        max_length=1,
+        choices=GENDER_CHOICES,
+        blank=True,
+        null=True,
     )
     is_staff = models.BooleanField(default=False)  # Necessário para acesso ao admin
     is_active = models.BooleanField(default=True)

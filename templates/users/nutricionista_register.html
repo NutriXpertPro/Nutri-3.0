@@ -21,13 +21,34 @@
         </div>
         <form class="mt-8 space-y-6" action="." method="POST">
             {% csrf_token %}
-            <div class="rounded-md shadow-sm -space-y-px">
+            <div class="rounded-md shadow-sm">
                 <div>
                     <label for="full-name" class="sr-only">Nome Completo</label>
                     <input id="full-name" name="name" type="text" autocomplete="name" required
-                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                           class="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                            placeholder="Nome Completo">
                 </div>
+
+                <div class="flex -space-x-px">
+                    <div class="w-1/2">
+                        <label for="professional_title" class="sr-only">Título Profissional</label>
+                        <select id="professional_title" name="professional_title"
+                                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 bg-white placeholder-gray-500 text-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm">
+                            <option value="" disabled selected>Seu título...</option>
+                            <option value="DR">Dr.</option>
+                            <option value="DRA">Dra.</option>
+                            <option value="PHD">PhD</option>
+                            <option value="MTR">Mestre</option>
+                            <option value="ESP">Especialista</option>
+                            <option value="NUT">Nutricionista</option>
+                        </select>
+                    </div>
+                    <div class="w-1/2 flex items-center justify-around border border-gray-300">
+                        <label class="text-sm text-gray-500"><input type="radio" name="gender" value="M" class="mr-1">Masc.</label>
+                        <label class="text-sm text-gray-500"><input type="radio" name="gender" value="F" class="mr-1">Fem.</label>
+                    </div>
+                </div>
+
                 <div>
                     <label for="email-address" class="sr-only">Endereço de Email</label>
                     <input id="email-address" name="email" type="email" autocomplete="email" required
@@ -49,7 +70,7 @@
                 <div class="relative">
                     <label for="password-confirm" class="sr-only">Confirmar Senha</label>
                     <input id="password-confirm" name="password_confirm" type="password" autocomplete="new-password" required
-                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm pr-10"
+                           class="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm pr-10"
                            placeholder="Confirmar Senha">
                     <span class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer z-10" onclick="togglePasswordVisibility('password-confirm')">
                         <svg id="togglePasswordIconConfirm" class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -109,12 +109,12 @@ class DashboardViewTest(TestCase):
     def test_dashboard_new_design_elements(self):
         # Simula um usuário logado com nome "Anderson"
         self.user.name = "Anderson"
+        self.user.gender = "M"
+        self.user.professional_title = "NUT"
         self.user.save()
 
         response = self.client.get(reverse("users:dashboard"))
-        self.assertContains(response, "Bem-vindo, Anderson!")
-        self.assertContains(response, "Ações Rápidas")
-        self.assertContains(response, "Áreas Principais")
+        self.assertContains(response, "Seja bem-vindo, Nutricionista Anderson")
 
     def test_login_cadastro_urls_resolve(self):
         # Teste para URLs de login

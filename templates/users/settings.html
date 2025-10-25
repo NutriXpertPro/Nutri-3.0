@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Configurações - NutriVida Pro{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Configurações</h1>
+    <p class="text-gray-600 mb-8">Esta seção permitirá que você personalize o sistema para se adequar ao seu método de trabalho.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Perfil e Dados Profissionais -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Perfil e Dados Profissionais</h2>
+            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>Alterar suas informações de conta e senha.</li>
+                <li>Inserir seu CRN, especialidades e contatos.</li>
+                <li>Fazer upload do seu logotipo para relatórios.</li>
+            </ul>
+        </div>
+
+        <!-- Preferências de Uso -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Preferências de Uso</h2>
+            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>Customizar modelos de anamnese e avaliação.</li>
+                <li>Gerenciar quais notificações deseja receber.</li>
+                <li>Conectar o sistema com outras ferramentas (ex: Google Agenda).</li>
+            </ul>
+        </div>
+
+        <!-- Gestão da Conta -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Gestão da Conta</h2>
+            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>Ver detalhes do seu plano de assinatura.</li>
+                <li>Acessar histórico de pagamentos e faturas.</li>
+                <li>Exportar todos os seus dados de pacientes.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -14,14 +14,22 @@ from appointments.models import Appointment
 from diets.models import Diet
 
 
+import json
+from evaluations.models import Evaluation
+
+
 @login_required
 def dashboard_view(request):
     # Dados para os cards do dashboard
     total_patients = Patient.objects.filter(nutritionist=request.user).count()
     today = timezone.now().date()
-    consultas_hoje = Appointment.objects.filter(
+
+    # Busca as consultas de hoje para a lista e para a contagem
+    appointments_today = Appointment.objects.filter(
         patient__nutritionist=request.user, date__date=today
-    ).count()
+    ).order_by("date")
+    consultas_hoje = appointments_today.count()
+
     # Lógica para "dietas ativas" - Conta todas as dietas associadas.
     dietas_ativas = Diet.objects.filter(patient__nutritionist=request.user).count()
 
@@ -51,9 +59,34 @@ def dashboard_view(request):
     page_number = request.GET.get("page")
     patients = paginator.get_page(page_number)
 
+    # --- Lógica para o Gráfico de Progresso ---
+    chart_labels = []
+    chart_data = []
+    chart_patient_name = ""
+
+    # Encontra a avaliação mais recente para selecionar um paciente
+    latest_evaluation = (
+        Evaluation.objects.filter(patient__nutritionist=request.user)
+        .order_by("-date")
+        .first()
+    )
+
+    if latest_evaluation:
+        patient_for_chart = latest_evaluation.patient
+        chart_patient_name = patient_for_chart.patient_user.name
+
+        # Pega todas as avaliações para esse paciente, em ordem cronológica
+        evaluations = Evaluation.objects.filter(patient=patient_for_chart).order_by(
+            "date"
+        )
+
+        chart_labels = [e.date.strftime("%d/%m") for e in evaluations]
+        chart_data = [float(e.weight) for e in evaluations if e.weight is not None]
+
     context = {
         "total_patients": total_patients,
         "consultas_hoje": consultas_hoje,
+        "appointments_today": appointments_today,  # Passa a lista para o template
         "total_consultas_hoje": 8,  # Valor fixo conforme o design
         "dietas_ativas": dietas_ativas,
         "percentual_dietas_ativas": 93,  # Valor fixo conforme o design
@@ -61,6 +94,9 @@ def dashboard_view(request):
         "proxima_consulta": proxima_consulta,
         "patients": patients,
         "search_query": search_query,
+        "chart_labels": json.dumps(chart_labels),
+        "chart_data": json.dumps(chart_data),
+        "chart_patient_name": chart_patient_name,
     }
     return render(request, "dashboard.html", context)
 
@@ -97,6 +133,8 @@ def nutricionista_register_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
         password_confirm = request.POST.get("password_confirm")
+        professional_title = request.POST.get("professional_title")
+        gender = request.POST.get("gender")
 
         if password != password_confirm:
             messages.error(request, "As senhas não coincidem.")
@@ -114,6 +152,8 @@ def nutricionista_register_view(request):
             email=email,
             password=hashed_password,
             user_type="nutricionista",
+            professional_title=professional_title,
+            gender=gender,
             is_active=False,  # Nutricionista precisa de aprovação de pagamento
         )
         messages.success(
@@ -133,3 +173,13 @@ def paciente_login_view(request):
 
 def paciente_register_view(request):
     return render(request, "users/patient_register.html")
+
+
+@login_required
+def resources_view(request):
+    return render(request, "users/resources.html")
+
+
+@login_required
+def settings_view(request):
+    return render(request, "users/settings.html")
