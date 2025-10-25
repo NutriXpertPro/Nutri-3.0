@@ -6,13 +6,29 @@ from .models import Notification
 from .serializers import NotificationSerializer
 
 
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Retorna apenas as notificações não lidas para o usuário autenticado
-        return Notification.objects.filter(user=self.request.user, is_read=False)
+        """
+        This view should return a list of all the unread notifications
+        for the currently authenticated user.
+        """
+        return Notification.objects.filter(
+            user=self.request.user, is_read=False
+        ).order_by("-sent_at")
+
+    @action(detail=False, methods=["post"])
+    def mark_all_as_read(self, request):
+        """Marks all unread notifications for the user as read."""
+        unread_notifications = self.get_queryset().filter(is_read=False)
+        unread_notifications.update(is_read=True)
+        return Response({"status": "all notifications marked as read"})
 
 
 @login_required
