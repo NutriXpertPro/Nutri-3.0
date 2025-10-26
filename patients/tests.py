@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from .models import Patient
+from notifications.models import Notification
 from django.urls import reverse
 from django.contrib.messages import get_messages
 
@@ -54,6 +55,47 @@ class PatientModelTest(TestCase):
             nutritionist=self.user,
         )
         self.assertEqual(str(patient), "Maria Oliveira")
+
+
+class PatientSignalTest(TestCase):
+    def setUp(self):
+        # Cria um usuário nutricionista
+        self.nutritionist = User.objects.create_user(
+            email="nutricionista@teste.com",
+            password="testpassword",
+            name="Nutricionista Teste",
+            user_type="nutricionista",
+        )
+
+    def test_notification_created_on_patient_creation(self):
+        """
+        Testa se uma notificação é criada para o nutricionista quando um novo
+        paciente é cadastrado.
+        """
+        # Cria um usuário para o paciente
+        patient_user = User.objects.create_user(
+            email="paciente@teste.com",
+            password="testpassword",
+            name="Paciente Teste",
+            user_type="paciente",
+        )
+
+        # Cria o perfil do paciente, o que deve disparar o sinal
+        Patient.objects.create(
+            patient_user=patient_user,
+            nutritionist=self.nutritionist,
+            birth_date="1995-05-10",
+        )
+
+        # Verifica se a notificação foi criada para o nutricionista correto
+        notification = Notification.objects.filter(user=self.nutritionist).first()
+
+        self.assertIsNotNone(notification)
+        self.assertEqual(notification.user, self.nutritionist)
+        self.assertEqual(
+            notification.message, "Novo paciente cadastrado: Paciente Teste"
+        )
+        self.assertEqual(notification.type, "APP")
 
 
 class PatientListViewTest(TestCase):
