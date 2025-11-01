@@ -4,36 +4,8 @@
 
 {% block content %}
 {% load static %}
-<div class="min-h-screen bg-green-50">
-    <!-- Top Navigation Bar -->
-    <nav class="bg-white shadow-sm px-8 py-4 flex items-center justify-between">
-        <!-- Logo -->
-        <div class="flex items-center">
-            <span class="text-xl font-bold text-gray-800">NUTRI XPERT PRO</span>
-        </div>
 
-        <!-- Search Bar -->
-        <div class="relative flex-grow mx-8">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="text" placeholder="Buscar pacientes, dietas, consultas..." class="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
 
-        <!-- Right Icons/User Menu -->
-        <div class="flex items-center space-x-4">
-            <!-- Notifications -->
-            <div class="relative">
-                <i class="fas fa-bell text-gray-600 text-lg cursor-pointer hover:text-blue-500"></i>
-                <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-            </div>
-            <!-- Help -->
-            <i class="fas fa-question-circle text-gray-600 text-lg cursor-pointer hover:text-blue-500"></i>
-            <!-- User Profile -->
-            <div class="relative">
-                <img src="https://picsum.photos/seed/nutricionista/40/40.jpg" alt="User Avatar" class="h-10 w-10 rounded-full cursor-pointer">
-                <!-- Dropdown will go here -->
-            </div>
-        </div>
-    </nav>
 
     <!-- Main Content Area -->
     <div class="p-8">
@@ -41,7 +13,7 @@
         <div class="flex justify-between items-center mb-8">
             <!-- Dynamic Greeting -->
             <div>
-                <h1 id="dynamic-greeting" class="text-3xl font-bold text-gray-800"></h1>
+                <h1 id="dynamic-greeting" class="text-3xl font-bold text-gray-800">Olá, Dr. {{ first_name }}</h1>
                 <p class="text-gray-600 mt-1">Aqui está o seu foco para hoje.</p>
             </div>
             <!-- Key Metric -->
@@ -67,7 +39,7 @@
                     greeting = 'Boa noite';
                 }
 
-                greetingElement.textContent = `${greeting}, Dr. {{ request.user.first_name }}`;
+                greetingElement.textContent = `${greeting}, Dr. {{ first_name }}`;
             })();
         </script>
 

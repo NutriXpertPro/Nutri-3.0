@@ -10,7 +10,7 @@ from django.utils import timezone
 from appointments.models import Appointment
 from diets.models import Diet
 import json
-from evaluations.models import Evaluation
+
 
 @login_required
 def dashboard_view(request):
@@ -34,9 +34,7 @@ def dashboard_view(request):
         "patient_user__name"
     )
     if search_query:
-        patients_list = patients_list.filter(
-            patient_user__name__icontains=search_query
-        )
+        patients_list = patients_list.filter(patient_user__name__icontains=search_query)
     paginator = Paginator(patients_list, 5)
     page_number = request.GET.get("page")
     patients = paginator.get_page(page_number)
@@ -45,19 +43,17 @@ def dashboard_view(request):
     chart_patient_name = ""
     first_name = request.user.name.split()[0]
 
-    # Encontra a avaliação mais recente para selecionar um paciente
-    latest_evaluation = (
-        Evaluation.objects.filter(patient__nutritionist=request.user)
-        .order_by("-date")
+    # Logic for Patient in Focus
+    patient_in_focus = (
+        Patient.objects.filter(nutritionist=request.user)
+        .order_by("-created_at")
         .first()
     )
-    # Logic for Patient in Focus
-    patient_in_focus = Patient.objects.filter(nutritionist=request.user).order_by('-created_at').first()
     if patient_in_focus:
         # Add placeholder goal and progress metric for demonstration
-        patient_in_focus.goal = "Perda de Peso" # Placeholder
-        patient_in_focus.progress_metric = "-5kg desde o início" # Placeholder
-    
+        patient_in_focus.goal = "Perda de Peso"  # Placeholder
+        patient_in_focus.progress_metric = "-5kg desde o início"  # Placeholder
+
     context = {
         "total_patients": total_patients,
         "consultas_hoje": consultas_hoje,
@@ -73,9 +69,10 @@ def dashboard_view(request):
         "chart_data": json.dumps(chart_data),
         "chart_patient_name": chart_patient_name,
         "first_name": first_name,
-        "patient_in_focus": patient_in_focus, # Add patient in focus to context
+        "patient_in_focus": patient_in_focus,  # Add patient in focus to context
     }
     return render(request, "dashboard.html", context)
+
 
 def nutricionista_login_view(request):
     if request.method == "POST":
@@ -99,6 +96,7 @@ def nutricionista_login_view(request):
         except User.DoesNotExist:
             messages.error(request, "Email ou senha inválidos.")
     return render(request, "users/nutricionista_login.html")
+
 
 def nutricionista_register_view(request):
     if request.method == "POST":
@@ -128,10 +126,9 @@ def nutricionista_register_view(request):
             request,
             ("Cadastro realizado com sucesso! " "Aguarde a aprovação do pagamento."),
         )
-        return redirect(
-            "users:nutricionista_login"
-        )
+        return redirect("users:nutricionista_login")
     return render(request, "users/nutricionista_register.html")
+
 
 def paciente_login_view(request):
     if request.method == "POST":
@@ -153,6 +150,7 @@ def paciente_login_view(request):
         except User.DoesNotExist:
             messages.error(request, "Email ou senha inválidos.")
     return render(request, "users/patient_login.html")
+
 
 def paciente_register_view(request):
     if request.method == "POST":
@@ -181,22 +179,26 @@ def paciente_register_view(request):
         return redirect("users:login_paciente")
     return render(request, "users/patient_register.html")
 
+
 @login_required
 def resources_view(request):
     return render(request, "users/resources.html")
+
 
 @login_required
 def settings_view(request):
     return render(request, "users/settings.html")
 
+
 @login_required
 def patient_dashboard_view(request):
     first_name = request.user.name.split()[0]
     context = {
-        'message': 'Bem-vindo ao seu dashboard de paciente!',
-        'first_name': first_name,
+        "message": "Bem-vindo ao seu dashboard de paciente!",
+        "first_name": first_name,
     }
     return render(request, "users/patient_dashboard.html", context)
+
 
 def logout_view(request):
     logout(request)

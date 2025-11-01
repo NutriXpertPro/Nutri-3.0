@@ -97,7 +97,26 @@
         .sidebar-item:hover {
             padding-left: 1.5rem;
         }
-        
+
+        aside.sidebar-pattern a i {
+            color: #22c55e; /* green-500 */
+        }
+
+        aside.sidebar-pattern a[href="/patients/"] i,
+        aside.sidebar-pattern a[href="/patients/create/"] i {
+            color: #3b82f6; /* blue-500 */
+        }
+
+        aside.sidebar-pattern a[href="/diets/"] i {
+            color: #9ca3af; /* slightly darker gray */
+        }
+
+        aside.sidebar-pattern div.mt-auto a i {
+            color: #4b5563; /* gray-600 */
+        }
+            color: #22c55e; /* green-500 */
+        }
+
         .notification-dot {
             animation: pulse 2s infinite;
         }
@@ -126,9 +145,7 @@
         <!-- Icon-only Sidebar -->
         <style>
         .sidebar-pattern {
-            background-color: #ecfdf5; /* bg-emerald-50 */
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d0f0d6' fill-opacity='0.6' fill-rule='evenodd'%3E%3Cpath d='M0 60V0h60v60zM4 0h2v4H4zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm-6 40h2v4h-2zm-6 0h2v4h-2zm-6 0h2v4h-2zm-6 0h2v4h-2zM0 60h60V0H0zm60 0H0V0.01zM0 0l60 60zM0 60l60-60zM4 60h2v-4H4zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm-6-40h2v-4h-2zm-6-40h2v-4H4zm-6 40h2v-4h-2zm-6 0h2v-4h-2z' fill='%23d0f0d6'/%3E%3C/g%3E%3C/svg%3E");
-            background-repeat: repeat;
+            background-color: #ffffff; /* white */
         }
         </style>
         <aside class="fixed top-0 left-0 h-screen w-20 sidebar-pattern flex flex-col items-center py-4">
@@ -180,10 +197,41 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="ml-20 flex-1">
-            {% block content %}
-            {% endblock %}
-        </main>
+                <main class="ml-20 flex-1">
+                    <!-- Top Navigation Bar -->
+                    <nav class="bg-white shadow-md px-8 py-4 flex items-center justify-between hover-lift">
+                        <!-- Logo -->
+                        <div class="flex items-center">
+                            <span class="text-xl font-bold text-gray-800">NUTRI XPERT PRO</span>
+                        </div>
+        
+                        <!-- Search Bar -->
+                        <div class="relative flex-grow mx-8">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" placeholder="Buscar pacientes, dietas, consultas..." class="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+        
+                        <!-- Right Icons/User Menu -->
+                        <div class="flex items-center space-x-4">
+                            <!-- Notifications -->
+                            <div class="relative">
+                                <i class="fas fa-bell text-gray-600 text-lg cursor-pointer hover:text-blue-500"></i>
+                                <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                            </div>
+                            <!-- Help -->
+                            <i class="fas fa-question-circle text-gray-600 text-lg cursor-pointer hover:text-blue-500"></i>
+                            <!-- User Profile -->
+                            <div class="relative">
+                                <img src="https://picsum.photos/seed/nutricionista/40/40.jpg" alt="User Avatar" class="h-10 w-10 rounded-full cursor-pointer">
+                                <!-- Dropdown will go here -->
+                            </div>
+                        </div>
+                    </nav>
+        
+                    <div class="min-h-screen bg-green-50">
+                {% block content %}{% endblock %}
+            </div>
+                </main>
     </div>
     
     <script>

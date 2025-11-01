@@ -114,7 +114,11 @@ class DashboardViewTest(TestCase):
         self.user.save()
 
         response = self.client.get(reverse("users:dashboard"))
-        self.assertContains(response, "Seja bem-vindo, Nutricionista Anderson")
+        self.assertContains(
+            response,
+            '<h1 id="dynamic-greeting" class="text-3xl font-bold text-gray-800">'
+            'Olá, Dr. Anderson</h1>',
+        )
 
     def test_login_cadastro_urls_resolve(self):
         # Teste para URLs de login
