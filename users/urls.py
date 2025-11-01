@@ -21,6 +21,8 @@ urlpatterns = [
         name="cadastro_paciente",
     ),
     path("dashboard/", views.dashboard_view, name="dashboard"),
+    path("patient-dashboard/", views.patient_dashboard_view, name="patient_dashboard"),
     path("resources/", views.resources_view, name="resources"),
     path("settings/", views.settings_view, name="settings"),
+    path("logout/", views.logout_view, name="logout"),
 ]

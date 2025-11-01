@@ -26,7 +26,7 @@
             transform: translateX(-50%);
             width: 150%;
             height: 500px;
-            background: radial-gradient(circle at 50% 0%, rgba(22, 163, 240, 0.5), rgba(99, 102, 241, 0.4), transparent 70%);
+            background: radial-gradient(circle at 50% 0%, rgba(22, 163, 240, 0.4), rgba(99, 102, 241, 0.3), transparent 70%);
             filter: blur(120px);
             z-index: -1;
         }
@@ -85,10 +85,9 @@
         }
         
         .bg-pattern {
-            background-image: url('static/images/background.png');
+            background-image: url('/static/images/background_final.svg');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
         }
         
         .sidebar-item {
@@ -101,6 +100,10 @@
         
         .notification-dot {
             animation: pulse 2s infinite;
+        }
+
+        .icon-blue {
+            --fa-primary-color: #3B82F6;
         }
         
         @keyframes pulse {
@@ -116,141 +119,68 @@
         }
     </style>
 </head>
-<body class="bg-brand-background text-gray-200 min-h-screen">
-    <!-- Header -->
-    <header class="text-white fixed w-full top-0 z-50">
-        <div class="px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <button id="menuToggle" class="md:hidden text-gray-600 hover:text-gray-900 focus:outline-none mr-4">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                    <a href="/" class="flex items-center">
-                        <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-[4.5rem] w-auto mr-3 -ml-8">
-                        <span class="text-xl font-bold text-white mt-10 -ml-4 [text-shadow:2px_2px_4px_rgba(0,0,0,0.2)]">NUTRI XPERT PRO</span>
-                    </a>
-                </div>
-                
-                <!-- Search Bar -->
-                <div class="hidden md:flex flex-1 max-w-md mx-8">
-                    <div class="relative w-full">
-                        <input type="text" placeholder="Buscar pacientes, planos, receitas..." 
-                               class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-purple-500 focus:ring-purple-500 focus:ring-2">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <i class="fas fa-search text-gray-400"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Right Side Actions -->
-                <div class="flex items-center space-x-4">
-                    <!-- Notifications -->
-                    <div class="relative">
-                        <button id="notificationBellBtn" class="relative p-2 text-white hover:text-gray-900 focus:outline-none">
-                            <i class="fas fa-bell text-xl"></i>
-                            <span id="notificationDot" class="notification-dot absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full"></span>
-                        </button>
-                        <!-- Dropdown de Notificações -->
-                        <div id="notificationDropdown" class="hidden origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                            <div class="py-1" id="notificationList">
-                                <!-- Notificações serão carregadas aqui via JS -->
-                                <div class="px-4 py-2 text-sm text-gray-700">Carregando notificações...</div>
-                            </div>
-                            <div class="border-t border-gray-200 flex justify-between items-center px-4 py-2">
-                                <a href="#" id="markAllAsReadBtn" class="text-sm text-indigo-600 hover:text-indigo-800">Marcar todas como lidas</a>
-                                <button id="muteNotificationSoundBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none">
-                                    <i class="fas fa-volume-up text-lg"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Messages -->
-                    <a href="{% url 'messages:inbox' %}" class="p-2 text-white hover:text-gray-900 focus:outline-none">
-                        <i class="fas fa-envelope text-xl"></i>
-                    </a>
-                    
-                    <!-- User Profile -->
-                    <div class="relative">
-                        <button id="profileMenuBtn" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                            <img class="h-10 w-10 rounded-full object-cover" src="https://picsum.photos/seed/nutricionista/100/100.jpg" alt="Perfil">
-                        </button>
-                        
-                        <!-- Dropdown Menu -->
-                        <div id="profileMenu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                            <div class="py-1">
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Meu Perfil</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Configurações</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Ajuda</a>
-                                <hr class="my-1">
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+<body class="bg-white text-gray-800 min-h-screen">
     
     <!-- Main Container -->
-    <div class="flex pt-16">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="glass-effect w-64 min-h-screen border-r border-gray-200 fixed md:relative md:translate-x-0 -translate-x-full transition-transform duration-300 z-40">
-            <nav class="mt-5 px-2">
-                <a href="{% url 'users:dashboard' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-white bg-gradient-to-b from-blue-500 to-blue-900 mb-2 shadow-lg shadow-blue-500/20">
-                    <i class="fas fa-home mr-3"></i>
-                    Dashboard
-                </a>
-                
-                <a href="{% url 'patients:list' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
-                    <i class="fas fa-users mr-3"></i>
-                    Pacientes
-                </a>
-                
-                <a href="{% url 'appointments:list' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
-                    <i class="fas fa-calendar-alt mr-3"></i>
-                    Consultas
-                </a>
-                
-                <a href="{% url 'diets:list' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
-                
-                <a href="{% url 'patients:create' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+    <div class="flex">
+        <!-- Icon-only Sidebar -->
+        <style>
+        .sidebar-pattern {
+            background-color: #ecfdf5; /* bg-emerald-50 */
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d0f0d6' fill-opacity='0.6' fill-rule='evenodd'%3E%3Cpath d='M0 60V0h60v60zM4 0h2v4H4zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm6 0h2v4h-2zm-6 40h2v4h-2zm-6 0h2v4h-2zm-6 0h2v4h-2zm-6 0h2v4h-2zM0 60h60V0H0zm60 0H0V0.01zM0 0l60 60zM0 60l60-60zM4 60h2v-4H4zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm6 0h2v-4h-2zm-6-40h2v-4h-2zm-6-40h2v-4H4zm-6 40h2v-4h-2zm-6 0h2v-4h-2z' fill='%23d0f0d6'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+        </style>
+        <aside class="fixed top-0 left-0 h-screen w-20 sidebar-pattern flex flex-col items-center py-4">
 
-                <a href="{% url 'diets:create' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
-                    <i class="fas fa-utensils mr-3"></i>
-                    Criar Dieta
-                </a>
 
-                <a href="{% url 'evaluations:list' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
+            <!-- Navigation Icons -->
+            <nav class="flex flex-col space-y-2 w-full">
+                <a href="{% url 'users:dashboard' %}" class="flex flex-col items-center py-2 rounded-lg hover:bg-emerald-100 text-gray-600" title="Dashboard">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs mt-1">Dash</span>
                 </a>
-
-                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
-                    <i class="fas fa-file-medical mr-3"></i>
-                    Anamnese
+                <a href="{% url 'patients:list' %}" class="flex flex-col items-center py-2 rounded-lg hover:bg-emerald-100 text-gray-600" title="Pacientes">
+                    <i class="fas fa-users text-xl"></i>
+                    <span class="text-xs mt-1">Pacientes</span>
                 </a>
-
-                <a href="#" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
-                    <i class="fas fa-chart-line mr-3"></i>
-                    Relatórios
+                <a href="{% url 'patients:create' %}" class="flex flex-col items-center py-2 rounded-lg hover:bg-emerald-100 text-gray-600" title="Novo Paciente">
+                    <i class="fas fa-user-plus text-xl"></i>
+                    <span class="text-xs mt-1">Novo Pac.</span>
                 </a>
-                
-                <a href="{% url 'users:resources' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
-                    <i class="fas fa-book mr-3"></i>
-                    Recursos
+                <a href="{% url 'appointments:list' %}" class="flex flex-col items-center py-2 rounded-lg hover:bg-emerald-100 text-gray-600" title="Consultas">
+                    <i class="fas fa-calendar-alt text-xl"></i>
+                    <span class="text-xs mt-1">Consultas</span>
                 </a>
-                
-                <div class="mt-8 pt-8 border-t border-gray-200">
-                    <a href="{% url 'users:settings' %}" class="sidebar-item group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 mb-2">
-                        <i class="fas fa-cog mr-3"></i>
-                        Configurações
-                    </a>
-                </div>
+                <a href="{% url 'diets:list' %}" class="flex flex-col items-center py-2 rounded-lg hover:bg-emerald-100 text-gray-600" title="Dietas">
+                    <i class="fas fa-utensils text-xl"></i>
+                    <span class="text-xs mt-1">Dietas</span>
+                </a>
+                <a href="{% url 'anamnesis:list' %}" class="flex flex-col items-center py-2 rounded-lg hover:bg-emerald-100 text-gray-600" title="Anamnese">
+                    <i class="fas fa-file-medical-alt text-xl"></i>
+                    <span class="text-xs mt-1">Anamnese</span>
+                </a>
+                <a href="#" class="flex flex-col items-center py-2 rounded-lg hover:bg-emerald-100 text-gray-600" title="Relatórios">
+                    <i class="fas fa-chart-line text-xl"></i>
+                    <span class="text-xs mt-1">Relatórios</span>
+                </a>
             </nav>
+
+            <!-- Bottom Icons -->
+            <div class="mt-auto flex flex-col space-y-2 w-full">
+                <a href="{% url 'users:settings' %}" class="flex flex-col items-center py-2 rounded-lg hover:bg-emerald-100 text-gray-600" title="Configurações">
+                    <i class="fas fa-cog text-xl"></i>
+                    <span class="text-xs mt-1">Config.</span>
+                </a>
+                <a href="{% url 'users:logout' %}" class="flex flex-col items-center py-2 rounded-lg hover:bg-emerald-100 text-gray-600" title="Sair">
+                    <i class="fas fa-sign-out-alt text-xl"></i>
+                    <span class="text-xs mt-1">Sair</span>
+                </a>
+            </div>
         </aside>
-        
+
         <!-- Main Content -->
-        <main class="flex-1 md:ml-0 p-4 md:p-6 lg:p-8">
+        <main class="ml-20 flex-1">
             {% block content %}
             {% endblock %}
         </main>

@@ -1,0 +1,37 @@
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100%" height="100%" fill="white" />
+    <g stroke-width="1.5" fill="none" opacity="0.15">
+        <!-- Glicina (simplificada) em azul -->
+        <g transform="translate(100, 100)" stroke="#3B82F6">
+            <path d="M 0,0 L 20,10 L 40,0"/>
+            <text x="-30" y="5" fill="#10B981" font-size="12" font-family="sans-serif">H₂N</text>
+            <text x="45" y="-5" fill="#10B981" font-size="12" font-family="sans-serif">O</text>
+            <text x="45" y="20" fill="#10B981" font-size="12" font-family="sans-serif">OH</text>
+        </g>
+
+        <!-- Tirosina (anel simplificado) em verde -->
+        <g transform="translate(400, 200)" stroke="#10B981">
+            <rect x="0" y="0" width="50" height="50"/>
+            <path d="M 50,25 L 70,25"/>
+            <text x="-25" y="55" fill="#10B981" font-size="12" font-family="sans-serif">HO</text>
+        </g>
+
+        <!-- Lisina (corrente longa simplificada) em azul -->
+        <g transform="translate(800, 150)" stroke="#3B82F6">
+            <path d="M 0,0 L 20,-10 L 40,0 L 60,-10 L 80,0"/>
+            <text x="-30" y="5" fill="#10B981" font-size="12" font-family="sans-serif">H₂N</text>
+        </g>
+
+        <!-- Alanina (simplificada) em verde -->
+        <g transform="translate(200, 400)" stroke="#10B981">
+            <path d="M 0,0 L 20,10 L 40,0"/>
+            <text x="-5" y="25" fill="#10B981" font-size="12" font-family="sans-serif">H₂N</text>
+        </g>
+
+        <!-- Cisteína (simplificada) em azul -->
+        <g transform="translate(600, 350)" stroke="#3B82F6">
+            <path d="M 0,0 L 20,10 L 40,0 L 40,30"/>
+            <text x="45" y="35" fill="#10B981" font-size="12" font-family="sans-serif">SH</text>
+        </g>
+    </g>
+</svg>

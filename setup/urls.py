@@ -27,6 +27,7 @@ urlpatterns = [
     path("users/", include("users.urls", namespace="users")),
     path("patients/", include("patients.urls", namespace="patients")),
     path("appointments/", include("appointments.urls", namespace="appointments")),
+    path("anamnesis/", include("anamnesis.urls", namespace="anamnesis")),
     path("diets/", include("diets.urls", namespace="diets")),
     path("evaluations/", include("evaluations.urls", namespace="evaluations")),
     path("api/", include("notifications.urls", namespace="notification")),

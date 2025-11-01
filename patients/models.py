@@ -11,6 +11,7 @@ class Patient(models.Model):  # Renomear para PatientProfile no futuro
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="patient_profile",
+        null=True,
     )
 
     # Link para o nutricionista responsável
@@ -18,6 +19,8 @@ class Patient(models.Model):  # Renomear para PatientProfile no futuro
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="managed_patients",
+        limit_choices_to={'user_type': 'nutricionista'},
+        null=True,
     )
 
     # Campos de dados do paciente (email e name podem ser removidos se já
