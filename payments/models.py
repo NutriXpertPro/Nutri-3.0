@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from patients.models import Patient
+from patients.models import PatientProfile
 
 # Create your models here.
 
@@ -16,7 +16,7 @@ class Payment(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="payments"
     )
     patient = models.ForeignKey(
-        Patient,
+        PatientProfile,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -32,5 +32,5 @@ class Payment(models.Model):
 
     def __str__(self):
         # Garante que o nome do paciente seja exibido, se houver um.
-        patient_name = self.patient.name if self.patient else "N/A"
+        patient_name = self.patient.user.name if self.patient else "N/A"
         return f"Pagamento {self.id} - {patient_name}"

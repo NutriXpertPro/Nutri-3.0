@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from .models import Patient
+from .models import PatientProfile
 from notifications.models import Notification
 from django.urls import reverse
 from django.contrib.messages import get_messages
@@ -24,20 +24,20 @@ class PatientModelTest(TestCase):
             password="testpass123",
             name="João da Silva",
         )
-        patient = Patient.objects.create(
-            patient_user=patient_user,
+        patient = PatientProfile.objects.create(
+            user=patient_user,
             nutritionist=self.user,
             birth_date="1990-01-15",
             phone="11999998888",
         )
 
         # Busca o paciente no banco de dados para verificar se foi salvo
-        saved_patient = Patient.objects.get(id=patient.id)
+        saved_patient = PatientProfile.objects.get(id=patient.id)
 
-        self.assertEqual(saved_patient.patient_user.name, "João da Silva")
-        self.assertEqual(saved_patient.patient_user.email, "joao.silva@example.com")
+        self.assertEqual(saved_patient.user.name, "João da Silva")
+        self.assertEqual(saved_patient.user.email, "joao.silva@example.com")
         self.assertEqual(str(saved_patient.birth_date), "1990-01-15")
-        self.assertEqual(saved_patient.patient_user, patient_user)
+        self.assertEqual(saved_patient.user, patient_user)
         self.assertEqual(saved_patient.nutritionist, self.user)
         self.assertEqual(str(saved_patient), "João da Silva")
 
@@ -50,8 +50,8 @@ class PatientModelTest(TestCase):
             password="testpass123",
             name="Maria Oliveira",
         )
-        patient = Patient.objects.create(
-            patient_user=patient_user,
+        patient = PatientProfile.objects.create(
+            user=patient_user,
             nutritionist=self.user,
         )
         self.assertEqual(str(patient), "Maria Oliveira")
@@ -81,8 +81,8 @@ class PatientSignalTest(TestCase):
         )
 
         # Cria o perfil do paciente, o que deve disparar o sinal
-        Patient.objects.create(
-            patient_user=patient_user,
+        PatientProfile.objects.create(
+            user=patient_user,
             nutritionist=self.nutritionist,
             birth_date="1995-05-10",
         )
@@ -145,8 +145,8 @@ class PatientCreateViewTest(TestCase):
         patient_user = User.objects.get(email="paciente.novo@example.com")
         self.assertEqual(patient_user.user_type, "paciente")
 
-        self.assertTrue(Patient.objects.filter(patient_user=patient_user).exists())
-        patient_profile = Patient.objects.get(patient_user=patient_user)
+        self.assertTrue(PatientProfile.objects.filter(user=patient_user).exists())
+        patient_profile = PatientProfile.objects.get(user=patient_user)
         self.assertEqual(patient_profile.nutritionist, self.nutritionist)
 
         self.assertRedirects(response, reverse("patients:list"))
@@ -207,4 +207,4 @@ class PatientCreateViewTest(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), "Email do paciente já cadastrado.")
         # Garante que nenhum novo paciente foi criado
-        self.assertEqual(Patient.objects.count(), 0)
+        self.assertEqual(PatientProfile.objects.count(), 0)

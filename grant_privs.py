@@ -31,7 +31,7 @@ parsed = parse_db_url(db_url)
 connection = pymysql.connect(
     host=parsed["host"],
     user="root",
-    password="900113Acps@",  # <-- EDITE ISSO ANTES DE RODAR
+    password=config("DB_ROOT_PASSWORD"),  # Lê a senha do .env
     port=int(parsed["port"]) if parsed["port"] else 3306,
     charset="utf8mb4",
 )

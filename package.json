@@ -6,7 +6,8 @@
   "scripts": {
     "start:django": "python manage.py runserver 0.0.0.0:8000",
     "start:tailwind": "npx tailwindcss -i .\/theme\/static\/src\/input.css -o .\/theme\/static\/css\/dist\/styles.css --watch",
-    "dev": "npm-run-all --parallel start:django start:tailwind",
+    "start:fastapi": "uvicorn main:app --reload --host 0.0.0.0 --port=8001",
+    "dev": "npm-run-all --parallel start:django start:tailwind start:fastapi",
     "build": "npx tailwindcss -i .\/theme\/static\/src\/input.css -o .\/theme\/static\/css\/dist\/styles.css --minify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

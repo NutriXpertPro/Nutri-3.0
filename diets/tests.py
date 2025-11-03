@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from patients.models import Patient
+from patients.models import PatientProfile
 from .models import Diet
 
 User = get_user_model()
@@ -16,8 +16,8 @@ class DietModelTest(TestCase):
             password="testpass123",
             name="João da Silva",
         )
-        self.patient = Patient.objects.create(
-            patient_user=self.patient_user,
+        self.patient = PatientProfile.objects.create(
+            user=self.patient_user,
             nutritionist=self.user,
         )
 
@@ -46,5 +46,5 @@ class DietModelTest(TestCase):
         self.assertEqual(saved_diet.meals[0]["items"], ["Ovos mexidos", "Pão integral"])
         self.assertEqual(
             str(saved_diet),
-            f"Dieta de Emagrecimento - {self.patient.patient_user.name}",
+            f"Dieta de Emagrecimento - {self.patient.user.name}",
         )

@@ -1,13 +1,13 @@
 from django.db import models
 from django.utils import formats
-from patients.models import Patient
+from patients.models import PatientProfile
 
 # Create your models here.
 
 
 class Evaluation(models.Model):
     patient = models.ForeignKey(
-        Patient, on_delete=models.CASCADE, related_name="evaluations", null=True
+        PatientProfile, on_delete=models.CASCADE, related_name="evaluations", null=True
     )
     weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     body_measurements = models.JSONField(null=True, blank=True)
@@ -20,4 +20,4 @@ class Evaluation(models.Model):
 
     def __str__(self):
         date_str = formats.date_format(self.date, "d/m/Y")
-        return f"Avaliação de {self.patient.patient_user.name} em {date_str}"
+        return f"Avaliação de {self.patient.user.name} em {date_str}"

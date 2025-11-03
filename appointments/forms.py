@@ -1,10 +1,10 @@
 from django import forms
-from patients.models import Patient
+from patients.models import PatientProfile
 
 
 class AppointmentForm(forms.Form):
     patient = forms.ModelChoiceField(
-        queryset=Patient.objects.none(),
+        queryset=PatientProfile.objects.none(),
         label="Paciente",
         widget=forms.Select(attrs={"class": "form-select w-full"}),
     )
@@ -26,4 +26,6 @@ class AppointmentForm(forms.Form):
         user = kwargs.pop("user", None)
         super(AppointmentForm, self).__init__(*args, **kwargs)
         if user:
-            self.fields["patient"].queryset = Patient.objects.filter(nutritionist=user)
+            self.fields["patient"].queryset = PatientProfile.objects.filter(
+                nutritionist=user
+            )

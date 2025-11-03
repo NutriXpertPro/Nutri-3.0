@@ -1,9 +1,10 @@
+from patients.models import PatientProfile
+from django.core import mail
+from payments.models import Payment
+
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from patients.models import Patient
-from django.core import mail
-from payments.models import Payment
 
 
 class PaymentSignalTest(TestCase):
@@ -71,14 +72,14 @@ class DashboardViewTest(TestCase):
             user_type="paciente",
         )
 
-        self.patient1 = Patient.objects.create(
-            nutritionist=self.user, patient_user=self.patient_user1
+        self.patient1 = PatientProfile.objects.create(
+            nutritionist=self.user, user=self.patient_user1
         )
-        self.patient2 = Patient.objects.create(
-            nutritionist=self.user, patient_user=self.patient_user2
+        self.patient2 = PatientProfile.objects.create(
+            nutritionist=self.user, user=self.patient_user2
         )
-        self.patient3 = Patient.objects.create(
-            nutritionist=self.user, patient_user=self.patient_user3
+        self.patient3 = PatientProfile.objects.create(
+            nutritionist=self.user, user=self.patient_user3
         )
 
     def test_dashboard_view_status_code(self):
@@ -98,7 +99,7 @@ class DashboardViewTest(TestCase):
                 name=f"Paciente Paginação {i}",
                 user_type="paciente",
             )
-            Patient.objects.create(nutritionist=self.user, patient_user=patient_user)
+            PatientProfile.objects.create(nutritionist=self.user, user=patient_user)
 
         # Assumindo que a paginação padrão é 10 itens por página
         response = self.client.get(reverse("users:dashboard"), {"page": 2})
@@ -117,7 +118,7 @@ class DashboardViewTest(TestCase):
         self.assertContains(
             response,
             '<h1 id="dynamic-greeting" class="text-3xl font-bold text-gray-800">'
-            'Olá, Dr. Anderson</h1>',
+            "Olá, Dr. Anderson</h1>",
         )
 
     def test_login_cadastro_urls_resolve(self):

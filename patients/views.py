@@ -1,10 +1,10 @@
+from django.forms import ModelForm, EmailField, CharField
+from django import forms
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.forms import ModelForm, EmailField, CharField
-from django import forms
-from .models import Patient
+from .models import PatientProfile
 
 User = get_user_model()
 
@@ -21,7 +21,7 @@ class PatientForm(ModelForm):
     )
 
     class Meta:
-        model = Patient
+        model = PatientProfile
         fields = ["birth_date", "phone", "address"]
         widgets = {
             "birth_date": forms.DateInput(attrs={"type": "date"}),
@@ -68,7 +68,7 @@ def patient_create(request):
 
                 # Salva Patient com dados do form
                 patient = form.save(commit=False)
-                patient.patient_user = patient_user
+                patient.user = patient_user
                 patient.nutritionist = request.user
                 patient.save()
 
@@ -90,12 +90,14 @@ def patient_create(request):
 @login_required
 def patient_list(request):
     # Exemplo: lista para redirect
-    patients = Patient.objects.filter(nutritionist=request.user)
+    patients = PatientProfile.objects.filter(nutritionist=request.user)
     return render(request, "patients/list.html", {"patients": patients})
 
 
 @login_required
 def patient_detail(request, patient_id):
-    patient = get_object_or_404(Patient, pk=patient_id, nutritionist=request.user)
+    patient = get_object_or_404(
+        PatientProfile, pk=patient_id, nutritionist=request.user
+    )
     context = {"patient": patient}
     return render(request, "patients/detail.html", context)

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from patients.models import Patient
+from patients.models import PatientProfile
 from .models import Anamnesis
 
 User = get_user_model()
@@ -16,8 +16,8 @@ class AnamnesisModelTest(TestCase):
             password="testpass123",
             name="João da Silva",
         )
-        self.patient = Patient.objects.create(
-            patient_user=self.patient_user,
+        self.patient = PatientProfile.objects.create(
+            user=self.patient_user,
             nutritionist=self.user,
         )
 
@@ -43,5 +43,5 @@ class AnamnesisModelTest(TestCase):
         self.assertEqual(len(saved_anamnesis.medical_conditions), 2)
         self.assertEqual(saved_anamnesis.allergies[0], "Amendoim")
         self.assertEqual(
-            str(saved_anamnesis), f"Anamnese de {self.patient.patient_user.name}"
+            str(saved_anamnesis), f"Anamnese de {self.patient.user.name}"
         )

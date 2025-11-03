@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
-from patients.models import Patient
+from patients.models import PatientProfile
 from django.core.paginator import Paginator
 from .models import User
 from django.utils import timezone
@@ -14,7 +14,7 @@ import json
 
 @login_required
 def dashboard_view(request):
-    total_patients = Patient.objects.filter(nutritionist=request.user).count()
+    total_patients = PatientProfile.objects.filter(nutritionist=request.user).count()
     today = timezone.now().date()
     appointments_today = Appointment.objects.filter(
         patient__nutritionist=request.user, date__date=today
@@ -30,11 +30,11 @@ def dashboard_view(request):
         .first()
     )
     search_query = request.GET.get("search")
-    patients_list = Patient.objects.filter(nutritionist=request.user).order_by(
-        "patient_user__name"
+    patients_list = PatientProfile.objects.filter(nutritionist=request.user).order_by(
+        "user__name"
     )
     if search_query:
-        patients_list = patients_list.filter(patient_user__name__icontains=search_query)
+        patients_list = patients_list.filter(user__name__icontains=search_query)
     paginator = Paginator(patients_list, 5)
     page_number = request.GET.get("page")
     patients = paginator.get_page(page_number)
@@ -45,7 +45,7 @@ def dashboard_view(request):
 
     # Logic for Patient in Focus
     patient_in_focus = (
-        Patient.objects.filter(nutritionist=request.user)
+        PatientProfile.objects.filter(nutritionist=request.user)
         .order_by("-created_at")
         .first()
     )

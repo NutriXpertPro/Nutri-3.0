@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.utils import timezone, formats
-from patients.models import Patient
+from patients.models import PatientProfile
 from .models import Evaluation
 
 User = get_user_model()
@@ -17,8 +17,8 @@ class EvaluationModelTest(TestCase):
             password="testpass123",
             name="João da Silva",
         )
-        self.patient = Patient.objects.create(
-            patient_user=self.patient_user,
+        self.patient = PatientProfile.objects.create(
+            user=self.patient_user,
             nutritionist=self.user,
         )
 
@@ -43,5 +43,5 @@ class EvaluationModelTest(TestCase):
         self.assertEqual(saved_evaluation.body_measurements["waist"], 90.5)
         self.assertEqual(saved_evaluation.date, evaluation_date)
         date_str = formats.date_format(evaluation_date, "d/m/Y")
-        expected_str = f"Avaliação de {self.patient.patient_user.name} em {date_str}"
+        expected_str = f"Avaliação de {self.patient.user.name} em {date_str}"
         self.assertEqual(str(saved_evaluation), expected_str)
