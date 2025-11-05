@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriXpert Pro - Dashboard Inteligente</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+       
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --accent-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border: #334155;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --ai-accent: #8b5cf6; /* Novo: Roxo para IA */
+            --gradient-ai: linear-gradient(135deg, var(--ai-accent) 0%, #a855f7 100%);
+        }
+       
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+       
+        /* Efeito de grid de fundo aprimorado com partículas sutis */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+            background-size: 50px 50px, 50px 50px, 200px 200px;
+            pointer-events: none;
+            z-index: 0;
+            animation: subtleShift 20s ease-in-out infinite alternate;
+        }
+       
+        @keyframes subtleShift {
+            0% { background-position: 0 0, 0 0, 0 0; }
+            100% { background-position: 50px 50px, 50px 50px, 100px 100px; }
+        }
+       
+        .dashboard {
+            position: relative;
+            z-index: 1;
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+       
+        /* Header Superior com Busca Inteligente */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+       
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+       
+        .user-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: var(--gradient-ai);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
+        }
+       
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+       
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+       
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+       
+        .user-details h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+       
+        .user-details p {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+       
+        .search-intelligent {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+            margin-left: 20px;
+        }
+       
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 50px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+       
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+       
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+       
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+       
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+       
+        .btn-primary {
+            background: var(--gradient-ai);
+            color: white;
+        }
+       
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+       
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+       
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+       
+        .btn-ai {
+            background: var(--gradient-ai);
+            animation: aiGlow 2s infinite alternate;
+        }
+       
+        @keyframes aiGlow {
+            0% { box-shadow: 0 0 5px rgba(139,92,246,0.3); }
+            100% { box-shadow: 0 0 20px rgba(139,92,246,0.6); }
+        }
+       
+        /* Grid de Estatísticas com Insights IA */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+       
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+       
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-ai);
+        }
+       
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+       
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+       
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+        }
+       
+        .stat-icon.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+       
+        .stat-icon.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+       
+        .stat-icon.danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+       
+        .stat-icon.ai {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--ai-accent);
+        }
+       
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+       
+        .stat-trend.up {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+       
+        .stat-trend.down {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+       
+        .stat-trend.ai {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--ai-accent);
+        }
+       
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+       
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+       
+        .stat-footer {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+       
+        .ai-insight {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(139, 92, 246, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--ai-accent);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+       
+        /* Grid Principal com Modais Interativos */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+       
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+       
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--ai-accent));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+       
+        .card:hover::after {
+            opacity: 1;
+        }
+       
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+       
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+       
+        .card-title i {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 14px;
+        }
+       
+        .card-action {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+       
+        .card-action:hover {
+            color: var(--accent-dark);
+        }
+       
+        /* Timeline de Agenda com Drag-and-Drop Simulado */
+        .timeline {
+            position: relative;
+        }
+       
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            cursor: grab;
+            user-select: none;
+        }
+       
+        .timeline-item:active {
+            cursor: grabbing;
+        }
+       
+        .timeline-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+       
+        .timeline-time {
+            min-width: 80px;
+            text-align: center;
+            font-weight: 600;
+        }
+       
+        .timeline-time .hour {
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+       
+        .timeline-time .date {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+       
+        .timeline-content {
+            flex: 1;
+        }
+       
+        .timeline-patient {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+       
+        .timeline-note {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+       
+        .timeline-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+       
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+       
+        .tag.online {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+       
+        .tag.duration {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+        }
+       
+        .tag.ai {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--ai-accent);
+        }
+       
+        .timeline-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+       
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+       
+        .icon-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            transform: scale(1.1);
+        }
+       
+        .icon-btn.ai {
+            background: var(--gradient-ai);
+            border-color: var(--ai-accent);
+            color: white;
+        }
+       
+        /* Paciente em Foco com Overlay Expandível */
+        .patient-focus {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+       
+        .patient-focus:hover {
+            transform: scale(1.02);
+        }
+       
+        .patient-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 16px;
+            margin: 0 auto 20px;
+            background: var(--gradient-ai);
+            padding: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+       
+        .patient-avatar-large:hover {
+            box-shadow: 0 8px 20px rgba(139,92,246,0.3);
+        }
+       
+        .patient-avatar-large img {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+            background: var(--bg-card);
+        }
+       
+        .patient-status {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--success);
+            border: 3px solid var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+       
+        .patient-status i {
+            font-size: 10px;
+            color: white;
+        }
+       
+        .patient-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+       
+        .patient-goal {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+       
+        .patient-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+       
+        .metric {
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+       
+        .metric:hover {
+            transform: translateY(-2px);
+        }
+       
+        .metric-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+       
+        .metric-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+       
+        .progress-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+       
+        .progress-container:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+       
+        .progress-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+       
+        .progress-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 12px;
+        }
+       
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+       
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success) 0%, var(--accent) 100%);
+            border-radius: 10px;
+            transition: width 1s ease;
+            position: relative;
+        }
+       
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+       
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+       
+        .patient-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+       
+        /* Overlay Modal para Detalhes Completos do Paciente */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+       
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+       
+        .modal {
+            background: var(--bg-card);
+            border-radius: 16px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+       
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+       
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+       
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+       
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+       
+        .close-modal:hover {
+            color: var(--danger);
+        }
+       
+        .modal-body {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+       
+        .modal-section {
+            background: rgba(255,255,255,0.02);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+       
+        .ai-insight-modal {
+            grid-column: span 2;
+            background: rgba(139,92,246,0.05);
+            border-left: 4px solid var(--ai-accent);
+        }
+       
+        .ai-insight-modal h3 {
+            color: var(--ai-accent);
+            margin-bottom: 8px;
+        }
+       
+        /* Gráfico e Analytics Aprimorados */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+       
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+       
+        .chart-container canvas {
+            max-height: 100%;
+        }
+       
+        /* Quick Actions com Integrações */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+       
+        .action-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+       
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-ai);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+       
+        .action-card:hover::before {
+            transform: scaleX(1);
+        }
+       
+        .action-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+       
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 20px;
+            transition: background 0.3s ease;
+        }
+       
+        .action-card:hover .action-icon {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--ai-accent);
+        }
+       
+        .action-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+       
+        /* Voice Mode Toggle */
+        .voice-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-ai);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(139,92,246,0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+       
+        .voice-toggle:hover {
+            transform: scale(1.1);
+        }
+       
+        .voice-toggle.listening {
+            animation: voicePulse 1s infinite;
+            box-shadow: 0 0 0 0 rgba(139,92,246,0.7);
+        }
+       
+        @keyframes voicePulse {
+            0% { box-shadow: 0 0 0 0 rgba(139,92,246,0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(139,92,246,0); }
+            100% { box-shadow: 0 0 0 0 rgba(139,92,246,0); }
+        }
+       
+        /* Responsivo */
+        @media (max-width: 1200px) {
+            .main-grid, .analytics-grid, .modal-body {
+                grid-template-columns: 1fr;
+            }
+           
+            .search-intelligent {
+                margin-left: 0;
+                margin-top: 16px;
+                order: 3;
+                width: 100%;
+            }
+        }
+       
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+           
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+           
+            .patient-metrics {
+                grid-template-columns: 1fr;
+            }
+           
+            .dashboard {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
+                <div class="user-info">
+                    <div class="user-avatar">DA</div>
+                    <div class="user-details">
+                        <h1 id="greeting">Boa tarde, Dr. Anderson</h1>
+                        <p>
+                            <i class="fas fa-calendar-day"></i>
+                            <span id="current-date">Segunda-feira, 04 de Novembro de 2025</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="search-intelligent">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar pacientes, insights IA ou métricas... (Ex: 'risco diabetes Angela')">
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary">
+                    <i class="fas fa-cog"></i>
+                    Configurações
+                </button>
+                <button class="btn btn-primary btn-ai" onclick="generatePlan()">
+                    <i class="fas fa-magic"></i>
+                    Insight IA
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Nova Consulta
+                </button>
+            </div>
+        </div>
+       
+        <!-- Stats Grid com Insights IA -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        12%
+                    </div>
+                </div>
+                <div class="stat-label">Pacientes Ativos</div>
+                <div class="stat-value">120</div>
+                <div class="stat-footer">8 novos este mês</div>
+                <div class="ai-insight">IA: 15% de risco de churn em pacientes inativos >30 dias.</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon success">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-check"></i>
+                        Hoje
+                    </div>
+                </div>
+                <div class="stat-label">Consultas Agendadas</div>
+                <div class="stat-value">5</div>
+                <div class="stat-footer">Próxima às 13:29 | Automatizado via Calendly</div>
+                <div class="ai-insight">IA: Sugere slot livre às 14:00 para follow-up urgente.</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="stat-trend down">
+                        <i class="fas fa-exclamation"></i>
+                        Atenção
+                    </div>
+                </div>
+                <div class="stat-label">Planos a Vencer</div>
+                <div class="stat-value">8</div>
+                <div class="stat-footer">Próximos 7 dias</div>
+                <div class="ai-insight">IA: Priorize João Silva - 80% chance de não-adesão.</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon ai">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="stat-trend ai">
+                        <i class="fas fa-bolt"></i>
+                        IA Ativa
+                    </div>
+                </div>
+                <div class="stat-label">Insights Gerados</div>
+                <div class="stat-value">27</div>
+                <div class="stat-footer">Hoje | Integração com Wearables</div>
+                <div class="ai-insight">IA: Detectou 3 deficiências vitamínicas em coorte.</div>
+            </div>
+        </div>
+       
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Agenda -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Agenda do Dia
+                    </div>
+                    <a class="card-action" onclick="toggleView('agenda')">Ver completa →</a>
+                </div>
+               
+                <div class="timeline" id="timeline" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="timeline-item" draggable="true" ondragstart="drag(event)">
+                        <div class="timeline-time">
+                            <div class="hour">13:29</div>
+                            <div class="date">04/11</div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-patient">Angela Portes</div>
+                            <div class="timeline-note">Consulta de acompanhamento nutricional</div>
+                            <div class="timeline-tags">
+                                <span class="tag online">
+                                    <i class="fas fa-video"></i> Online
+                                </span>
+                                <span class="tag duration">
+                                    <i class="fas fa-clock"></i> 60 min
+                                </span>
+                                <span class="tag ai">
+                                    <i class="fas fa-brain"></i> IA: Verificar glicose
+                                </span>
+                            </div>
+                        </div>
+                        <div class="timeline-actions">
+                            <button class="icon-btn" onclick="openModal('Angela Portes')">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                            <button class="icon-btn ai" onclick="aiAction('chamada')">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="timeline-item" draggable="true" ondragstart="drag(event)">
+                        <div class="timeline-time">
+                            <div class="hour">15:00</div>
+                            <div class="date">04/11</div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-patient">João Silva</div>
+                            <div class="timeline-note">Primeira consulta - Avaliação inicial</div>
+                            <div class="timeline-tags">
+                                <span class="tag online">
+                                    <i class="fas fa-video"></i> Online
+                                </span>
+                                <span class="tag duration">
+                                    <i class="fas fa-clock"></i> 90 min
+                                </span>
+                            </div>
+                        </div>
+                        <div class="timeline-actions">
+                            <button class="icon-btn" onclick="openModal('João Silva')">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                            <button class="icon-btn" onclick="aiAction('mensagem')">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="timeline-item" draggable="true" ondragstart="drag(event)">
+                        <div class="timeline-time">
+                            <div class="hour">17:00</div>
+                            <div class="date">04/11</div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-patient">Maria Costa</div>
+                            <div class="timeline-note">Revisão de plano alimentar</div>
+                            <div class="timeline-tags">
+                                <span class="tag online">
+                                    <i class="fas fa-video"></i> Online
+                                </span>
+                                <span class="tag duration">
+                                    <i class="fas fa-clock"></i> 45 min
+                                </span>
+                            </div>
+                        </div>
+                        <div class="timeline-actions">
+                            <button class="icon-btn" onclick="openModal('Maria Costa')">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                            <button class="icon-btn" onclick="aiAction('revisao')">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Paciente em Foco -->
+            <div class="card patient-focus" onclick="openModal('Angela Portes')">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-star"></i>
+                        Paciente em Foco
+                    </div>
+                </div>
+                <div class="patient-avatar-large">
+                    <img src="https://i.pravatar.cc/120?img=45" alt="Angela Portes">
+                    <div class="patient-status">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <div class="patient-name">Angela Portes</div>
+                <div class="patient-goal">Perda de Peso | Meta: -10kg em 3 meses</div>
+                <div class="patient-metrics">
+                    <div class="metric">
+                        <div class="metric-label">IMC</div>
+                        <div class="metric-value">22.5</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Gordura</div>
+                        <div class="metric-value">28%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Massa</div>
+                        <div class="metric-value">55kg</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">Progresso Atual</div>
+                    <div class="progress-value">-5.2kg</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                </div>
+                <div class="patient-actions">
+                    <button class="btn btn-secondary" style="width: 100%;">
+                        <i class="fas fa-user"></i>
+                        Ver Perfil Completo
+                    </button>
+                    <button class="btn btn-primary btn-ai" style="width: 100%;">
+                        <i class="fas fa-brain"></i>
+                        Análise IA
+                    </button>
+                </div>
+            </div>
+        </div>
+       
+        <!-- Analytics Grid -->
+        <div class="analytics-grid">
+            <!-- Gráfico de Evolução Interativo -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Evolução Mensal (Interativa)
+                    </div>
+                    <select id="periodSelect" class="btn btn-secondary" style="padding: 8px 16px;" onchange="updateChart()">
+                        <option>Últimos 6 meses</option>
+                        <option>Últimos 3 meses</option>
+                        <option>Este ano</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="evolutionChart"></canvas>
+                </div>
+            </div>
+            <!-- Tarefas Pendentes com Automação -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-tasks"></i>
+                        Tarefas Pendentes
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="padding: 12px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid var(--warning); cursor: pointer;" onclick="completeTask(0)">
+                        <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Revisar dietas</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">8 planos precisam de atualização | IA: 4 priorizadas</div>
+                    </div>
+                    <div style="padding: 12px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid var(--success); cursor: pointer;" onclick="completeTask(1)">
+                        <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Feedbacks pendentes</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">3 avaliações para responder | Automatizar respostas?</div>
+                    </div>
+                    <div style="padding: 12px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid var(--accent); cursor: pointer;" onclick="completeTask(2)">
+                        <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Acompanhamentos semanais</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Enviar relatórios para 12 pacientes | Integração Fitbit ativa</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        <!-- Quick Actions -->
+        <div class="quick-actions-grid">
+            <div class="action-card" onclick="integrateWearable()">
+                <div class="action-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="action-title">Integrar Wearables</div>
+            </div>
+            <div class="action-card" onclick="exportReport()">
+                <div class="action-icon">
+                    <i class="fas fa-file-export"></i>
+                </div>
+                <div class="action-title">Exportar Relatórios</div>
+            </div>
+            <div class="action-card" onclick="voiceMode()">
+                <div class="action-icon">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <div class="action-title">Modo Voz</div>
+            </div>
+            <div class="action-card" onclick="aiPredict()">
+                <div class="action-icon">
+                    <i class="fas fa-crystal-ball"></i>
+                </div>
+                <div class="action-title">Previsões IA</div>
+            </div>
+        </div>
+    </div>
+   
+    <!-- Overlay Modal -->
+    <div class="overlay" id="patientModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Detalhes do Paciente</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3>Perfil Geral</h3>
+                    <p id="modalBio">Idade: 32 | Gênero: Feminino | Alergias: Nenhuma | Metas: Perda de peso sustentável</p>
+                    <h3>Histórico Recente</h3>
+                    <ul id="modalHistory" style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0; border-bottom: 1px solid var(--border);"><i class="fas fa-calendar" style="color: var(--accent); margin-right: 8px;"></i>04/11: Consulta - IMC 22.5</li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid var(--border);"><i class="fas fa-calendar" style="color: var(--accent); margin-right: 8px;"></i>28/10: Ajuste plano - +2kg</li>
+                        <li style="padding: 8px 0;"><i class="fas fa-calendar" style="color: var(--accent); margin-right: 8px;"></i>15/10: Início - IMC 24.1</li>
+                    </ul>
+                </div>
+                <div class="modal-section">
+                    <h3>Métricas em Tempo Real</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px;">
+                        <div><strong>Passos Diários:</strong> 8.500 <i class="fas fa-shoe-prints" style="color: var(--success);"></i></div>
+                        <div><strong>Calorias:</strong> 1.800 kcal <i class="fas fa-fire" style="color: var(--warning);"></i></div>
+                        <div><strong>Sono:</strong> 7h 20m <i class="fas fa-bed" style="color: var(--accent);"></i></div>
+                        <div><strong>Glicose:</strong> 95 mg/dL <i class="fas fa-vial" style="color: var(--danger);"></i></div>
+                    </div>
+                    <canvas id="patientChart" width="200" height="100" style="max-height: 150px;"></canvas>
+                </div>
+                <div class="modal-section ai-insight-modal">
+                    <h3>Insights IA Personalizados</h3>
+                    <p id="modalAI">Baseado em dados de wearables: Recomendação - Aumentar ingestão de fibras em 20% para otimizar digestão. Probabilidade de sucesso: 87%. Plano gerado automaticamente.</p>
+                    <button class="btn btn-primary btn-ai" style="width: 100%; margin-top: 12px;" onclick="applyAIPlan()">Aplicar Plano IA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <!-- Voice Toggle Button -->
+    <button class="voice-toggle" id="voiceBtn" onclick="toggleVoice()" title="Ativar Modo Voz">
+        <i class="fas fa-microphone"></i>
+    </button>
+   
+    <script>
+        // Inicialização da Data Atual
+        const now = new Date();
+        const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+        const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        document.getElementById('current-date').textContent = `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`;
+        document.getElementById('greeting').textContent = `Boa ${now.getHours() < 12 ? 'manhã' : now.getHours() < 18 ? 'tarde' : 'noite'}, Dr. Anderson`;
+       
+        // Gráfico de Evolução com Chart.js
+        const ctx = document.getElementById('evolutionChart').getContext('2d');
+        const evolutionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov'],
+                datasets: [{
+                    label: 'Peso Médio (kg)',
+                    data: [68, 67.5, 66.8, 65.2, 64.1, 63.5, 62.8, 62.0, 61.2, 60.5, 59.8],
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
+                scales: {
+                    y: { beginAtZero: false, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { grid: { color: 'rgba(255,255,255,0.1)' } }
+                },
+                plugins: { legend: { labels: { color: 'white' } } }
+            }
+        });
+       
+        function updateChart() {
+            const period = document.getElementById('periodSelect').value;
+            // Mock update - em produção, fetch API
+            if (period === 'Últimos 3 meses') {
+                evolutionChart.data.labels = ['Ago', 'Set', 'Out', 'Nov'];
+                evolutionChart.data.datasets[0].data = [62.0, 61.2, 60.5, 59.8];
+            }
+            evolutionChart.update();
+        }
+       
+        // Gráfico no Modal do Paciente
+        function initPatientChart() {
+            const patientCtx = document.getElementById('patientChart').getContext('2d');
+            new Chart(patientCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Proteínas', 'Carboidratos', 'Gorduras'],
+                    datasets: [{
+                        data: [35, 45, 20],
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: 'white', padding: 20 } } }
+                }
+            });
+        }
+       
+        // Modal Functions
+        function openModal(patientName) {
+            document.getElementById('patientModal').style.display = 'flex';
+            document.getElementById('modalTitle').textContent = `Detalhes de ${patientName}`;
+            document.getElementById('modalBio').textContent = patientName === 'Angela Portes' ? 'Idade: 32 | Gênero: Feminino | Alergias: Nenhuma | Metas: Perda de peso sustentável' :
+                patientName === 'João Silva' ? 'Idade: 28 | Gênero: Masculino | Alergias: Lactose | Metas: Ganho muscular' :
+                'Idade: 45 | Gênero: Feminino | Alergias: Glúten | Metas: Controle glicêmico';
+            // Atualizar histórico mock
+            const histories = {
+                'Angela Portes': ['04/11: Consulta - IMC 22.5', '28/10: Ajuste plano - +2kg', '15/10: Início - IMC 24.1'],
+                'João Silva': ['04/11: Avaliação inicial - Massa 75kg', '20/10: Teste força - Bom', '10/10: Início programa'],
+                'Maria Costa': ['04/11: Revisão - Glicose estável', '01/11: Ajuste insulina', '15/10: Diagnóstico inicial']
+            };
+            const ul = document.getElementById('modalHistory');
+            ul.innerHTML = histories[patientName].map(h => `<li style="padding: 8px 0; border-bottom: 1px solid var(--border);"><i class="fas fa-calendar" style="color: var(--accent); margin-right: 8px;"></i>${h}</li>`).join('');
+            document.getElementById('modalAI').textContent = patientName === 'Angela Portes' ? 'Baseado em dados de wearables: Recomendação - Aumentar ingestão de fibras em 20% para otimizar digestão. Probabilidade de sucesso: 87%. Plano gerado automaticamente.' :
+                patientName === 'João Silva' ? 'Análise muscular: Sugere suplemento BCAA. Risco de overtraining: 12%.' : 'Monitor glicêmico: Alerta baixo - Ajustar carboidratos em 15%.';
+            initPatientChart(); // Inicializar gráfico no modal
+            document.body.style.overflow = 'hidden';
+        }
+       
+        function closeModal() {
+            document.getElementById('patientModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+       
+        // Drag and Drop para Agenda
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.outerHTML); }
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            ev.target.insertAdjacentHTML("beforeend", data); // Simples mock - reorder itens
+            // Em produção: API para salvar ordem
+        }
+       
+        // Ações IA
+        function aiAction(type) {
+            const insights = {
+                chamada: 'IA: Iniciando chamada com resumo de histórico. Deseja gravar áudio?',
+                mensagem: 'IA: Mensagem personalizada gerada: "Olá! Baseado no seu progresso, experimente esta receita."',
+                revisao: 'IA: Revisão automática - Plano atualizado com 92% de adesão prevista.'
+            };
+            alert(insights[type] || 'Ação IA executada!');
+        }
+       
+        function generatePlan() {
+            alert('IA NutriXpert: Plano semanal gerado para top 5 pacientes. Enviando por email... (Mock)');
+        }
+       
+        function applyAIPlan() {
+            alert('Plano IA aplicado! Notificação enviada ao paciente via app.');
+            closeModal();
+        }
+       
+        // Quick Actions
+        function integrateWearable() {
+            alert('Integração com Fitbit/Apple Health ativada. Dados em tempo real carregados.');
+        }
+       
+        function exportReport() {
+            alert('Relatório PDF/CSV exportado. Inclui insights IA e métricas agregadas.');
+        }
+       
+        function aiPredict() {
+            alert('Previsões IA: 25% dos pacientes atingirão metas em 30 dias. Alertas enviados.');
+        }
+       
+        // Modo Voz com Web Speech API
+        let recognition;
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'pt-BR';
+        }
+       
+        function toggleVoice() {
+            const btn = document.getElementById('voiceBtn');
+            if (btn.classList.contains('listening')) {
+                recognition.stop();
+                btn.classList.remove('listening');
+                btn.innerHTML = '<i class="fas fa-microphone"></i>';
+            } else {
+                recognition.start();
+                btn.classList.add('listening');
+                btn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                recognition.onresult = function(event) {
+                    const command = event.results[0][0].transcript.toLowerCase();
+                    if (command.includes('abrir paciente')) {
+                        const name = command.split('abrir paciente')[1].trim();
+                        openModal(name || 'Angela Portes');
+                    } else if (command.includes('gerar plano')) {
+                        generatePlan();
+                    } else if (command.includes('fechar')) {
+                        closeModal();
+                    } else {
+                        alert(`Comando reconhecido: "${command}". Executando ação correspondente.`);
+                    }
+                    toggleVoice(); // Auto-stop
+                };
+                recognition.onerror = () => toggleVoice();
+            }
+        }
+       
+        // Tarefas
+        function completeTask(id) {
+            alert(`Tarefa ${id} concluída! IA: Próxima sugerida automaticamente.`);
+            // Remover ou marcar como feito
+        }
+       
+        function toggleView(section) {
+            alert(`${section} view toggled! (Mock full view)`);
+        }
+       
+        // Busca Inteligente Mock
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            if (query.includes('risco') || query.includes('diabetes')) {
+                alert('IA: Alertas de risco encontrados. Abrindo painel de pacientes de alto risco.');
+                openModal('João Silva'); // Exemplo
+            }
+        });
+       
+        // Fechar modal ao clicar fora
+        document.getElementById('patientModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>

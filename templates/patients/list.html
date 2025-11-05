@@ -1,62 +1,93 @@
-{% extends 'base.html' %}
+{% extends 'base_new_dashboard.html' %}
 
 {% block title %}Meus Pacientes - NutriVida Pro{% endblock %}
 
-{% block content %}
-<div class="max-w-7xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Meus Pacientes</h1>
-        <a href="{% url 'patients:create' %}" class="px-4 py-2 text-white rounded-lg bg-gradient-to-b from-blue-500 to-blue-900 shadow-lg hover:from-blue-600 hover:to-blue-900 transition-all">
-            <i class="fas fa-user-plus mr-2"></i> Novo Paciente
-        </a>
+{% block body_content %}
+<div class="dashboard">
+    <!-- Header -->
+    <div class="header">
+        <div class="user-info">
+            <div class="user-details">
+                <h1>Meus Pacientes</h1>
+                <p>{{ patients.paginator.count }} pacientes cadastrados</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <form method="get" class="search-form">
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Buscar por nome...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+            <form method="get" class="sort-form">
+                <select name="sort" onchange="this.form.submit()" class="btn btn-secondary">
+                    <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Mais Recentes</option>
+                    <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Mais Antigos</option>
+                    <option value="user__name" {% if sort_by == 'user__name' %}selected{% endif %}>Nome (A-Z)</option>
+                    <option value="-user__name" {% if sort_by == '-user__name' %}selected{% endif %}>Nome (Z-A)</option>
+                </select>
+            </form>
+            <a href="{% url 'patients:create' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Novo Paciente
+            </a>
+        </div>
     </div>
 
-    <!-- Patient List Table -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Cadastro</th>
-                    <th scope="col" class="relative px-6 py-3">
-                        <span class="sr-only">Ações</span>
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for patient in patients %}
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">{{ patient.patient_user.name }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">{{ patient.patient_user.email }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">{{ patient.phone|default:"Não informado" }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">{{ patient.created_at|date:"d/m/Y" }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{% url 'patients:detail' patient.id %}" class="text-indigo-600 hover:text-indigo-900">Ver Perfil</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="px-6 py-12 text-center">
-                        <div class="text-center">
-                            <i class="fas fa-users text-4xl text-gray-400 mb-3"></i>
-                            <p class="text-gray-600">Nenhum paciente cadastrado ainda.</p>
-                            <p class="text-sm text-gray-400 mt-2">Clique em "Novo Paciente" para começar.</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Patient Cards Grid -->
+    <div class="patient-grid">
+        {% for patient in patients %}
+        <div class="patient-card">
+            <div class="patient-card-header">
+                <div class="patient-card-avatar">
+                    {% if patient.user.profile_picture %}
+                        <img src="{{ patient.user.profile_picture.url }}" alt="{{ patient.user.name }}">
+                    {% else %}
+                        <img src="https://i.pravatar.cc/80?u={{ patient.user.id }}" alt="Paciente">
+                    {% endif %}
+                </div>
+                <div class="patient-card-info">
+                    <h3 class="patient-card-name">{{ patient.user.name }}</h3>
+                    <p class="patient-card-email">{{ patient.user.email }}</p>
+                </div>
+            </div>
+            <div class="patient-card-body">
+                <p><i class="fas fa-phone"></i> {{ patient.phone|default:"Não informado" }}</p>
+                <p><i class="fas fa-calendar-alt"></i> Cadastrado em: {{ patient.created_at|date:"d/m/Y" }}</p>
+            </div>
+            <div class="patient-card-footer">
+                <a href="{% url 'patients:detail' patient.id %}" class="btn btn-secondary">Ver Perfil</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="card" style="grid-column: 1 / -1;">
+            <div class="text-center py-10">
+                <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500">Nenhum paciente cadastrado ainda.</p>
+                <p class="text-sm text-gray-400 mt-2">Clique em "Novo Paciente" para começar.</p>
+            </div>
+        </div>
+        {% endfor %}
     </div>
+
+    <!-- Pagination -->
+    {% if patients.has_other_pages %}
+    <div class="pagination">
+        {% if patients.has_previous %}
+            <a href="?page=1&q={{ search_query }}&sort={{ sort_by }}" class="page-item">&laquo;</a>
+            <a href="?page={{ patients.previous_page_number }}&q={{ search_query }}&sort={{ sort_by }}" class="page-item">&lsaquo;</a>
+        {% endif %}
+
+        {% for num in patients.paginator.page_range %}
+            {% if patients.number == num %}
+                <span class="page-item current">{{ num }}</span>
+            {% elif num > patients.number|add:'-3' and num < patients.number|add:'3' %}
+                <a href="?page={{ num }}&q={{ search_query }}&sort={{ sort_by }}" class="page-item">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if patients.has_next %}
+            <a href="?page={{ patients.next_page_number }}&q={{ search_query }}&sort={{ sort_by }}" class="page-item">&rsaquo;</a>
+            <a href="?page={{ patients.paginator.num_pages }}&q={{ search_query }}&sort={{ sort_by }}" class="page-item">&raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

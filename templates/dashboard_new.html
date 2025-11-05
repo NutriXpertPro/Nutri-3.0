@@ -1,0 +1,330 @@
+{% extends 'base_new_dashboard.html' %}
+{% load static %}
+
+{% block body_content %}
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 20px; flex: 1;">
+                <div class="user-info">
+                    <div class="user-avatar">DA</div> {# Dynamic initials will be added later #}
+                    <div class="user-details">
+                        <h1 id="greeting">Boa {{ greeting }}, Dr. {{ first_name }}</h1>
+                        <p>
+                            <i class="fas fa-calendar-day"></i>
+                            <span id="current-date">{% now "l, d \de F \de Y" %}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="search-intelligent">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar pacientes, insights IA ou métricas...">
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary">
+                    <i class="fas fa-cog"></i>
+                    Configurações
+                </button>
+                <button class="btn btn-primary btn-ai" onclick="generatePlan()">
+                    <i class="fas fa-magic"></i>
+                    Insight IA
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Nova Consulta
+                </button>
+                <button class="btn btn-secondary" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar Tema">
+                    <i class="fas fa-sun"></i> {# Initial icon, will change with JS #}
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Grid com Insights IA -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        12% {# Placeholder #}
+                    </div>
+                </div>
+                <div class="stat-label">Pacientes Ativos</div>
+                <div class="stat-value">{{ total_patients }}</div>
+                <div class="stat-footer">8 novos este mês {# Placeholder #}</div>
+                <div class="ai-insight">IA: 15% de risco de cancelamento em pacientes inativos >30 dias.</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon success">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-check"></i>
+                        Hoje
+                    </div>
+                </div>
+                <div class="stat-label">Consultas Agendadas</div>
+                <div class="stat-value">{{ consultas_hoje }}</div>
+                <div class="stat-footer">
+                    {% if proxima_consulta %}
+                        Próxima às {{ proxima_consulta.date|time:"H:i" }}
+                    {% else %}
+                        Nenhuma próxima
+                    {% endif %}
+                    | Automatizado via Calendly {# Placeholder #}
+                </div>
+                <div class="ai-insight">IA: Sugere horário livre às 14:00 para acompanhamento urgente.</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="stat-trend down">
+                        <i class="fas fa-exclamation"></i>
+                        Atenção
+                    </div>
+                </div>
+                <div class="stat-label">Planos a Vencer</div>
+                <div class="stat-value">{{ dietas_a_vencer }}</div>
+                <div class="stat-footer">Próximos 7 dias</div>
+                <div class="ai-insight">IA: Priorize João Silva - 80% chance de não-adesão.</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon ai">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="stat-trend ai">
+                        <i class="fas fa-bolt"></i>
+                        IA Ativa
+                    </div>
+                </div>
+                <div class="stat-label">Insights Gerados</div>
+                <div class="stat-value">27 {# Placeholder #}</div>
+                <div class="stat-footer">Hoje | Integração com Smartwatch</div>
+                <div class="ai-insight">IA: Detectou 3 deficiências vitamínicas em coorte.</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Agenda -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Agenda do Dia
+                    </div>
+                    <a class="card-action" onclick="toggleView('agenda')">Ver completa →</a>
+                </div>
+
+                <div class="timeline" id="timeline" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    {% for appointment in appointments_today %}
+                    <div class="timeline-item" draggable="true" ondragstart="drag(event)">
+                        <div class="timeline-avatar">
+                            {% if appointment.patient.user.profile_picture %}
+                                <img src="{{ appointment.patient.user.profile_picture.url }}" alt="{{ appointment.patient.user.name }}">
+                            {% else %}
+                                <img src="https://i.pravatar.cc/40?u={{ appointment.patient.user.id }}" alt="Paciente">
+                            {% endif %}
+                        </div>
+                        <div class="timeline-time">
+                            <div class="hour">{{ appointment.date|time:"H:i" }}</div>
+                            <div class="date">{{ appointment.date|date:"d/m" }}</div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-patient">{{ appointment.patient.user.name }}</div>
+                            <div class="timeline-note">{{ appointment.notes|default:"Consulta"|truncatechars:40 }}</div>
+                            <div class="timeline-tags">
+                                <span class="tag online">
+                                    <i class="fas fa-video"></i> Online
+                                </span>
+                                <span class="tag duration">
+                                    <i class="fas fa-clock"></i> 60 min
+                                </span>
+                                <span class="tag ai">
+                                    <i class="fas fa-brain"></i> IA: Verificar glicose
+                                </span>
+                            </div>
+                        </div>
+                        <div class="timeline-actions">
+                            <button class="icon-btn" onclick="openModal('{{ appointment.patient.user.name }}')">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                            <button class="icon-btn ai" onclick="aiAction('chamada')">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-patient">Nenhum agendamento para hoje.</div>
+                            <div class="timeline-note">Aproveite para planejar o futuro!</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Paciente em Foco -->
+            <div class="card patient-focus" onclick="openModal('{{ patient_in_focus.user.name|default:"Nenhum Paciente" }}')">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-star"></i>
+                        Paciente em Foco
+                    </div>
+                </div>
+                {% if patient_in_focus %}
+                <div class="patient-avatar-large">
+                    {% if patient_in_focus.user.profile_picture %}
+                        <img src="{{ patient_in_focus.user.profile_picture.url }}" alt="{{ patient_in_focus.user.name }}">
+                    {% else %}
+                        <img src="https://i.pravatar.cc/150?u={{ patient_in_focus.user.id }}" alt="Paciente">
+                    {% endif %}
+                    <div class="patient-status">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <div class="patient-name">{{ patient_in_focus.user.name }}</div>
+                <div class="patient-goal">{{ patient_in_focus.goal|default:"Sem objetivo definido" }}</div>
+                <div class="patient-metrics">
+                    <div class="metric">
+                        <div class="metric-label">IMC</div>
+                        <div class="metric-value">22.5</div> {# Placeholder #}
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Gordura</div>
+                        <div class="metric-value">28%</div> {# Placeholder #}
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Massa</div>
+                        <div class="metric-value">55kg</div> {# Placeholder #}
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">Progresso Atual</div>
+                    <div class="progress-value">-5.2kg</div> {# Placeholder #}
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div> {# Placeholder #}
+                    </div>
+                </div>
+                <div class="patient-actions">
+                    <button class="btn btn-secondary" style="width: 100%;">
+                        <i class="fas fa-user"></i>
+                        Ver Perfil Completo
+                    </button>
+                    <button class="btn btn-primary btn-ai" style="width: 100%;">
+                        <i class="fas fa-brain"></i>
+                        Análise IA
+                    </button>
+                </div>
+                {% else %}
+                <div class="text-center py-10">
+                    <i class="fas fa-user-circle text-6xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500">Nenhum paciente em foco.</p>
+                    <p class="text-sm text-gray-400 mt-2">Adicione um paciente para vê-lo aqui.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Analytics Grid -->
+        <div class="analytics-grid">
+            <!-- Gráfico de Evolução Interativo -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Evolução Mensal (Interativa)
+                    </div>
+                    <div class="chart-controls">
+                        <div class="metric-selector">
+                            <button class="metric-btn active" onclick="updateEvolutionChart('peso')">Peso</button>
+                            <button class="metric-btn" onclick="updateEvolutionChart('imc')">IMC</button>
+                            <button class="metric-btn" onclick="updateEvolutionChart('massa')">Massa</button>
+                            <button class="metric-btn" onclick="updateEvolutionChart('gordura')">Gordura</button>
+                        </div>
+                        <select id="periodSelect" class="btn btn-secondary" style="padding: 8px 16px;" onchange="updateChart()">
+                            <option>Últimos 6 meses</option>
+                            <option>Últimos 3 meses</option>
+                            <option>Este ano</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="evolutionChart"></canvas>
+                </div>
+            </div>
+            <!-- Tarefas Pendentes com Automação -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-tasks"></i>
+                        Tarefas Pendentes
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="padding: 12px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid var(--warning); cursor: pointer;" onclick="completeTask(0)">
+                        <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Revisar dietas</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">8 planos precisam de atualização | IA: 4 priorizadas</div>
+                    </div>
+                    <div style="padding: 12px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid var(--success); cursor: pointer;" onclick="completeTask(1)">
+                        <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Feedbacks pendentes</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">3 avaliações para responder | Automatizar respostas?</div>
+                    </div>
+                    <div style="padding: 12px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid var(--accent); cursor: pointer;" onclick="completeTask(2)">
+                        <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px;">Acompanhamentos semanais</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Enviar relatórios para 12 pacientes | Integração Fitbit ativa</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay Modal -->
+    <div class="overlay" id="patientModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Detalhes do Paciente</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3>Perfil Geral</h3>
+                    <p id="modalBio">Idade: 32 | Gênero: Feminino | Alergias: Nenhuma | Metas: Perda de peso sustentável</p>
+                    <h3>Histórico Recente</h3>
+                    <ul id="modalHistory" style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0; border-bottom: 1px solid var(--border);"><i class="fas fa-calendar" style="color: var(--accent); margin-right: 8px;"></i>04/11: Consulta - IMC 22.5</li>
+                        <li style="padding: 8px 0; border-bottom: 1px solid var(--border);"><i class="fas fa-calendar" style="color: var(--accent); margin-right: 8px;"></i>28/10: Ajuste plano - +2kg</li>
+                        <li style="padding: 8px 0;"><i class="fas fa-calendar" style="color: var(--accent); margin-right: 8px;"></i>15/10: Início - IMC 24.1</li>
+                    </ul>
+                </div>
+                <div class="modal-section">
+                    <h3>Métricas em Tempo Real</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px;">
+                        <div><strong>Passos Diários:</strong> 8.500 <i class="fas fa-shoe-prints" style="color: var(--success);"></i></div>
+                        <div><strong>Calorias:</strong> 1.800 kcal <i class="fas fa-fire" style="color: var(--warning);"></i></div>
+                        <div><strong>Sono:</strong> 7h 20m <i class="fas fa-bed" style="color: var(--accent);"></i></div>
+                        <div><strong>Glicose:</strong> 95 mg/dL <i class="fas fa-vial" style="color: var(--danger);"></i></div>
+                    </div>
+                    <canvas id="patientChart" width="200" height="100" style="max-height: 150px;"></canvas>
+                </div>
+                <div class="modal-section ai-insight-modal">
+                    <h3>Insights IA Personalizados</h3>
+                    <p id="modalAI">Baseado em dados de wearables: Recomendação - Aumentar ingestão de fibras em 20% para otimizar digestão. Probabilidade de sucesso: 87%. Plano gerado automaticamente.</p>
+                    <button class="btn btn-primary btn-ai" style="width: 100%; margin-top: 12px;" onclick="applyAIPlan()">Aplicar Plano IA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Toggle Button -->
+    <button class="voice-toggle" id="voiceBtn" onclick="toggleVoice()" title="Ativar Modo Voz">
+        <i class="fas fa-microphone"></i>
+    </button>
+{% endblock body_content %}

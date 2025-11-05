@@ -1,3 +1,6 @@
+from datetime import datetime, time
+from django.utils.timezone import make_aware
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -16,31 +19,38 @@ import json
 def dashboard_view(request):
     total_patients = PatientProfile.objects.filter(nutritionist=request.user).count()
     today = timezone.now().date()
+
+    # Adjust query for timezone-aware date range
+    start_of_day = make_aware(datetime.combine(today, time.min))
+    end_of_day = make_aware(datetime.combine(today, time.max))
+
     appointments_today = Appointment.objects.filter(
-        patient__nutritionist=request.user, date__date=today
+        user=request.user, date__range=(start_of_day, end_of_day)
     ).order_by("date")
     consultas_hoje = appointments_today.count()
     dietas_ativas = Diet.objects.filter(patient__nutritionist=request.user).count()
-    dietas_a_vencer = 0
+    dietas_a_vencer = 0  # Placeholder for now, needs actual logic
     proxima_consulta = (
         Appointment.objects.filter(
-            patient__nutritionist=request.user, date__gte=timezone.now()
+            user=request.user, date__gte=timezone.now()
         )
         .order_by("date")
         .first()
     )
-    search_query = request.GET.get("search")
+    search_query = request.GET.get("search")  # Keep for future search functionality
     patients_list = PatientProfile.objects.filter(nutritionist=request.user).order_by(
         "user__name"
     )
     if search_query:
         patients_list = patients_list.filter(user__name__icontains=search_query)
+    # Paginator and chart data are not directly used in the new template's initial state,
+    # but keep them for completeness or future use.
     paginator = Paginator(patients_list, 5)
     page_number = request.GET.get("page")
     patients = paginator.get_page(page_number)
-    chart_labels = []
-    chart_data = []
-    chart_patient_name = ""
+    chart_labels = []  # Hardcoded in JS for now
+    chart_data = []  # Hardcoded in JS for now
+    chart_patient_name = ""  # Hardcoded in JS for now
     first_name = request.user.name.split()[0]
 
     # Logic for Patient in Focus
@@ -54,24 +64,29 @@ def dashboard_view(request):
         patient_in_focus.goal = "Perda de Peso"  # Placeholder
         patient_in_focus.progress_metric = "-5kg desde o início"  # Placeholder
 
+    # Determine greeting based on time of day
+    current_hour = timezone.now().hour
+    if current_hour < 12:
+        greeting = "manhã"
+    elif current_hour < 18:
+        greeting = "tarde"
+    else:
+        greeting = "noite"
+
+
+
     context = {
         "total_patients": total_patients,
         "consultas_hoje": consultas_hoje,
         "appointments_today": appointments_today,
-        "total_consultas_hoje": 8,
-        "dietas_ativas": dietas_ativas,
-        "percentual_dietas_ativas": 93,
-        "dietas_a_vencer": dietas_a_vencer,
+        "dietas_a_vencer": dietas_a_vencer,  # Placeholder
         "proxima_consulta": proxima_consulta,
-        "patients": patients,
-        "search_query": search_query,
-        "chart_labels": json.dumps(chart_labels),
-        "chart_data": json.dumps(chart_data),
-        "chart_patient_name": chart_patient_name,
         "first_name": first_name,
-        "patient_in_focus": patient_in_focus,  # Add patient in focus to context
+        "patient_in_focus": patient_in_focus,
+        "greeting": greeting,  # New
+        # Add other context variables if needed by the new template
     }
-    return render(request, "dashboard.html", context)
+    return render(request, "dashboard_new.html", context)
 
 
 def nutricionista_login_view(request):

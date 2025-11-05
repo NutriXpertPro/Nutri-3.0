@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NutriXpert Pro - Dashboard Inteligente{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/new_dashboard.css' %}">
+</head>
+<body>
+    <div class="flex">
+        <aside class="sidebar">
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <i class="fas fa-brain"></i>
+            </div>
+
+            <!-- Navigation Icons -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'users:dashboard' %}" class="nav-item active" title="Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+                <hr class="sidebar-divider">
+                <a href="{% url 'patients:list' %}" class="nav-item" title="Pacientes">
+                    <i class="fas fa-users"></i>
+                </a>
+                <a href="{% url 'patients:create' %}" class="nav-item" title="Novo Paciente">
+                    <i class="fas fa-user-plus"></i>
+                </a>
+                <hr class="sidebar-divider">
+                <a href="{% url 'appointments:list' %}" class="nav-item" title="Consultas">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'anamnesis:list' %}" class="nav-item" title="Anamnese">
+                    <i class="fas fa-file-medical-alt"></i>
+                </a>
+                <a href="#" class="nav-item" title="Antropometria">
+                    <i class="fas fa-ruler-combined"></i>
+                </a>
+                <a href="{% url 'diets:list' %}" class="nav-item" title="Dietas">
+                    <i class="fas fa-utensils"></i>
+                </a>
+                <hr class="sidebar-divider">
+                <a href="#" class="nav-item" title="Relatórios">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+            </nav>
+
+            <!-- Bottom Icons -->
+            <div class="sidebar-bottom">
+                <a href="{% url 'users:settings' %}" class="nav-item" title="Configurações">
+                    <i class="fas fa-cog"></i>
+                </a>
+                <a href="{% url 'users:logout' %}" class="nav-item" title="Sair">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content flex-1">
+            {% block body_content %}{% endblock %}
+        </main>
+    </div>
+    <script src="{% static 'js/new_dashboard.js' %}"></script>
+</body>
+</html>

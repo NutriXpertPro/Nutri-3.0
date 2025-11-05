@@ -8,7 +8,7 @@
 
 
     <!-- Main Content Area -->
-    <div class="p-8">
+    <div class="bg-white/85 backdrop-blur-xl border border-white/30 rounded-3xl shadow-xl p-8">
         <!-- Dynamic Hero Section -->
         <div class="flex justify-between items-center mb-8">
             <!-- Dynamic Greeting -->
@@ -46,118 +46,151 @@
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Card 1: Pacientes Ativos -->
-            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition duration-300">
+            <div class="bg-white rounded-lg shadow-md p-6 hover:-translate-y-2 hover:scale-105 transition-transform duration-300">
                 <div class="flex items-center justify-between mb-4">
-                    <i class="fas fa-users text-blue-500 text-2xl"></i>
-                    <span class="text-sm text-gray-500">Ver todos</span>
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg bg-gradient-to-r from-blue-500 to-blue-600">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800">+12%</span> <!-- Placeholder -->
                 </div>
-                <h2 class="text-3xl font-bold text-gray-800">120</h2> <!-- Placeholder -->
-                <p class="text-gray-600">Pacientes Ativos</p>
+                <p class="text-gray-600 text-sm">Pacientes Ativos</p>
+                <h3 class="text-3xl font-bold text-gray-800">{{ total_patients }}</h3>
+                <div class="flex items-center text-sm text-gray-500 mt-2">
+                    <i class="fas fa-arrow-up text-green-500 mr-1"></i>
+                    <span>8 novos este mês</span> <!-- Placeholder -->
+                </div>
             </div>
             <!-- Card 2: Consultas Hoje -->
-            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition duration-300">
+            <div class="bg-white rounded-lg shadow-md p-6 hover:-translate-y-2 hover:scale-105 transition-transform duration-300">
                 <div class="flex items-center justify-between mb-4">
-                    <i class="fas fa-calendar-alt text-green-500 text-2xl"></i>
-                    <span class="text-sm text-gray-500">Hoje</span>
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg bg-gradient-to-r from-green-500 to-green-600">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-green-100 text-green-800">Hoje</span>
                 </div>
-                <h2 class="text-3xl font-bold text-gray-800">5</h2> <!-- Placeholder -->
-                <p class="text-gray-600">Consultas Agendadas</p>
+                <p class="text-gray-600 text-sm">Consultas Agendadas</p>
+                <h3 class="text-3xl font-bold text-gray-800">{{ consultas_hoje }}</h3>
+                <div class="flex items-center text-sm text-gray-500 mt-2">
+                    <i class="fas fa-clock text-blue-500 mr-1"></i>
+                    {% if proxima_consulta %}
+                    <span>Próxima às {{ proxima_consulta.date|time:"H:i" }}</span>
+                    {% else %}
+                    <span>Nenhuma</span>
+                    {% endif %}
+                </div>
             </div>
             <!-- Card 3: Planos a Vencer -->
-            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition duration-300">
+            <div class="bg-white rounded-lg shadow-md p-6 hover:-translate-y-2 hover:scale-105 transition-transform duration-300">
                 <div class="flex items-center justify-between mb-4">
-                    <i class="fas fa-file-alt text-orange-500 text-2xl"></i>
-                    <span class="text-sm text-gray-500">Próx. 7 dias</span>
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg bg-gradient-to-r from-orange-500 to-orange-600">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-orange-100 text-orange-800">Próx. 7 dias</span>
                 </div>
-                <h2 class="text-3xl font-bold text-gray-800">8</h2> <!-- Placeholder -->
-                <p class="text-gray-600">Planos a Vencer</p>
+                <p class="text-gray-600 text-sm">Planos a Vencer</p>
+                <h3 class="text-3xl font-bold text-gray-800">{{ dietas_a_vencer }}</h3>
+                <div class="flex items-center text-sm text-gray-500 mt-2">
+                    <i class="fas fa-exclamation-circle text-orange-500 mr-1"></i>
+                    <span>Requer atenção</span> <!-- Placeholder -->
+                </div>
             </div>
             <!-- Card 4: Feedback Pendente -->
-            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition duration-300">
+            <div class="bg-white rounded-lg shadow-md p-6 hover:-translate-y-2 hover:scale-105 transition-transform duration-300">
                 <div class="flex items-center justify-between mb-4">
-                    <i class="fas fa-comment-dots text-purple-500 text-2xl"></i>
-                    <span class="text-sm text-gray-500">Novas</span>
+                    <div class="w-14 h-14 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg bg-gradient-to-r from-purple-500 to-purple-600">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-purple-100 text-purple-800">Novo</span>
                 </div>
-                <h2 class="text-3xl font-bold text-gray-800">3</h2> <!-- Placeholder -->
-                <p class="text-gray-600">Feedback Pendente</p>
+                <p class="text-gray-600 text-sm">Avaliações</p>
+                <h3 class="text-3xl font-bold text-gray-800">4.9</h3> <!-- Placeholder -->
+                <div class="flex items-center text-sm text-gray-500 mt-2">
+                    <i class="fas fa-heart text-purple-500 mr-1"></i>
+                    <span>3 feedbacks novos</span> <!-- Placeholder -->
+                </div>
             </div>
         </div>
 
         <!-- Main Content Grid (Agenda and Recent Patients) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column: Vertical Timeline for Agenda -->
+            <!-- Left Column: Agenda -->
             <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-bold text-gray-800">Agenda do Dia</h2>
                     <a href="#" class="text-blue-600 hover:underline text-sm">Ver agenda completa</a>
                 </div>
                 <div class="flow-root">
-                    <ul role="list" class="-mb-8">
-                        {% for appointment in appointments_today %}
-                        <li>
-                            <div class="relative pb-8">
-                                {% if not forloop.last %}
-                                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-                                {% endif %}
-                                <div class="relative flex space-x-3">
-                                    <div>
-                                        <span class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
-                                            <i class="fas fa-calendar-check text-white"></i>
-                                        </span>
-                                    </div>
-                                    <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                        <div>
-                                            <p class="text-sm text-gray-500">{{ appointment.date|time:"H:i" }} - <span class="font-medium text-gray-900">{{ appointment.patient.patient_user.name }}</span></p>
-                                        </div>
-                                        <div class="text-right text-sm whitespace-nowrap text-gray-500">
-                                            <time datetime="{{ appointment.date|date:"Y-m-d" }}">{{ appointment.notes|default:"Consulta"|truncatechars:20 }}</time>
-                                        </div>
-                                    </div>
-                                </div>
+                    {% for appointment in appointments_today %}
+                    <div class="appointment-item flex gap-4 p-4 rounded-lg bg-gradient-to-r from-white to-gray-50 border-l-4 border-green-500 mb-3 cursor-pointer transition-all duration-300 hover:shadow-lg hover:translate-x-1">
+                        <div class="appointment-time text-center min-w-[80px]">
+                            <div class="text-xl font-bold text-gray-800">{{ appointment.date|time:"H:i" }}</div>
+                            <div class="text-xs text-gray-600">{{ appointment.date|date:"d/m" }}</div>
+                        </div>
+                        <div class="appointment-details flex-1">
+                            <h3 class="text-base font-bold text-gray-800 mb-1 hover:text-green-500 transition-colors duration-300">{{ appointment.patient.user.name }}</h3>
+                            <p class="text-sm text-gray-600 mb-2">{{ appointment.notes|default:"Consulta"|truncatechars:40 }}</p>
+                            <div class="appointment-tags flex gap-2">
+                                <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800"><i class="fas fa-video mr-1"></i> Online</span>
+                                <span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800"><i class="fas fa-clock mr-1"></i> 60 min</span>
                             </div>
-                        </li>
-                        {% empty %}
-                        <li>
-                            <div class="relative pb-8">
-                                <div class="relative flex space-x-3">
-                                    <div>
-                                        <span class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center ring-8 ring-white">
-                                            <i class="fas fa-calendar-times text-gray-500"></i>
-                                        </span>
-                                    </div>
-                                    <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                        <div>
-                                            <p class="text-sm text-gray-500">Nenhuma consulta para hoje.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                        </div>
+                        <div class="appointment-actions flex gap-2 items-center">
+                            <button class="w-10 h-10 rounded-lg bg-green-100 text-green-800 flex items-center justify-center hover:scale-110 hover:bg-green-200 transition-transform duration-300 shadow-md">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                            <button class="w-10 h-10 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center hover:scale-110 hover:bg-blue-200 transition-transform duration-300 shadow-md">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-10 text-gray-500">
+                        <i class="fas fa-calendar-times text-6xl text-gray-300 mb-4"></i>
+                        <p>Nenhuma consulta agendada para hoje.</p>
+                        <p class="text-sm text-gray-400 mt-2">Aproveite para planejar o futuro!</p>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
 
             <!-- Right Column: Paciente em Foco -->
-            <div class="lg:col-span-1 bg-white rounded-lg shadow-md p-6 border border-gray-200 text-center">
-                <h2 class="text-xl font-bold text-gray-800 mb-6">Paciente em Foco</h2>
+            <div class="lg:col-span-1 bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Paciente em Foco</h2>
+                    <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-h"></i></button>
+                </div>
                 {% if patient_in_focus %}
-                    {% if patient_in_focus.patient_user.gender == 'F' %}
-                        <img src="{% static 'images/placeholder_female.svg' %}" alt="Paciente Feminino" class="h-24 w-24 rounded-full mx-auto mb-4 object-cover">
-                    {% else %}
-                        <img src="{% static 'images/placeholder_male.svg' %}" alt="Paciente Masculino" class="h-24 w-24 rounded-full mx-auto mb-4 object-cover">
-                    {% endif %}
-                    <p class="text-2xl font-bold text-gray-800">{{ patient_in_focus.patient_user.name }}</p>
-                    <p class="text-sm text-gray-600 mb-4">{{ patient_in_focus.goal|default:"Sem objetivo definido" }}</p>
-                    <div class="mb-6">
-                        <p class="text-lg font-semibold text-blue-600">Progresso: {{ patient_in_focus.progress_metric|default:"N/A" }}</p>
+                    <div class="text-center">
+                        {% if patient_in_focus.user.gender == 'F' %}
+                            <img src="{% static 'images/placeholder_female.svg' %}" alt="Paciente Feminino" class="h-24 w-24 rounded-full mx-auto mb-4 object-cover ring-4 ring-green-200">
+                        {% else %}
+                            <img src="{% static 'images/placeholder_male.svg' %}" alt="Paciente Masculino" class="h-24 w-24 rounded-full mx-auto mb-4 object-cover ring-4 ring-green-200">
+                        {% endif %}
+                        <h3 class="text-2xl font-bold text-gray-800">{{ patient_in_focus.user.name }}</h3>
+                        <p class="text-sm text-gray-600 mb-4">{{ patient_in_focus.goal|default:"Faltam 2kg para a meta" }}</p>
                     </div>
-                    <div class="flex justify-center space-x-3">
-                        <a href="#" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition duration-300">Ver Perfil</a>
-                        <a href="#" class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition duration-300">Mensagem</a>
+
+                    <div class="flex justify-around my-6 text-center">
+                        <div>
+                            <p class="text-gray-500 text-sm">IMC</p>
+                            <span class="text-xl font-bold text-gray-800">22.5</span>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm">Gordura %</p>
+                            <span class="text-xl font-bold text-gray-800">28%</span>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm">Massa Magra</p>
+                            <span class="text-xl font-bold text-gray-800">55kg</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col space-y-3">
+                        <a href="#" class="w-full bg-green-100 text-green-800 px-4 py-2 rounded-lg text-center font-semibold hover:bg-green-200 transition duration-300">Ver Perfil Completo</a>
+                        <a href="#" class="w-full bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-center font-semibold hover:bg-blue-200 transition duration-300">Enviar Mensagem</a>
                     </div>
                 {% else %}
-                    <div class="py-10">
+                    <div class="text-center py-10">
                         <i class="fas fa-user-circle text-6xl text-gray-300 mb-4"></i>
                         <p class="text-gray-500">Nenhum paciente em foco.</p>
                         <p class="text-sm text-gray-400 mt-2">Adicione um paciente para vê-lo aqui.</p>
