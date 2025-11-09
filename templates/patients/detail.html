@@ -1,118 +1,155 @@
 {% extends 'base_new_dashboard.html' %}
+{% load static %}
 
 {% block title %}Detalhes de {{ patient.user.name }} - NutriVida Pro{% endblock %}
 
+{% block head_extra %}
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.min.js"></script>
+    <script src="https://unpkg.com/lucide-react/dist/lucide-react.js"></script>
+    <style>
+        /* Adicione aqui os estilos que faltam ou que precisam ser ajustados */
+    </style>
+{% endblock %}
+
 {% block body_content %}
-<div class="dashboard">
-    <!-- Header -->
-    <div class="header">
-        <div class="user-info">
-            <div class="patient-card-avatar">
-                {% if patient.user.profile_picture %}
-                    <img src="{{ patient.user.profile_picture.url }}" alt="{{ patient.user.name }}">
-                {% else %}
-                    <img src="https://i.pravatar.cc/80?u={{ patient.user.id }}" alt="Paciente">
-                {% endif %}
-            </div>
-            <div class="user-details">
-                <h1>{{ patient.user.name }}</h1>
-                <p>{{ patient.user.email }}</p>
-            </div>
-        </div>
-        <div class="header-actions">
-            <a href="#" class="btn btn-secondary">
-                <i class="fas fa-edit"></i> Editar Perfil
-            </a>
-            <a href="#" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nova Consulta
-            </a>
-        </div>
-    </div>
+<div id="root"></div>
 
-    <!-- Main Grid -->
-    <div class="main-grid">
-        <!-- Personal Info Card -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <i class="fas fa-user"></i>
-                    Informações Pessoais
-                </div>
-            </div>
-            <div class="patient-details-grid">
-                <div><strong>Data de Nasc.:</strong> {{ patient.birth_date|date:"d/m/Y" }}</div>
-                <div><strong>Idade:</strong> {{ patient.get_age }} anos</div>
-                <div><strong>Telefone:</strong> {{ patient.phone|default:"Não informado" }}</div>
-                <div><strong>Endereço:</strong> {{ patient.address|default:"Não informado" }}</div>
-            </div>
-        </div>
+{{ patient_data_json|json_script:"patient_data_json" }}
+{{ current_metrics_json|json_script:"current_metrics_json" }}
+{{ radar_data_json|json_script:"radar_data_json" }}
+{{ evolution_data_json|json_script:"evolution_data_json" }}
+{{ lab_exams_history_json|json_script:"lab_exams_history_json" }}
+{{ diet_history_json|json_script:"diet_history_json" }}
+{{ macros_evolution_json|json_script:"macros_evolution_json" }}
+{{ consultations_json|json_script:"consultations_json" }}
 
-        <!-- Key Metrics Card -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">
-                    <i class="fas fa-heartbeat"></i>
-                    Métricas Principais
-                </div>
-            </div>
-            <div class="patient-metrics">
-                <div class="metric">
-                    <div class="metric-label">Peso</div>
-                    <div class="metric-value">77kg</div>
-                    <div class="stat-trend down">
-                        <i class="fas fa-arrow-down"></i> -2.3kg
-                    </div>
-                </div>
-                <div class="metric">
-                    <div class="metric-label">IMC</div>
-                    <div class="metric-value">22.5</div>
-                    <div class="stat-trend down">
-                        <i class="fas fa-arrow-down"></i> -2%
-                    </div>
-                </div>
-                <div class="metric">
-                    <div class="metric-label">Gordura</div>
-                    <div class="metric-value">28%</div>
-                    <div class="stat-trend down">
-                        <i class="fas fa-arrow-down"></i> -1.5%
-                    </div>
-                </div>
-                <div class="metric">
-                    <div class="metric-label">Massa</div>
-                    <div class="metric-value">55kg</div>
-                    <div class="stat-trend up">
-                        <i class="fas fa-arrow-up"></i> +1.2kg
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- History Card -->
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">
-                <i class="fas fa-history"></i>
-                Histórico do Paciente
-            </div>
-        </div>
-        <div class="timeline">
-            <!-- Placeholder for history items -->
-            <div class="timeline-item">
-                <div class="timeline-time"><div class="hour">04/11</div></div>
-                <div class="timeline-content">
-                    <div class="timeline-patient">Consulta de Acompanhamento</div>
-                    <div class="timeline-note">Paciente relatou melhora na disposição.</div>
+<script type="text/babel">
+{% verbatim %}
+    try {
+        const { useState, useMemo } = React;
+        
+        // Helper to get data from Django's json_script
+        const getJsonData = (id) => JSON.parse(document.getElementById(id).textContent);
+
+        // --- Main Component ---
+        const NutritionCommandCenter = () => {
+            const { LineChart, Line, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+
+            // --- State and Data ---
+            const [activeView, setActiveView] = useState('dashboard');
+            const patientData = getJsonData('patient_data_json');
+            const currentMetrics = getJsonData('current_metrics_json');
+            const radarData = getJsonData('radar_data_json');
+            const evolutionData = getJsonData('evolution_data_json');
+            const labExamsHistory = getJsonData('lab_exams_history_json');
+            const dietHistory = getJsonData('diet_history_json');
+            const macrosEvolution = getJsonData('macros_evolution_json');
+            const consultations = getJsonData('consultations_json');
+
+            // --- UI Components ---
+            const MetricCard = ({ title, value, unit, change, trend, goal }) => {
+                const trendColor = trend === 'up' ? 'text-green-500' : 'text-red-500';
+                const TrendIcon = trend === 'up' ? '▲' : '▼';
+                return (
+                    <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500">
+                        <h3 className="text-sm font-semibold text-gray-500">{title}</h3>
+                        <p className="text-3xl font-bold text-gray-800">{value} <span className="text-lg font-normal text-gray-600">{unit}</span></p>
+                        <div className="flex justify-between items-center mt-2 text-sm">
+                            <span className={trendColor}>{TrendIcon} {change} {unit}</span>
+                            {goal && <span className="text-gray-500">Meta: {goal} {unit}</span>}
+                        </div>
+                    </div>
+                );
+            };
+            
+            const DashboardView = () => (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    {/* Metrics */}
+                    <MetricCard title="Peso" value={currentMetrics.peso.atual} unit="kg" change={currentMetrics.peso.mudanca.toFixed(1)} trend={currentMetrics.peso.trend} goal={currentMetrics.peso.objetivo} />
+                    <MetricCard title="Gordura Corporal" value={currentMetrics.gordura.atual} unit="%" change={currentMetrics.gordura.mudanca.toFixed(1)} trend={currentMetrics.gordura.trend} />
+                    <MetricCard title="Massa Muscular" value={currentMetrics.musculo.atual} unit="kg" change={currentMetrics.musculo.mudanca.toFixed(1)} trend={currentMetrics.musculo.trend} />
+                    <MetricCard title="IMC" value={currentMetrics.imc.atual} unit="" change={currentMetrics.imc.mudanca.toFixed(1)} trend={currentMetrics.imc.trend} />
+                    <MetricCard title="Abdômen" value={currentMetrics.abdomen.atual} unit="cm" change={currentMetrics.abdomen.mudanca.toFixed(1)} trend={currentMetrics.abdomen.trend} />
+
+                    {/* Charts */}
+                    <div className="lg:col-span-3 bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="font-semibold text-lg mb-4">Evolução Corporal</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={evolutionData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="data" />
+                                <YAxis yAxisId="left" label={{ value: 'kg', angle: -90, position: 'insideLeft' }} />
+                                <YAxis yAxisId="right" orientation="right" label={{ value: '%', angle: -90, position: 'insideRight' }} />
+                                <Tooltip />
+                                <Legend />
+                                <Line yAxisId="left" type="monotone" dataKey="peso" stroke="#8884d8" name="Peso (kg)" />
+                                <Line yAxisId="left" type="monotone" dataKey="musculo" stroke="#82ca9d" name="Músculo (kg)" />
+                                <Line yAxisId="right" type="monotone" dataKey="gordura" stroke="#ffc658" name="Gordura (%)" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="font-semibold text-lg mb-4">Medidas Corporais (cm)</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                                <PolarGrid />
+                                <PolarAngleAxis dataKey="metrica" />
+                                <PolarRadiusAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Radar name="Inicial" dataKey="inicial" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                                <Radar name="Atual" dataKey="atual" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
+                            </RadarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-time"><div class="hour">20/10</div></div>
-                <div class="timeline-content">
-                    <div class="timeline-patient">Entrega de Dieta</div>
-                    <div class="timeline-note">Plano alimentar focado em ganho de massa.</div>
+            );
+
+            // --- Main Render ---
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    {/* Header */}
+                    <div className="sticky top-0 z-50 bg-white shadow-sm border-b">
+                        <div className="max-w-7xl mx-auto px-6 py-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h1 className="text-2xl font-bold text-gray-800">{patientData.nome}</h1>
+                                    <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
+                                        <span>{patientData.idade} anos</span>
+                                        <span>•</span>
+                                        <span>Objetivo: <span className="font-semibold">{patientData.objetivo}</span></span>
+                                        <span>•</span>
+                                        <span>Início: <span className="font-semibold">{patientData.dataInicio}</span></span>
+                                        <span>•</span>
+                                        <span className="font-semibold text-blue-600">{patientData.consultasTotal} consultas</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <a href={`/patients/${patient.pk}/edit/`} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Editar Paciente</a>
+                                    <a href="/patients/" className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Voltar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Body */}
+                    <div className="max-w-7xl mx-auto px-6 py-8">
+                        <DashboardView />
+                        {/* Here you could add more views and tabs for Diet History, Exams, etc. */}
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
+            );
+        };
+
+        ReactDOM.render(<NutritionCommandCenter />, document.getElementById('root'));
+    } catch (e) {
+        // If something breaks, show the error on the page for easy debugging
+        document.getElementById('root').innerHTML = `<div class="p-4 bg-red-100 text-red-800 rounded-md"><h3 class="font-bold">Erro no Componente React</h3><pre class="mt-2 whitespace-pre-wrap">${e.stack}</pre></div>`;
+    }
+{% endverbatim %}
+</script>
 {% endblock %}
