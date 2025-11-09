@@ -29,91 +29,94 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Gráfico de Evolução com Chart.js
-    const evolutionChartCtx = document.getElementById('evolutionChart').getContext('2d');
+    const evolutionChartElement = document.getElementById('evolutionChart');
+    if (evolutionChartElement) {
+        const evolutionChartCtx = evolutionChartElement.getContext('2d');
 
-    const chartData = {
-        labels: ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro'],
-        peso: {
-            label: 'Peso (kg)',
-            data: [78, 79, 81, 80, 78, 77],
-            borderColor: '#3b82f6', // Blue
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        },
-        imc: {
-            label: 'IMC',
-            data: [24.1, 24.4, 25.0, 24.7, 24.1, 23.8],
-            borderColor: '#10b981', // Green
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        },
-        massa: {
-            label: 'Massa Muscular (kg)',
-            data: [55, 55.2, 55.8, 56, 55.5, 55.3],
-            borderColor: '#A52A2A', // Dark red
-            backgroundColor: 'rgba(165, 42, 42, 0.3)',
-        },
-        gordura: {
-            label: '% Gordura Corporal',
-            data: [22, 22.5, 23, 22.8, 22.2, 21.8],
-            borderColor: '#FFD700', // Yellow
-            backgroundColor: 'rgba(255, 215, 0, 0.2)',
-        }
-    };
-
-    evolutionChart = new Chart(evolutionChartCtx, {
-        type: 'line',
-        data: {
-            labels: chartData.labels,
-            datasets: [{
-                label: chartData.peso.label,
-                data: chartData.peso.data,
-                borderColor: chartData.peso.borderColor,
-                backgroundColor: chartData.peso.backgroundColor,
-                borderWidth: 3,
-                pointBackgroundColor: 'white',
-                pointBorderColor: chartData.peso.borderColor,
-                pointBorderWidth: 2,
-                pointRadius: 5,
-                tension: 0.4,
-                fill: true,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
+        const chartData = {
+            labels: ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro'],
+            peso: {
+                label: 'Peso (kg)',
+                data: [78, 79, 81, 80, 78, 77],
+                borderColor: '#3b82f6', // Blue
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
             },
-            scales: {
-                x: {
-                    grid: {
+            imc: {
+                label: 'IMC',
+                data: [24.1, 24.4, 25.0, 24.7, 24.1, 23.8],
+                borderColor: '#10b981', // Green
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            },
+            massa: {
+                label: 'Massa Muscular (kg)',
+                data: [55, 55.2, 55.8, 56, 55.5, 55.3],
+                borderColor: '#A52A2A', // Dark red
+                backgroundColor: 'rgba(165, 42, 42, 0.3)',
+            },
+            gordura: {
+                label: '% Gordura Corporal',
+                data: [22, 22.5, 23, 22.8, 22.2, 21.8],
+                borderColor: '#FFD700', // Yellow
+                backgroundColor: 'rgba(255, 215, 0, 0.2)',
+            }
+        };
+
+        evolutionChart = new Chart(evolutionChartCtx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: chartData.peso.label,
+                    data: chartData.peso.data,
+                    borderColor: chartData.peso.borderColor,
+                    backgroundColor: chartData.peso.backgroundColor,
+                    borderWidth: 3,
+                    pointBackgroundColor: 'white',
+                    pointBorderColor: chartData.peso.borderColor,
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    tension: 0.4,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
                         display: false
-                    },
-                    ticks: {
-                        color: '#64748b' // Initial dark mode color
                     }
                 },
-                y: {
-                    grid: {
-                        color: '#334155' // Initial dark mode color
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#64748b' // Initial dark mode color
+                        }
                     },
-                    ticks: {
-                        color: '#64748b' // Initial dark mode color
+                    y: {
+                        grid: {
+                            color: '#334155' // Initial dark mode color
+                        },
+                        ticks: {
+                            color: '#64748b' // Initial dark mode color
+                        }
                     }
                 }
             }
-        }
-    });
+        });
 
-    // Set initial text color based on theme
-    if (isLightMode) {
-        const initialTextColor = '#999999';
-        const initialGridColor = '#D3D3D3';
-        evolutionChart.options.scales.x.ticks.color = initialTextColor;
-        evolutionChart.options.scales.y.ticks.color = initialTextColor;
-        evolutionChart.options.scales.y.grid.color = initialGridColor;
-        evolutionChart.update();
+        // Set initial text color based on theme
+        if (isLightMode) {
+            const initialTextColor = '#999999';
+            const initialGridColor = '#D3D3D3';
+            evolutionChart.options.scales.x.ticks.color = initialTextColor;
+            evolutionChart.options.scales.y.ticks.color = initialTextColor;
+            evolutionChart.options.scales.y.grid.color = initialGridColor;
+            evolutionChart.update();
+        }
     }
 
     window.updateEvolutionChart = function(metric) {

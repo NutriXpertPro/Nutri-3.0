@@ -1,0 +1,42 @@
+{% extends 'base_new_dashboard.html' %}
+
+{% block title %}
+    Detalhes da Consulta - {{ appointment.patient.user.name }}
+{% endblock %}
+
+{% block body_content %}
+<div class="dashboard">
+    <div class="header">
+        <div class="user-info">
+            <h1>Detalhes da Consulta</h1>
+            <p>Paciente: {{ appointment.patient.user.name }}</p>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-calendar-check"></i>
+                    Consulta de {{ appointment.date|date:"d/m/Y" }} às {{ appointment.date|time:"H:i" }}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="patient-details-grid">
+                    <div><strong>Paciente:</strong> {{ appointment.patient.user.name }}</div>
+                    <div><strong>Data:</strong> {{ appointment.date|date:"d/m/Y" }}</div>
+                    <div><strong>Hora:</strong> {{ appointment.date|time:"H:i" }}</div>
+                </div>
+                <hr style="margin: 1rem 0; border-color: var(--border);">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">Anotações da Consulta</h3>
+                <p>
+                    {{ appointment.notes|linebreaksbr|default:"Nenhuma anotação registrada." }}
+                </p>
+            </div>
+            <div class="card-footer" style="margin-top: 1rem; text-align: right;">
+                <a href="{% url 'patients:detail' appointment.patient.pk %}" class="btn btn-secondary">Voltar ao Perfil do Paciente</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

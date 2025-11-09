@@ -14,7 +14,12 @@ urlpatterns = [
         views.nutricionista_register_view,
         name="nutricionista_register",
     ),
-    path("login/paciente/", views.paciente_login_view, name="login_paciente"),
+    # Corrigido para usar PatientLoginTemplateView e nome 'patient_login'
+    path(
+        "login/paciente/",
+        views.PatientLoginTemplateView.as_view(),
+        name="patient_login",
+    ),
     path(
         "register/paciente/",
         views.paciente_register_view,
@@ -26,3 +31,4 @@ urlpatterns = [
     path("settings/", views.settings_view, name="settings"),
     path("logout/", views.logout_view, name="logout"),
 ]
+

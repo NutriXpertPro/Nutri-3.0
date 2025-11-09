@@ -1,0 +1,149 @@
+{% extends 'base_new_dashboard.html' %}
+
+{% block title %}
+    Comparar Evolução de {{ patient.user.name }}
+{% endblock %}
+
+{% block head_extra %}
+<style>
+    .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .comparison-column h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        text-align: center;
+    }
+    .comparison-column h2 small {
+        font-size: 1rem;
+        font-weight: 400;
+        color: var(--text-secondary);
+    }
+    .photo-card {
+        background-color: var(--bg-secondary);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .photo-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+    .photo-card img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    .placeholder-photo {
+        width: 100%;
+        height: 300px; /* Adjust as needed */
+        border-radius: 8px;
+        background-color: var(--bg-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        border: 2px dashed var(--border);
+    }
+</style>
+{% endblock %}
+
+{% block body_content %}
+<div class="dashboard">
+    <div class="header">
+        <div class="user-info">
+            <h1>Comparar Evolução de {{ patient.user.name }}</h1>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'patients:detail' patient.pk %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar ao Perfil
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if first_eval_photos %}
+                <div class="comparison-grid">
+                    <!-- ANTES -->
+                    <div class="comparison-column">
+                        <h2>Antes <small>({{ first_eval_photos.date|date:"d/m/Y" }})</small></h2>
+                        <div class="photo-card">
+                            <h3>Frente</h3>
+                            {% if first_eval_photos.FRENTE %}
+                                <img src="{{ first_eval_photos.FRENTE }}" alt="Foto de Frente - Antes">
+                            {% else %}
+                                <div class="placeholder-photo"><span>Sem foto</span></div>
+                            {% endif %}
+                        </div>
+                        <div class="photo-card">
+                            <h3>Lado</h3>
+                            {% if first_eval_photos.LADO %}
+                                <img src="{{ first_eval_photos.LADO }}" alt="Foto de Lado - Antes">
+                            {% else %}
+                                <div class="placeholder-photo"><span>Sem foto</span></div>
+                            {% endif %}
+                        </div>
+                        <div class="photo-card">
+                            <h3>Costas</h3>
+                            {% if first_eval_photos.COSTAS %}
+                                <img src="{{ first_eval_photos.COSTAS }}" alt="Foto de Costas - Antes">
+                            {% else %}
+                                <div class="placeholder-photo"><span>Sem foto</span></div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- DEPOIS -->
+                    <div class="comparison-column">
+                        {% if latest_eval_photos %}
+                            <h2>Depois <small>({{ latest_eval_photos.date|date:"d/m/Y" }})</small></h2>
+                            <div class="photo-card">
+                                <h3>Frente</h3>
+                                {% if latest_eval_photos.FRENTE %}
+                                    <img src="{{ latest_eval_photos.FRENTE }}" alt="Foto de Frente - Depois">
+                                {% else %}
+                                    <div class="placeholder-photo"><span>Sem foto</span></div>
+                                {% endif %}
+                            </div>
+                            <div class="photo-card">
+                                <h3>Lado</h3>
+                                {% if latest_eval_photos.LADO %}
+                                    <img src="{{ latest_eval_photos.LADO }}" alt="Foto de Lado - Depois">
+                                {% else %}
+                                    <div class="placeholder-photo"><span>Sem foto</span></div>
+                                {% endif %}
+                            </div>
+                            <div class="photo-card">
+                                <h3>Costas</h3>
+                                {% if latest_eval_photos.COSTAS %}
+                                    <img src="{{ latest_eval_photos.COSTAS }}" alt="Foto de Costas - Depois">
+                                {% else %}
+                                    <div class="placeholder-photo"><span>Sem foto</span></div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                             <h2>Depois</h2>
+                             <div class="placeholder-photo" style="height: 95%;">
+                                <span>Aguardando segunda avaliação com fotos.</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 40px;">
+                    <h2>Sem Fotos para Comparar</h2>
+                    <p>É necessário ter pelo menos uma avaliação com fotos para usar esta funcionalidade.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

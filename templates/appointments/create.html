@@ -1,80 +1,157 @@
-{% extends 'base.html' %}
+{% extends 'base_new_dashboard.html' %}
 
 {% block title %}Agendar Nova Consulta - NutriVida Pro{% endblock %}
 
-{% block content %}
+{% block head_extra %}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-    .select2-container .select2-selection--single {
-        height: 38px !important;
+    /* Estilos gerais do formulário */
+    .form-container .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    .form-container label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    .form-control {
+        width: 100%;
+        padding: 12px 20px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: rgba(255,255,255,0.05);
+        color: var(--text-primary);
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 12px;
+        align-items: center;
+    }
+    .error-message {
+        color: var(--danger);
+        font-size: 12px;
+    }
+
+    /* Estilos específicos para o Select2 */
+    .select2-container--default .select2-selection--single {
+        height: 50px !important;
+        background-color: transparent !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 10px !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 36px !important;
+        color: var(--text-primary) !important;
+        line-height: 48px !important;
+        padding-left: 20px !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 36px !important;
+        height: 48px !important;
+        right: 10px !important;
+    }
+    .select2-dropdown {
+        background-color: var(--secondary) !important;
+        border: 1px solid var(--border) !important;
+    }
+    .select2-search__field {
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+    }
+    .select2-results__option--highlighted[aria-selected] {
+        background-color: var(--accent) !important;
+    }
+    .select2-results__option[aria-selected=true] {
+        background-color: var(--border) !important;
     }
 </style>
+{% endblock %}
 
-<div class="max-w-2xl mx-auto bg-white rounded-lg shadow p-8">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Agendar Nova Consulta</h1>
+{% block body_content %}
+<div class="dashboard">
+    <div class="header">
+        <div class="user-info">
+            <h1>Agendar Nova Consulta</h1>
+        </div>
+    </div>
 
-    <form method="post">
-        {% csrf_token %}
-        
-        <div class="space-y-4">
-            <div>
-                <label for="{{ form.patient.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.patient.label }}</label>
-                {{ form.patient }}
-                {% if form.patient.errors %}
-                    <div class="text-red-500 text-sm mt-1">{{ form.patient.errors|striptags }}</div>
-                {% endif %}
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label for="{{ form.date.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.date.label }}</label>
-                    {{ form.date }}
-                    {% if form.date.errors %}
-                        <div class="text-red-500 text-sm mt-1">{{ form.date.errors|striptags }}</div>
-                    {% endif %}
-                </div>
-                <div>
-                    <label for="{{ form.time.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.time.label }}</label>
-                    {{ form.time }}
-                    {% if form.time.errors %}
-                        <div class="text-red-500 text-sm mt-1">{{ form.time.errors|striptags }}</div>
-                    {% endif %}
+    <div class="main-grid">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-calendar-plus"></i>
+                    Formulário de Agendamento
                 </div>
             </div>
+            <div class="card-body">
+                <form method="post" class="form-container">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.patient.id_for_label }}">{{ form.patient.label }}</label>
+                        {{ form.patient }}
+                        {% if form.patient.errors %}<div class="error-message">{{ form.patient.errors|striptags }}</div>{% endif %}
+                    </div>
 
-            <div>
-                <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.notes.label }}</label>
-                {{ form.notes }}
-                {% if form.notes.errors %}
-                    <div class="text-red-500 text-sm mt-1">{{ form.notes.errors|striptags }}</div>
-                {% endif %}
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label for="{{ form.date.id_for_label }}">{{ form.date.label }}</label>
+                            {{ form.date }}
+                            {% if form.date.errors %}<div class="error-message">{{ form.date.errors|striptags }}</div>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.time.id_for_label }}">{{ form.time.label }}</label>
+                            {{ form.time }}
+                            {% if form.time.errors %}<div class="error-message">{{ form.time.errors|striptags }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}<div class="error-message">{{ form.notes.errors|striptags }}</div>{% endif %}
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Salvar Agendamento</button>
+                        <a href="{% url 'appointments:list' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
             </div>
         </div>
-
-        <div class="mt-8 flex justify-end space-x-4">
-            <a href="{% url 'appointments:list' %}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
-                Cancelar
-            </a>
-            <button type="submit" class="px-4 py-2 text-white rounded-lg bg-gradient-to-b from-blue-500 to-blue-900 shadow-lg hover:from-blue-600 hover:to-blue-900 transition-all">
-                <i class="fas fa-save mr-2"></i> Salvar Agendamento
-            </button>
-        </div>
-    </form>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#{{ form.patient.id_for_label }}').select2({
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aplica .form-control aos inputs padrão
+        const form = document.querySelector('.form-container');
+        if (form) {
+            const inputs = form.querySelectorAll('input, textarea, select');
+            inputs.forEach(function(input) {
+                // Não aplica a classe ao select que será substituído pelo Select2
+                if (input.tagName.toLowerCase() !== 'select' && input.type !== 'hidden' && input.type !== 'submit') {
+                    input.classList.add('form-control');
+                }
+            });
+        }
+
+        // Inicializa o Select2
+        $('#id_patient').select2({
             placeholder: "Selecione um paciente",
-            allowClear: true
+            allowClear: true,
+            width: '100%' 
         });
     });
 </script>

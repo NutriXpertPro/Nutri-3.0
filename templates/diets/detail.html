@@ -1,0 +1,58 @@
+{% extends 'base_new_dashboard.html' %}
+
+{% block title %}
+    Detalhes da Dieta - {{ diet.patient.user.name }}
+{% endblock %}
+
+{% block body_content %}
+<div class="dashboard">
+    <div class="header">
+        <div class="user-info">
+            <h1>{{ diet.name }}</h1>
+            <p>Paciente: {{ diet.patient.user.name }}</p>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-utensils"></i>
+                    Plano Alimentar
+                </div>
+            </div>
+            <div class="card-body">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">Refeições</h3>
+                <pre style="background: var(--bg-hover); padding: 1rem; border-radius: 8px; color: var(--text-primary);"><code id="meals-code"></code></pre>
+                {{ diet.meals|json_script:"meals-json" }}
+                
+                {% if diet.substitutions %}
+                <hr style="margin: 1.5rem 0; border-color: var(--border);">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">Substituições</h3>
+                <pre style="background: var(--bg-hover); padding: 1rem; border-radius: 8px; color: var(--text-primary);"><code id="subs-code"></code></pre>
+                {{ diet.substitutions|json_script:"substitutions-json" }}
+                {% endif %}
+            </div>
+            <div class="card-footer" style="margin-top: 1rem; text-align: right;">
+                <a href="{% url 'patients:detail' diet.patient.pk %}" class="btn btn-secondary">Voltar ao Perfil do Paciente</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            const mealsData = JSON.parse(document.getElementById('meals-json').textContent);
+            document.getElementById('meals-code').textContent = JSON.stringify(mealsData, null, 2);
+        } catch (e) { console.error('Could not parse meals JSON', e); }
+
+        try {
+            const subsElement = document.getElementById('substitutions-json');
+            if (subsElement) {
+                const subsData = JSON.parse(subsElement.textContent);
+                document.getElementById('subs-code').textContent = JSON.stringify(subsData, null, 2);
+            }
+        } catch (e) { console.error('Could not parse substitutions JSON', e); }
+    });
+</script>
+{% endblock %}

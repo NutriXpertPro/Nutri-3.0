@@ -1,15 +1,12 @@
 from django.urls import path
-from . import views  # Assumindo views.py com create_view; ajuste imports se necessário
+from . import views
 
-app_name = (
-    "patients"  # Fix: Declara app_name pra suportar namespace no include principal
-)
+app_name = "patients"
 
 urlpatterns = [
-    path("", views.patient_list, name="list"),  # Exemplo: lista de pacientes
-    path(
-        "create/", views.patient_create, name="create"
-    ),  # Rota pro cadastro (link no template)
-    path("<int:patient_id>/", views.patient_detail, name="detail"),
-    # Adicione outras rotas conforme seu app (ex.: update, delete)
+    path("", views.patient_list, name="list"),
+    path("create/", views.patient_create, name="create"),
+    path("<int:pk>/", views.patient_detail, name="detail"),
+    path("<int:pk>/edit/", views.patient_edit, name="edit"),
+    path("<int:pk>/compare_photos/", views.compare_photos_view, name="compare_photos"),
 ]

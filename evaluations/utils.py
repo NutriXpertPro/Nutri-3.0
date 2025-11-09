@@ -1,30 +1,40 @@
 import math
 
+def calculate_navy_body_fat(gender, height_m, waist_cm, neck_cm, hip_cm=None):
+    """
+    Calculates body fat percentage using the U.S. Navy Method.
 
-def calculate_body_fat_navy(gender, waist, neck, height, hip=None):
+    Args:
+        gender (str): The gender of the person ('male' or 'female').
+        height_m (float): Height in meters.
+        waist_cm (float): Waist circumference in centimeters.
+        neck_cm (float): Neck circumference in centimeters.
+        hip_cm (float, optional): Hip circumference in centimeters (required for females).
+
+    Returns:
+        float: The calculated body fat percentage, or None if inputs are invalid.
     """
-    Calculates body fat percentage using the U.S. Navy method.
-    All measurements should be in centimeters.
-    """
-    if gender == "M":
-        try:
-            body_fat = (
-                86.010 * math.log10(waist - neck) - 70.041 * math.log10(height) + 36.76
-            )
-        except ValueError:
-            return None
-    elif gender == "F":
-        if not hip:
-            return None
-        try:
-            body_fat = (
-                163.205 * math.log10(waist + hip - neck)
-                - 97.684 * math.log10(height)
-                - 78.387
-            )
-        except ValueError:
-            return None
-    else:
+    if not all([gender, height_m, waist_cm, neck_cm]):
         return None
 
-    return round(body_fat, 2)
+    try:
+        height_cm = height_m * 100
+        if height_cm <= 0 or waist_cm <= 0 or neck_cm <= 0:
+            return None
+
+        if gender.lower() == 'male':
+            # Formula for men
+            body_fat = 86.010 * math.log10(waist_cm - neck_cm) - 70.041 * math.log10(height_cm) + 36.76
+        elif gender.lower() == 'female':
+            if not hip_cm or hip_cm <= 0:
+                return None
+            # Formula for women
+            body_fat = 163.205 * math.log10(waist_cm + hip_cm - neck_cm) - 97.684 * math.log10(height_cm) - 78.387
+        else:
+            return None
+        
+        return round(body_fat, 2)
+
+    except (ValueError, TypeError):
+        # Catches math domain errors (e.g., log10 of a non-positive number)
+        return None

@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "payments.apps.PaymentsConfig",
     "notifications.apps.NotificationsConfig",
     "messages.apps.MessagesConfig",  # New app for internal messaging
+    "lab_exams.apps.LabExamsConfig",
 ]
 
 MIDDLEWARE = [
@@ -202,3 +203,7 @@ SIMPLE_JWT = {
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Media files (User-uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

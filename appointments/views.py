@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from datetime import datetime
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -32,7 +32,7 @@ def appointment_api_list(request):
 
 
 @login_required
-def appointment_create(request):
+def appointment_create(request, patient_pk=None):
     if request.method == "POST":
         form = AppointmentForm(request.POST, user=request.user)
         if form.is_valid():
@@ -54,8 +54,20 @@ def appointment_create(request):
         date_str = request.GET.get("date")
         if date_str:
             initial_data["date"] = date_str
+        
+        if patient_pk:
+            initial_data["patient"] = patient_pk
 
         form = AppointmentForm(initial=initial_data, user=request.user)
 
     context = {"form": form}
     return render(request, "appointments/create.html", context)
+
+
+@login_required
+def appointment_detail(request, pk):
+    appointment = get_object_or_404(
+        Appointment, pk=pk, patient__nutritionist=request.user
+    )
+    context = {"appointment": appointment}
+    return render(request, "appointments/detail.html", context)

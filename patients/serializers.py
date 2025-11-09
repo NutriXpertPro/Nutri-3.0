@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import Patient
+from .models import PatientProfile
 
 
-class PatientSerializer(serializers.ModelSerializer):
+class PatientProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Patient
+        model = PatientProfile
         fields = "__all__"

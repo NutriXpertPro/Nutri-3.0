@@ -1,0 +1,98 @@
+<style>
+    .modal-diet-header {
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+    }
+    .modal-diet-header h3 {
+        margin: 0;
+        font-size: 24px;
+    }
+    .modal-diet-header p {
+        margin: 5px 0 0;
+        color: var(--text-secondary);
+    }
+    .meal-card {
+        background-color: var(--bg-secondary);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .meal-card h4 {
+        margin-top: 0;
+        font-size: 18px;
+        color: var(--primary);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+    .meal-items-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    .meal-items-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+    .meal-items-list li:last-child {
+        border-bottom: none;
+    }
+    .food-name {
+        font-weight: 500;
+    }
+    .food-quantity {
+        color: var(--text-secondary);
+    }
+    .substitutions-card h4 {
+        font-size: 18px;
+        color: var(--success);
+    }
+</style>
+
+<div class="modal-diet-details">
+    <div class="modal-diet-header">
+        <h3>{{ diet.name }}</h3>
+        <p>Plano alimentar detalhado para <strong>{{ diet.patient.user.name }}</strong></p>
+    </div>
+
+    <div class="diet-content">
+        {% if diet.meals %}
+            <h4>Refeições</h4>
+            {% for meal in diet.meals %}
+                <div class="meal-card">
+                    <h4>{{ meal.name }}</h4>
+                    {% if meal.items %}
+                        <ul class="meal-items-list">
+                            {% for item in meal.items %}
+                                <li>
+                                    <span class="food-name">{{ item.food }}</span>
+                                    <span class="food-quantity">{{ item.quantity }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Nenhum item cadastrado para esta refeição.</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Nenhuma refeição definida para esta dieta.</p>
+        {% endif %}
+
+        {% if diet.substitutions %}
+            <div class="meal-card substitutions-card">
+                <h4>Opções de Substituição</h4>
+                <ul class="meal-items-list">
+                {% for sub in diet.substitutions %}
+                    <li>
+                        <span class="food-name">{{ sub.original }}</span>
+                        <span class="food-quantity">pode ser substituído por {{ sub.replacement }}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</div>

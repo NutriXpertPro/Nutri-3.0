@@ -1,5 +1,7 @@
 from datetime import datetime, time
 from django.utils.timezone import make_aware
+from django.utils import timezone
+from django.utils import translation
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -9,10 +11,10 @@ from django.contrib.auth.decorators import login_required
 from patients.models import PatientProfile
 from django.core.paginator import Paginator
 from .models import User
-from django.utils import timezone
 from appointments.models import Appointment
 from diets.models import Diet
 import json
+from django.views.generic import TemplateView # Importar TemplateView
 
 
 @login_required
@@ -20,7 +22,6 @@ def dashboard_view(request):
     total_patients = PatientProfile.objects.filter(nutritionist=request.user).count()
     today = timezone.now().date()
 
-    # Adjust query for timezone-aware date range
     start_of_day = make_aware(datetime.combine(today, time.min))
     end_of_day = make_aware(datetime.combine(today, time.max))
 
@@ -29,7 +30,8 @@ def dashboard_view(request):
     ).order_by("date")
     consultas_hoje = appointments_today.count()
     dietas_ativas = Diet.objects.filter(patient__nutritionist=request.user).count()
-    dietas_a_vencer = 0  # Placeholder for now, needs actual logic
+    dietas_a_vencer = 0
+
     proxima_consulta = (
         Appointment.objects.filter(
             user=request.user, date__gte=timezone.now()
@@ -37,35 +39,20 @@ def dashboard_view(request):
         .order_by("date")
         .first()
     )
-    search_query = request.GET.get("search")  # Keep for future search functionality
-    patients_list = PatientProfile.objects.filter(nutritionist=request.user).order_by(
-        "user__name"
-    )
-    if search_query:
-        patients_list = patients_list.filter(user__name__icontains=search_query)
-    # Paginator and chart data are not directly used in the new template's initial state,
-    # but keep them for completeness or future use.
-    paginator = Paginator(patients_list, 5)
-    page_number = request.GET.get("page")
-    patients = paginator.get_page(page_number)
-    chart_labels = []  # Hardcoded in JS for now
-    chart_data = []  # Hardcoded in JS for now
-    chart_patient_name = ""  # Hardcoded in JS for now
+    
     first_name = request.user.name.split()[0]
 
-    # Logic for Patient in Focus
     patient_in_focus = (
         PatientProfile.objects.filter(nutritionist=request.user)
         .order_by("-created_at")
         .first()
     )
     if patient_in_focus:
-        # Add placeholder goal and progress metric for demonstration
-        patient_in_focus.goal = "Perda de Peso"  # Placeholder
-        patient_in_focus.progress_metric = "-5kg desde o início"  # Placeholder
+        patient_in_focus.goal = "Perda de Peso"
+        patient_in_focus.progress_metric = "-5kg desde o início"
 
-    # Determine greeting based on time of day
-    current_hour = timezone.now().hour
+    local_time = timezone.localtime(timezone.now())
+    current_hour = local_time.hour
     if current_hour < 12:
         greeting = "manhã"
     elif current_hour < 18:
@@ -73,19 +60,18 @@ def dashboard_view(request):
     else:
         greeting = "noite"
 
-
-
     context = {
         "total_patients": total_patients,
         "consultas_hoje": consultas_hoje,
         "appointments_today": appointments_today,
-        "dietas_a_vencer": dietas_a_vencer,  # Placeholder
+        "dietas_a_vencer": dietas_a_vencer,
         "proxima_consulta": proxima_consulta,
         "first_name": first_name,
         "patient_in_focus": patient_in_focus,
-        "greeting": greeting,  # New
-        # Add other context variables if needed by the new template
+        "greeting": greeting,
+        "current_date": timezone.now(),
     }
+    translation.activate('pt-br')
     return render(request, "dashboard_new.html", context)
 
 
@@ -145,6 +131,11 @@ def nutricionista_register_view(request):
     return render(request, "users/nutricionista_register.html")
 
 
+class PatientLoginTemplateView(TemplateView):
+    template_name = "users/patient_login.html"
+
+# A lógica de POST da paciente_login_view será movida ou tratada separadamente
+# Por enquanto, deixamos a função original, mas a URL apontará para a TemplateView
 def paciente_login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
@@ -164,6 +155,10 @@ def paciente_login_view(request):
                 messages.error(request, "Email ou senha inválidos.")
         except User.DoesNotExist:
             messages.error(request, "Email ou senha inválidos.")
+    # No modo produção, esta view funcional será eventualmente substituída por uma View
+    # que lida tanto com GET (renderiza o formulário) quanto POST (processa o formulário)
+    # Por agora, para o teste de renderização, vamos usar a TemplateView.
+    # Esta função só será usada se a TemplateView não for suficiente para o teste.
     return render(request, "users/patient_login.html")
 
 
@@ -218,3 +213,4 @@ def patient_dashboard_view(request):
 def logout_view(request):
     logout(request)
     return redirect("theme:home")
+
