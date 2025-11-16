@@ -1,0 +1,8 @@
+{
+    "python-envs.pythonProjects": [],
+    "jest.outputConfig": {
+        "revealOn": "run",
+        "revealWithFocus": "test-results",
+        "clearOnRun": "none"
+    }
+}

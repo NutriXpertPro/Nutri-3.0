@@ -89,7 +89,7 @@ def patient_create(request):
             patient_profile.nutritionist = request.user
             patient_profile.save()
             messages.success(request, "Paciente cadastrado com sucesso!")
-            return redirect("patients:patient_list")
+            return redirect("patients:list")
     else:
         form = PatientForm()
     return render(request, "patients/create.html", {"form": form})
@@ -269,7 +269,7 @@ def patient_detail(request, pk):
         "macros_evolution_json": json.dumps(macros_evolution),
         "consultations_json": json.dumps(consultations),
     }
-    return render(request, "patients/detail.html", context)
+    return render(request, "patients/patient_dashboard.html", context)
 
 
 # Other views like compare_photos_view might be deprecated or changed

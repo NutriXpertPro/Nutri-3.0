@@ -2,11 +2,11 @@
 
 ## Etapa 1: Fundação Técnica (CONCLUÍDA)
 
-- [x] 1.1: Decidir stack de tecnologia (Django, HTMX, Tailwind CSS, MariaDB).
+- [x] 1.1: Decidir stack de tecnologia (Django + Django ORM + MariaDB, HTMX, Tailwind CSS).
 - [x] 1.2: Criar projeto Django e todos os 8 apps.
-- [x] 1.3: Criar todos os 8 modelos de dados (`User`, `Patient`, etc.).
-- [x] 1.4: Configurar `settings.py` (apps, `AUTH_USER_MODEL`).
-- [x] 1.5: Resetar e recriar o banco de dados com a estrutura final.
+- [x] 1.3: Criar todos os 8 modelos de dados Django (`User`, `PatientProfile`, etc.).
+- [x] 1.4: Configurar `settings.py` (apps, `AUTH_USER_MODEL`, banco MariaDB).
+- [x] 1.5: Configurar conexão MariaDB e executar migrações Django.
 - [x] 1.6: Registrar todos os modelos no painel de Admin do Django.
 
 ## Etapa 2: Layout Global e Configurações (Próximos Passos)

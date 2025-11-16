@@ -1,21 +1,28 @@
-{% load tailwind_tags static %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Bem-vindo ao Nutri Xpert Pro{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+
+    <!-- Tailwind CSS via CDN (fix for missing local build) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Ensure dark mode uses class strategy
+      tailwind.config = { darkMode: 'class' }
+    </script>
 
     <script>
-        // Script para evitar FOUC (Flash of Unstyled Content) e aplicar o tema correto antes da renderização da página.
+        // Evita FOUC e aplica o tema correto antes da renderização da página
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark')
         } else {
             document.documentElement.classList.remove('dark')
         }
     </script>
-
 </head>
-<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans relative transition-colors duration-300">
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans relative transition-colors duration-300 min-h-screen">
 
     <!-- Imagem de Fundo (Apenas para Modo Escuro) -->
     <div class="absolute inset-0 z-0 hidden dark:block">
@@ -29,9 +36,15 @@
 
     <!-- Botão de Troca de Tema -->
     <div class="absolute top-0 right-0 p-4 md:p-6 z-20">
-        <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
-            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+        <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5" aria-label="Alternar tema">
+            <!-- Moon icon -->
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8 8 0 1010.586 10.586z" />
+            </svg>
+            <!-- Sun icon -->
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 103.636 6.464l.707-.707A1 1 0 105.05 5.05z" />
+            </svg>
         </button>
     </div>
 
@@ -41,7 +54,7 @@
         <!-- Imagens Centrais -->
         <div class="flex items-center justify-center gap-0 mb-4">
             <img src="{% static 'images/adipometro.png' %}" alt="Adipômetro" class="h-[3.6rem] w-auto z-10 translate-y-12 -translate-x-6">
-            <img src="{% static 'images/nutri.png' %}" alt="Nutri Xpert Pro Logo" class="w-[31.2rem] -ml-16">
+            <img src="{% static 'images/nutri.png' %}" alt="Nutri Xpert Pro Logo" class="w-80 -ml-16">
         </div>
 
         <!-- Slogan -->
@@ -122,3 +135,4 @@
     </script>
 
 </body>
+</html>

@@ -1,0 +1,54 @@
+{% comment %}
+COMPONENT: Card
+Card reutilizável do Design System
+
+USAGE:
+{% include 'components/card.html' with title='Título' icon='fas fa-users' %}
+    <p>Conteúdo do card aqui</p>
+{% endinclude %}
+
+PARAMS:
+- title: Título do card (optional)
+- icon: Classe do ícone Font Awesome para o título (optional)
+- action_text: Texto do link de ação (optional)
+- action_href: URL do link de ação (optional)
+- action_onclick: Função JS do link de ação (optional)
+- variant: stat|default (default: default)
+- hover: true|false (default: true)
+- class: Classes CSS adicionais (optional)
+- id: ID do elemento (optional)
+- padding: sm|base|lg (default: base)
+{% endcomment %}
+
+{% with variant=variant|default:'default' padding=padding|default:'base' hover=hover|default:True %}
+<div class="card {% if variant == 'stat' %}stat-card{% endif %} {% if padding == 'sm' %}p-4{% elif padding == 'lg' %}p-8{% endif %} {% if not hover %}hover:transform-none hover:shadow-none{% endif %} {{ class|default:'' }}"
+     {% if id %}id="{{ id }}"{% endif %}>
+    
+    {% if title or action_text %}
+    <div class="card-header">
+        {% if title %}
+        <div class="card-title">
+            {% if icon %}
+                <i class="{{ icon }}"></i>
+            {% endif %}
+            {{ title }}
+        </div>
+        {% endif %}
+        
+        {% if action_text %}
+            {% if action_href %}
+                <a href="{{ action_href }}" class="card-action">{{ action_text }}</a>
+            {% elif action_onclick %}
+                <span class="card-action" onclick="{{ action_onclick }}">{{ action_text }}</span>
+            {% else %}
+                <span class="card-action">{{ action_text }}</span>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <div class="card-body">
+        {{ content }}
+    </div>
+</div>
+{% endwith %}

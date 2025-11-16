@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from patients.models import PatientProfile
 from django.core.paginator import Paginator
 from .models import User
@@ -75,6 +76,7 @@ def dashboard_view(request):
     return render(request, "dashboard_new.html", context)
 
 
+@csrf_exempt
 def nutricionista_login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")

@@ -1,8 +1,17 @@
-{% extends 'base.html' %}
+{% extends 'base_design_system.html' %}
+{% load static %}
 
 {% block title %}Planos Alimentares{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold text-gray-800">Planos Alimentares</h1>
-<p class="text-gray-600 mt-2">Aqui você poderá gerenciar os planos alimentares dos seus pacientes.</p>
+<div id="react-root" class="min-h-screen bg-slate-950 text-slate-100"></div>
+{% endblock %}
+
+{% block js_extra %}
+<!-- React UMD -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+<!-- App (cache-busting v=3) -->
+<script src="{% static 'js/plano-alimentar-react.js' %}?v=3"></script>
 {% endblock %}

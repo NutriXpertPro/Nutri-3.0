@@ -1,0 +1,32 @@
+{% extends 'base_new_dashboard.html' %}
+{% load static %}
+
+{% block head_scripts %}{% endblock %}
+
+{% block body_content %}
+<!-- Container para o React App -->
+<div id="root"></div>
+
+<!-- Dados do Django para o React (usando json_script) -->
+{{ patient_json|json_script:"patient_data" }}
+{{ metrics_json|json_script:"metrics_data" }}
+{{ radar_json|json_script:"radar_data" }}
+{{ evolution_json|json_script:"evolution_data" }}
+{{ lab_exams_json|json_script:"lab_exams_data" }}
+{{ diet_history_json|json_script:"diet_history_data" }}
+{{ macros_evolution_json|json_script:"macros_evolution_data" }}
+{{ consultations_json|json_script:"consultations_data" }}
+{% endblock %}
+
+{% block body_scripts %}
+<!-- Carregar o bundle do Vite (React) -->
+{% if debug %}
+  <!-- Modo Desenvolvimento: Vite Dev Server -->
+  <script type="module" src="http://localhost:5173/@vite/client"></script>
+  <script type="module" src="http://localhost:5173/src/main.jsx"></script>
+{% else %}
+  <!-- Modo Produção: Arquivos compilados -->
+  <script type="module" src="{% static 'dist/assets/main.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'dist/assets/main.css' %}">
+{% endif %}
+{% endblock %}

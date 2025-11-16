@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NutriXpert Pro{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    
+    <!-- Main Tailwind CSS -->
+    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+    <!-- Design System CSS (Sidebar, layout, tokens) -->
+    <link rel="stylesheet" href="{% static 'css/new_dashboard.css' %}">
+    
+    <!-- Custom CSS -->
+    {% block head_extra %}{% endblock %}
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="{% block description %}Sistema completo de nutrição com IA integrada{% endblock %}">
+    <meta name="author" content="NutriXpert Pro">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{% static 'images/icon-192x192.svg' %}">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+    <!-- Skip Link para Acessibilidade -->
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+    
+    {% block layout %}
+    <div class="flex">
+        <!-- Sidebar -->
+        {% if not hide_sidebar %}
+        <aside class="sidebar">
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <i class="fas fa-brain"></i>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'users:dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" title="Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+                
+                <hr class="sidebar-divider">
+                
+                <a href="{% url 'patients:list' %}" class="nav-item {% if 'patients' in request.resolver_match.namespace %}active{% endif %}" title="Pacientes">
+                    <i class="fas fa-users"></i>
+                </a>
+                <a href="{% url 'patients:create' %}" class="nav-item" title="Novo Paciente">
+                    <i class="fas fa-user-plus"></i>
+                </a>
+                
+                <hr class="sidebar-divider">
+                
+                <a href="{% url 'appointments:list' %}" class="nav-item {% if 'appointments' in request.resolver_match.namespace %}active{% endif %}" title="Consultas">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'anamnesis:list' %}" class="nav-item {% if 'anamnesis' in request.resolver_match.namespace %}active{% endif %}" title="Anamnese">
+                    <i class="fas fa-file-medical-alt"></i>
+                </a>
+                <a href="#" class="nav-item" title="Antropometria">
+                    <i class="fas fa-ruler-combined"></i>
+                </a>
+                <a href="{% url 'diets:list' %}" class="nav-item {% if 'diets' in request.resolver_match.namespace %}active{% endif %}" title="Dietas">
+                    <i class="fas fa-utensils"></i>
+                </a>
+                
+                <hr class="sidebar-divider">
+                
+                <a href="#" class="nav-item" title="Relatórios">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+            </nav>
+
+            <!-- Bottom Actions -->
+            <div class="sidebar-bottom">
+                <a href="{% url 'users:settings' %}" class="nav-item" title="Configurações">
+                    <i class="fas fa-cog"></i>
+                </a>
+                <a href="{% url 'users:logout' %}" class="nav-item" title="Sair">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </aside>
+        {% endif %}
+
+        <!-- Main Content -->
+        <main class="main-content flex-1" id="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% endblock layout %}
+
+    <!-- Theme Toggle -->
+    {% if not hide_theme_toggle %}
+    <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="Alternar Tema">
+        <i class="fas fa-sun"></i>
+    </button>
+    {% endif %}
+
+    <!-- Voice Toggle -->
+    {% if show_voice_toggle %}
+    <button class="voice-toggle" id="voiceBtn" onclick="toggleVoice()" title="Ativar Modo Voz">
+        <i class="fas fa-microphone"></i>
+    </button>
+    {% endif %}
+
+    <!-- Notifications -->
+    {% include 'components/notifications.html' %}
+
+    <!-- JavaScript -->
+    {% block javascript %}
+    <script src="{% static 'js/design-system.js' %}"></script>
+    {% endblock %}
+    
+    <!-- Custom JS -->
+    {% block js_extra %}{% endblock %}
+
+    <!-- Analytics -->
+    {% block analytics %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,160 @@
+/* Patient Detail Page - Hover Effects Fix */
+/* Matching the exact hover effects from dashboard cards */
+
+/* Metric Cards Hover Effects - Exact Match from Dashboard */
+.metric-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Photo Cards Hover Effects */
+.photo-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Chart Container Hover Effects */
+.chart-container:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Exam Cards Hover Effects */
+.exam-card:hover {
+    border-color: #ef4444;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(239, 68, 68, 0.3);
+}
+
+/* Diet Section Hover Effects */
+.diet-section:hover {
+    border-color: #10b981;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.2);
+}
+
+/* Consultation Cards Hover Effects */
+.consultation-card:hover {
+    border-color: var(--accent);
+    transform: translateX(8px) translateY(-2px);
+    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.3);
+}
+
+/* First Consultation Special Hover */
+.consultation-card.first-consultation:hover {
+    border-color: var(--ai-accent);
+    box-shadow: 0 12px 24px rgba(139, 92, 246, 0.4);
+}
+
+/* Action Button Hover Effects */
+.consultation-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.consultation-action-btn.photos:hover {
+    box-shadow: 0 8px 16px rgba(139, 92, 246, 0.4);
+}
+
+.consultation-action-btn.exams:hover {
+    box-shadow: 0 8px 16px rgba(239, 68, 68, 0.4);
+}
+
+.consultation-action-btn.diet:hover {
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* Header Card Hover */
+.command-header:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.2);
+}
+
+/* Dashboard Content Hover */
+.dashboard-content:hover {
+    border-color: var(--accent);
+    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.1);
+}
+
+/* View Toggle Buttons Enhanced Hover */
+.view-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+    border-color: var(--accent);
+}
+
+/* Action Buttons Enhanced Hover */
+.btn-compare:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
+    border-color: var(--accent);
+}
+
+.btn-ai-insights:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(139, 92, 246, 0.5);
+}
+
+/* Glowing effect for AI elements */
+.btn-ai-insights:hover::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--ai-accent), #ec4899);
+    border-radius: 12px;
+    z-index: -1;
+    opacity: 0.7;
+    filter: blur(8px);
+}
+
+/* Compare Button Hover Animation Enhancement */
+.compare-button:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 16px 32px rgba(59, 130, 246, 0.5);
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 16px 32px rgba(59, 130, 246, 0.5); }
+    to { box-shadow: 0 20px 40px rgba(59, 130, 246, 0.7); }
+}
+
+/* Add subtle pulse animation to metric cards on hover */
+.metric-card:hover .metric-current {
+    animation: pulse-number 0.6s ease-in-out;
+}
+
+@keyframes pulse-number {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Enhanced hover for consultation metrics */
+.consultation-metric:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--accent);
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Timeline line glow effect on consultation hover */
+.consultation-card:hover ~ .timeline-line,
+.consultation-card:hover + .consultation-card .timeline-line {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+/* Metric progress bar animation on hover */
+.metric-card:hover .metric-progress-bar {
+    animation: progress-glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes progress-glow {
+    from { box-shadow: 0 0 5px currentColor; }
+    to { box-shadow: 0 0 15px currentColor; }
+}

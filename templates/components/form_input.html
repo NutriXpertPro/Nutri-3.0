@@ -1,0 +1,62 @@
+{% comment %}
+COMPONENT: Form Input
+Input de formulário reutilizável
+
+USAGE:
+{% include 'components/form_input.html' with name='email' label='Email' type='email' required=True %}
+
+PARAMS:
+- name: Nome do input (required)
+- label: Label do campo (optional)
+- type: text|email|password|number|tel|url|search (default: text)
+- placeholder: Placeholder (optional)
+- value: Valor inicial (optional)
+- required: true|false (default: false)
+- disabled: true|false (default: false)
+- readonly: true|false (default: false)
+- icon: Classe do ícone Font Awesome (optional)
+- help_text: Texto de ajuda (optional)
+- error: Mensagem de erro (optional)
+- class: Classes CSS adicionais (optional)
+- input_class: Classes CSS específicas do input (optional)
+- id: ID do elemento (optional, se não fornecido, usa o name)
+{% endcomment %}
+
+{% with type=type|default:'text' id=id|default:name %}
+<div class="form-group {{ class|default:'' }}">
+    {% if label %}
+    <label for="{{ id }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger ml-1">*</span>{% endif %}
+    </label>
+    {% endif %}
+    
+    <div class="relative">
+        {% if icon %}
+        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted">
+            <i class="{{ icon }}"></i>
+        </div>
+        {% endif %}
+        
+        <input type="{{ type }}"
+               id="{{ id }}"
+               name="{{ name }}"
+               class="form-input {% if icon %}pl-10{% endif %} {% if error %}border-danger{% endif %} {{ input_class|default:'' }}"
+               {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+               {% if value %}value="{{ value }}"{% endif %}
+               {% if required %}required{% endif %}
+               {% if disabled %}disabled{% endif %}
+               {% if readonly %}readonly{% endif %}>
+    </div>
+    
+    {% if help_text %}
+    <div class="text-xs text-muted mt-1">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+    <div class="text-xs text-danger mt-1">
+        <i class="fas fa-exclamation-circle mr-1"></i>{{ error }}
+    </div>
+    {% endif %}
+</div>
+{% endwith %}

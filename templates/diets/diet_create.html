@@ -1,66 +1,1405 @@
-{% extends 'base_new_dashboard.html' %}
+{% extends 'base.html' %}
+{% load static %}
 
-{% block title %}
-    Criar Nova Dieta{% if patient %} para {{ patient.user.name }}{% endif %} - NutriVida Pro
-{% endblock %}
+{% block title %}Criar Dieta{% endblock %}
 
-{% block body_content %}
+
+{% block content %}
 <div class="dashboard">
     <div class="header">
         <div class="user-info">
-            <h1>Criar Nova Dieta{% if patient %} para {{ patient.user.name }}{% endif %}</h1>
+            <h1>
+                <i class="fas fa-utensils"></i>
+                🚀 NOVA PÁGINA - Criar Plano Alimentar Completo
+                {% if patient %}para {{ patient.user.name }}{% endif %}
+            </h1>
+            <p>Configure um plano alimentar personalizado com cálculos automáticos</p>
+        </div>
+        <div class="actions">
+            <a href="{% url 'diets:list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
         </div>
     </div>
 
+    <!-- Painel de Metas Fixo -->
+    <div id="metas-panel" class="metas-fixas">
+        <div class="metas-content">
+            <div class="meta-item">
+                <span class="meta-label">Meta Calorias:</span>
+                <span id="meta-calorias" class="meta-value">0 kcal</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Consumido:</span>
+                <span id="consumido-calorias" class="meta-value consumido">0 kcal</span>
+            </div>
+            <div class="macros-progress">
+                <div class="macro-item">
+                    <span>Carboidratos:</span>
+                    <div class="progress-bar">
+                        <div id="progress-carb" class="progress-fill carb"></div>
+                    </div>
+                    <span id="carb-values">0/0g</span>
+                </div>
+                <div class="macro-item">
+                    <span>Proteínas:</span>
+                    <div class="progress-bar">
+                        <div id="progress-prot" class="progress-fill prot"></div>
+                    </div>
+                    <span id="prot-values">0/0g</span>
+                </div>
+                <div class="macro-item">
+                    <span>Gorduras:</span>
+                    <div class="progress-bar">
+                        <div id="progress-gord" class="progress-fill gord"></div>
+                    </div>
+                    <span id="gord-values">0/0g</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid Layout -->
     <div class="main-grid">
+        <!-- SEÇÃO 1: Dados do Paciente e Fórmulas -->
         <div class="card">
             <div class="card-header">
                 <div class="card-title">
-                    <i class="fas fa-apple-alt"></i>
-                    Formulário de Dieta
+                    <i class="fas fa-user"></i>
+                    Dados do Paciente
+                </div>
+            </div>
+            <div class="card-body" id="patient-data">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Paciente:</label>
+                        <select id="patient-select" class="form-select">
+                            <option value="">Selecione um paciente...</option>
+                            {% for patient in patients %}
+                                <option value="{{ patient.id }}" data-weight="{{ patient.weight }}" data-height="{{ patient.height }}" data-age="{{ patient.age }}" data-gender="{{ patient.gender }}">
+                                    {{ patient.user.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="patient-info" class="patient-details" style="display: none;">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Peso:</span>
+                            <span id="patient-weight">-- kg</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Altura:</span>
+                            <span id="patient-height">-- cm</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Idade:</span>
+                            <span id="patient-age">-- anos</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Sexo:</span>
+                            <span id="patient-gender">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 2: Cálculo de Necessidades Calóricas -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-calculator"></i>
+                    Cálculo de Necessidades Calóricas
                 </div>
             </div>
             <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    {% if not patient %}
+                <div class="form-grid">
                     <div class="form-group">
-                        <label for="{{ form.patient.id_for_label }}">Paciente</label>
-                        {{ form.patient }}
-                        {% if form.patient.errors %}<div class="error-message">{{ form.patient.errors|first }}</div>{% endif %}
+                        <label>Fórmula para TMB:</label>
+                        <select id="formula-tmb" class="form-select">
+                            <option value="harris-benedict">Harris-Benedict</option>
+                            <option value="mifflin-st-jeor">Mifflin-St Jeor</option>
+                            <option value="katch-mcardle">Katch-McArdle</option>
+                        </select>
                     </div>
-                    {% else %}
-                        <input type="hidden" name="patient" value="{{ patient.pk }}">
-                    {% endif %}
-
                     <div class="form-group">
-                        <label for="{{ form.name.id_for_label }}">Nome da Dieta</label>
-                        {{ form.name }}
-                        {% if form.name.errors %}<div class="error-message">{{ form.name.errors|first }}</div>{% endif %}
+                        <label>Nível de Atividade:</label>
+                        <select id="activity-level" class="form-select">
+                            <option value="1.2">Sedentário (1.2x)</option>
+                            <option value="1.375">Levemente ativo (1.375x)</option>
+                            <option value="1.55">Moderadamente ativo (1.55x)</option>
+                            <option value="1.725">Muito ativo (1.725x)</option>
+                            <option value="1.9">Extremamente ativo (1.9x)</option>
+                        </select>
                     </div>
-
                     <div class="form-group">
-                        <label for="{{ form.meals.id_for_label }}">Refeições (JSON)</label>
-                        {{ form.meals }}
-                        <small class="form-text text-muted">Insira a estrutura das refeições em formato JSON.</small>
-                        {% if form.meals.errors %}<div class="error-message">{{ form.meals.errors|first }}</div>{% endif %}
+                        <label>Objetivo:</label>
+                        <select id="objetivo" class="form-select">
+                            <option value="manter">Manter peso</option>
+                            <option value="perder">Perder peso (-500 kcal)</option>
+                            <option value="ganhar">Ganhar peso (+500 kcal)</option>
+                        </select>
                     </div>
+                </div>
+                
+                <div class="calculation-results">
+                    <div class="result-item">
+                        <span class="result-label">TMB:</span>
+                        <span id="tmb-result" class="result-value">-- kcal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">GCDT:</span>
+                        <span id="gcdt-result" class="result-value">-- kcal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Meta Final:</span>
+                        <span id="meta-final" class="result-value meta-highlight">-- kcal</span>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn btn-primary" onclick="calcularNecessidades()">
+                    <i class="fas fa-calculator"></i>
+                    Calcular Necessidades
+                </button>
+            </div>
+        </div>
 
+        <!-- SEÇÃO 3: Distribuição de Macronutrientes -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Distribuição de Macronutrientes
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="macro-inputs">
+                    <div class="macro-group">
+                        <label>Carboidratos (%):</label>
+                        <input type="range" id="carb-percentage" min="20" max="70" value="50" class="macro-slider">
+                        <span id="carb-display">50%</span>
+                    </div>
+                    <div class="macro-group">
+                        <label>Proteínas (%):</label>
+                        <input type="range" id="prot-percentage" min="10" max="40" value="20" class="macro-slider">
+                        <span id="prot-display">20%</span>
+                    </div>
+                    <div class="macro-group">
+                        <label>Gorduras (%):</label>
+                        <input type="range" id="gord-percentage" min="15" max="50" value="30" class="macro-slider">
+                        <span id="gord-display">30%</span>
+                    </div>
+                </div>
+                
+                <div class="macro-results">
+                    <div class="macro-result">
+                        <span>Carboidratos:</span>
+                        <span id="carb-gramas">-- g</span>
+                        <span id="carb-calorias">(-- kcal)</span>
+                    </div>
+                    <div class="macro-result">
+                        <span>Proteínas:</span>
+                        <span id="prot-gramas">-- g</span>
+                        <span id="prot-calorias">(-- kcal)</span>
+                    </div>
+                    <div class="macro-result">
+                        <span>Gorduras:</span>
+                        <span id="gord-gramas">-- g</span>
+                        <span id="gord-calorias">(-- kcal)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 4: Refeições (Repetível) -->
+        <div class="card refeicoes-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-clock"></i>
+                    Refeições
+                </div>
+                <div class="card-actions">
+                    <button type="button" class="btn btn-primary" onclick="adicionarRefeicao()">
+                        <i class="fas fa-plus"></i>
+                        Adicionar Refeição
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="refeicoes-container">
+                    <!-- Refeições serão adicionadas dinamicamente aqui -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 5: Tabela de Substituições Automáticas -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-exchange-alt"></i>
+                    Tabela de Substituições Automáticas
+                </div>
+                <div class="card-actions">
+                    <button type="button" class="btn btn-secondary" onclick="gerarSubstituicoes()">
+                        <i class="fas fa-magic"></i>
+                        Gerar Substituições
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="substituicoes-container">
+                    <div class="empty-message">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Adicione alimentos nas refeições para gerar substituições automáticas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 6: Gráficos de Visualização -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Visualização Nutricional
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h4>Distribuição de Macros</h4>
+                        <canvas id="macros-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h4>Calorias por Refeição</h4>
+                        <canvas id="refeicoes-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 7: Cardápio Automático (IA) -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-robot"></i>
+                    Gerador de Cardápio Inteligente
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="ai-options">
                     <div class="form-group">
-                        <label for="{{ form.substitutions.id_for_label }}">Substituições (JSON, Opcional)</label>
-                        {{ form.substitutions }}
-                        <small class="form-text text-muted">Insira as substituições em formato JSON.</small>
-                        {% if form.substitutions.errors %}<div class="error-message">{{ form.substitutions.errors|first }}</div>{% endif %}
+                        <label>Preferências Alimentares:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="vegetariano"> Vegetariano</label>
+                            <label><input type="checkbox" id="vegano"> Vegano</label>
+                            <label><input type="checkbox" id="sem-lactose"> Sem lactose</label>
+                            <label><input type="checkbox" id="sem-gluten"> Sem glúten</label>
+                        </div>
                     </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Salvar Dieta</button>
-                        <a href="{% if patient %}{% url 'patients:detail' patient.pk %}{% else %}{% url 'patients:list' %}{% endif %}" class="btn btn-secondary">Cancelar</a>
+                    <div class="form-group">
+                        <label>Alimentos a evitar:</label>
+                        <input type="text" class="form-input" placeholder="Ex: camarão, amendoim, etc.">
                     </div>
-                </form>
+                    <div class="form-group">
+                        <label>Número de refeições:</label>
+                        <select id="num-refeicoes" class="form-select">
+                            <option value="3">3 refeições</option>
+                            <option value="4">4 refeições</option>
+                            <option value="5" selected>5 refeições</option>
+                            <option value="6">6 refeições</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="ai-actions">
+                    <button type="button" class="btn btn-primary" onclick="gerarCardapioIA()">
+                        <i class="fas fa-magic"></i>
+                        Gerar Cardápio com IA
+                    </button>
+                    <div id="ai-loading" class="loading-indicator" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Gerando cardápio personalizado...</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Ações de Rodapé -->
+    <div class="footer-actions">
+        <div class="actions-group">
+            <button type="button" class="btn btn-primary" onclick="salvarPlano()">
+                <i class="fas fa-save"></i>
+                Salvar Plano Alimentar
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="salvarRascunho()">
+                <i class="fas fa-file"></i>
+                Salvar Rascunho
+            </button>
+            <button type="button" class="btn btn-ghost" onclick="gerarPDF()">
+                <i class="fas fa-file-pdf"></i>
+                Gerar PDF
+            </button>
+            <a href="{% url 'diets:list' %}" class="btn btn-ghost">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+        </div>
+    </div>
+
+    <!-- Hidden Form para submissão -->
+    <form id="diet-form" method="POST" style="display: none;">
+        {% csrf_token %}
+        <input type="hidden" name="patient" id="hidden-patient">
+        <input type="hidden" name="name" id="hidden-name">
+        <input type="hidden" name="meals" id="hidden-meals">
+        <input type="hidden" name="substitutions" id="hidden-substitutions">
+        <input type="hidden" name="meta_calorias" id="hidden-meta-calorias">
+        <input type="hidden" name="meta_carboidratos" id="hidden-meta-carboidratos">
+        <input type="hidden" name="meta_proteinas" id="hidden-meta-proteinas">
+        <input type="hidden" name="meta_gorduras" id="hidden-meta-gorduras">
+    </form>
 </div>
+
+<!-- Template para Refeição -->
+<template id="refeicao-template">
+    <div class="refeicao-item" data-refeicao-id="">
+        <div class="refeicao-header">
+            <div class="refeicao-info">
+                <input type="text" class="refeicao-nome" placeholder="Nome da refeição (ex: Café da Manhã)">
+                <input type="time" class="refeicao-horario">
+            </div>
+            <div class="refeicao-actions">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="removerRefeicao(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="alimentos-section">
+            <div class="alimentos-header">
+                <h5>Alimentos</h5>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="adicionarAlimento(this)">
+                    <i class="fas fa-plus"></i> Adicionar Alimento
+                </button>
+            </div>
+            <div class="alimentos-list">
+                <!-- Alimentos serão adicionados aqui -->
+            </div>
+        </div>
+        
+        <div class="refeicao-resumo">
+            <div class="resumo-item">
+                <span>Calorias:</span>
+                <span class="refeicao-calorias">0 kcal</span>
+            </div>
+            <div class="resumo-item">
+                <span>Carboidratos:</span>
+                <span class="refeicao-carb">0g</span>
+            </div>
+            <div class="resumo-item">
+                <span>Proteínas:</span>
+                <span class="refeicao-prot">0g</span>
+            </div>
+            <div class="resumo-item">
+                <span>Gorduras:</span>
+                <span class="refeicao-gord">0g</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template para Alimento -->
+<template id="alimento-template">
+    <div class="alimento-item">
+        <div class="alimento-search">
+            <input type="text" class="alimento-nome" placeholder="Digite o nome do alimento..." autocomplete="off">
+            <div class="search-results" style="display: none;"></div>
+        </div>
+        <div class="alimento-quantidade">
+            <input type="number" class="quantidade-input" placeholder="Qtd" step="0.1" min="0">
+            <select class="unidade-select">
+                <option value="g">g</option>
+                <option value="ml">ml</option>
+                <option value="unidade">unidade</option>
+                <option value="colher-sopa">colher (sopa)</option>
+                <option value="colher-cha">colher (chá)</option>
+                <option value="xicara">xícara</option>
+            </select>
+        </div>
+        <div class="alimento-macros">
+            <span class="macro-cal">0 kcal</span>
+            <span class="macro-carb">0g C</span>
+            <span class="macro-prot">0g P</span>
+            <span class="macro-gord">0g G</span>
+        </div>
+        <div class="alimento-actions">
+            <button type="button" class="btn btn-ghost btn-xs favoritar" onclick="favoritarAlimento(this)">
+                <i class="far fa-heart"></i>
+            </button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="removerAlimento(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</template>
+
+<script>
+// Variáveis globais
+let refeicaoCounter = 0;
+let pacienteSelecionado = null;
+let metasCalorias = 0;
+let metasCarb = 0, metasProt = 0, metasGord = 0;
+let consumidoCalorias = 0;
+let consumidoCarb = 0, consumidoProt = 0, consumidoGord = 0;
+let macrosChart = null;
+let refeicoesChart = null;
+
+// Cache de alimentos para evitar requisições desnecessárias
+let alimentosCache = new Map();
+
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarPagina();
+    configurarEventListeners();
+    inicializarCharts();
+});
+
+// ===== INICIALIZAÇÃO =====
+function inicializarPagina() {
+    // Configurar painel de metas fixo
+    const metasPanel = document.getElementById('metas-panel');
+    metasPanel.style.position = 'fixed';
+    metasPanel.style.top = '0';
+    metasPanel.style.left = '0';
+    metasPanel.style.right = '0';
+    metasPanel.style.zIndex = '1000';
+    metasPanel.style.background = 'var(--bg-card)';
+    metasPanel.style.borderBottom = '1px solid var(--border)';
+    
+    // Adicionar margem ao body para compensar o painel fixo
+    document.querySelector('.main-grid').style.marginTop = '120px';
+}
+
+function configurarEventListeners() {
+    // Seleção de paciente
+    document.getElementById('patient-select').addEventListener('change', selecionarPaciente);
+    
+    // Sliders de macronutrientes
+    document.getElementById('carb-percentage').addEventListener('input', atualizarMacros);
+    document.getElementById('prot-percentage').addEventListener('input', atualizarMacros);
+    document.getElementById('gord-percentage').addEventListener('input', atualizarMacros);
+    
+    // Fórmulas e objetivos
+    document.getElementById('formula-tmb').addEventListener('change', calcularNecessidades);
+    document.getElementById('activity-level').addEventListener('change', calcularNecessidades);
+    document.getElementById('objetivo').addEventListener('change', calcularNecessidades);
+}
+
+// ===== SELEÇÃO DE PACIENTE =====
+function selecionarPaciente() {
+    const select = document.getElementById('patient-select');
+    const selectedOption = select.options[select.selectedIndex];
+    
+    if (selectedOption.value) {
+        pacienteSelecionado = {
+            id: selectedOption.value,
+            nome: selectedOption.text,
+            peso: parseFloat(selectedOption.dataset.weight),
+            altura: parseFloat(selectedOption.dataset.height),
+            idade: parseInt(selectedOption.dataset.age),
+            sexo: selectedOption.dataset.gender
+        };
+        
+        // Exibir dados do paciente
+        document.getElementById('patient-info').style.display = 'block';
+        document.getElementById('patient-weight').textContent = pacienteSelecionado.peso + ' kg';
+        document.getElementById('patient-height').textContent = pacienteSelecionado.altura + ' cm';
+        document.getElementById('patient-age').textContent = pacienteSelecionado.idade + ' anos';
+        document.getElementById('patient-gender').textContent = pacienteSelecionado.sexo === 'M' ? 'Masculino' : 'Feminino';
+        
+        // Calcular automaticamente
+        calcularNecessidades();
+    } else {
+        document.getElementById('patient-info').style.display = 'none';
+        pacienteSelecionado = null;
+    }
+}
+
+// ===== CÁLCULOS CALÓRICOS =====
+function calcularNecessidades() {
+    if (!pacienteSelecionado) return;
+    
+    const formula = document.getElementById('formula-tmb').value;
+    const activityLevel = parseFloat(document.getElementById('activity-level').value);
+    const objetivo = document.getElementById('objetivo').value;
+    
+    let tmb;
+    const peso = pacienteSelecionado.peso;
+    const altura = pacienteSelecionado.altura;
+    const idade = pacienteSelecionado.idade;
+    const sexo = pacienteSelecionado.sexo;
+    
+    // Calcular TMB conforme fórmula selecionada
+    switch (formula) {
+        case 'harris-benedict':
+            if (sexo === 'M') {
+                tmb = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * idade);
+            } else {
+                tmb = 447.593 + (9.247 * peso) + (3.098 * altura) - (4.330 * idade);
+            }
+            break;
+        case 'mifflin-st-jeor':
+            if (sexo === 'M') {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * idade) + 5;
+            } else {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
+            }
+            break;
+        case 'katch-mcardle':
+            // Assumindo 15% de gordura corporal como padrão
+            const massaMagra = peso * 0.85;
+            tmb = 370 + (21.6 * massaMagra);
+            break;
+    }
+    
+    // Calcular GCDT
+    const gcdt = tmb * activityLevel;
+    
+    // Aplicar objetivo
+    let metaFinal;
+    switch (objetivo) {
+        case 'perder':
+            metaFinal = gcdt - 500;
+            break;
+        case 'ganhar':
+            metaFinal = gcdt + 500;
+            break;
+        default:
+            metaFinal = gcdt;
+    }
+    
+    // Exibir resultados
+    document.getElementById('tmb-result').textContent = Math.round(tmb) + ' kcal';
+    document.getElementById('gcdt-result').textContent = Math.round(gcdt) + ' kcal';
+    document.getElementById('meta-final').textContent = Math.round(metaFinal) + ' kcal';
+    
+    metasCalorias = Math.round(metaFinal);
+    atualizarMetas();
+    atualizarMacros();
+}
+
+// ===== MACRONUTRIENTES =====
+function atualizarMacros() {
+    if (metasCalorias === 0) return;
+    
+    const carbPerc = parseInt(document.getElementById('carb-percentage').value);
+    const protPerc = parseInt(document.getElementById('prot-percentage').value);
+    const gordPerc = parseInt(document.getElementById('gord-percentage').value);
+    
+    // Garantir que soma seja 100%
+    const total = carbPerc + protPerc + gordPerc;
+    if (total !== 100) {
+        const diff = 100 - total;
+        if (diff > 0) {
+            document.getElementById('carb-percentage').value = carbPerc + diff;
+        }
+    }
+    
+    // Atualizar displays
+    document.getElementById('carb-display').textContent = carbPerc + '%';
+    document.getElementById('prot-display').textContent = protPerc + '%';
+    document.getElementById('gord-display').textContent = gordPerc + '%';
+    
+    // Calcular gramas (4 kcal/g para carb e prot, 9 kcal/g para gordura)
+    const carbCalorias = (metasCalorias * carbPerc) / 100;
+    const protCalorias = (metasCalorias * protPerc) / 100;
+    const gordCalorias = (metasCalorias * gordPerc) / 100;
+    
+    metasCarb = Math.round(carbCalorias / 4);
+    metasProt = Math.round(protCalorias / 4);
+    metasGord = Math.round(gordCalorias / 9);
+    
+    // Exibir resultados
+    document.getElementById('carb-gramas').textContent = metasCarb + ' g';
+    document.getElementById('carb-calorias').textContent = '(' + Math.round(carbCalorias) + ' kcal)';
+    document.getElementById('prot-gramas').textContent = metasProt + ' g';
+    document.getElementById('prot-calorias').textContent = '(' + Math.round(protCalorias) + ' kcal)';
+    document.getElementById('gord-gramas').textContent = metasGord + ' g';
+    document.getElementById('gord-calorias').textContent = '(' + Math.round(gordCalorias) + ' kcal)';
+    
+    atualizarMetas();
+}
+
+function atualizarMetas() {
+    document.getElementById('meta-calorias').textContent = metasCalorias + ' kcal';
+    document.getElementById('consumido-calorias').textContent = consumidoCalorias + ' kcal';
+    
+    const carbProgress = metasCarb > 0 ? (consumidoCarb / metasCarb) * 100 : 0;
+    const protProgress = metasProt > 0 ? (consumidoProt / metasProt) * 100 : 0;
+    const gordProgress = metasGord > 0 ? (consumidoGord / metasGord) * 100 : 0;
+    
+    document.getElementById('progress-carb').style.width = Math.min(carbProgress, 100) + '%';
+    document.getElementById('progress-prot').style.width = Math.min(protProgress, 100) + '%';
+    document.getElementById('progress-gord').style.width = Math.min(gordProgress, 100) + '%';
+    
+    document.getElementById('carb-values').textContent = consumidoCarb + '/' + metasCarb + 'g';
+    document.getElementById('prot-values').textContent = consumidoProt + '/' + metasProt + 'g';
+    document.getElementById('gord-values').textContent = consumidoGord + '/' + metasGord + 'g';
+}
+
+// ===== REFEIÇÕES =====
+function adicionarRefeicao() {
+    const template = document.getElementById('refeicao-template');
+    const clone = template.content.cloneNode(true);
+    const refeicaoItem = clone.querySelector('.refeicao-item');
+    
+    refeicaoItem.setAttribute('data-refeicao-id', 'refeicao-' + refeicaoCounter++);
+    
+    document.getElementById('refeicoes-container').appendChild(clone);
+    
+    // Adicionar primeiro alimento automaticamente
+    adicionarAlimento(refeicaoItem.querySelector('.btn'));
+}
+
+function removerRefeicao(button) {
+    const refeicaoItem = button.closest('.refeicao-item');
+    refeicaoItem.remove();
+    recalcularTotais();
+}
+
+function adicionarAlimento(button) {
+    const template = document.getElementById('alimento-template');
+    const clone = template.content.cloneNode(true);
+    const refeicaoItem = button.closest('.refeicao-item');
+    const alimentosList = refeicaoItem.querySelector('.alimentos-list');
+    
+    alimentosList.appendChild(clone);
+    
+    // Configurar busca inteligente
+    const alimentoInput = alimentosList.querySelector('.alimento-item:last-child .alimento-nome');
+    configurarBuscaAlimento(alimentoInput);
+    
+    // Configurar recálculo automático na mudança de quantidade
+    const quantidadeInput = alimentosList.querySelector('.alimento-item:last-child .quantidade-input');
+    quantidadeInput.addEventListener('input', function() {
+        const alimentoItem = this.closest('.alimento-item');
+        atualizarMacrosAlimento(alimentoItem);
+    });
+}
+
+function removerAlimento(button) {
+    const alimentoItem = button.closest('.alimento-item');
+    alimentoItem.remove();
+    recalcularTotais();
+}
+
+function favoritarAlimento(button) {
+    const alimentoItem = button.closest('.alimento-item');
+    const alimentoNome = alimentoItem.querySelector('.alimento-nome').value;
+    
+    if (!alimentoNome) {
+        alert('Selecione um alimento primeiro.');
+        return;
+    }
+    
+    // Salvar nos favoritos do localStorage
+    let favoritos = JSON.parse(localStorage.getItem('alimentosFavoritos') || '[]');
+    
+    if (!favoritos.includes(alimentoNome)) {
+        favoritos.push(alimentoNome);
+        localStorage.setItem('alimentosFavoritos', JSON.stringify(favoritos));
+        
+        // Atualizar ícone
+        const icon = button.querySelector('i');
+        icon.className = 'fas fa-heart';
+        button.style.color = '#e74c3c';
+        
+        alert('Alimento adicionado aos favoritos!');
+    } else {
+        alert('Alimento já está nos favoritos.');
+    }
+}
+
+function configurarBuscaAlimento(input) {
+    const searchResults = input.nextElementSibling;
+    let searchTimeout;
+    
+    input.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        if (query.length < 2) {
+            searchResults.style.display = 'none';
+            return;
+        }
+        
+        // Debounce da busca
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            buscarAlimentosServidor(query, searchResults);
+        }, 300);
+    });
+}
+
+async function buscarAlimentosServidor(query, searchResults) {
+    try {
+        // Verificar cache primeiro
+        if (alimentosCache.has(query)) {
+            exibirResultadosBusca(alimentosCache.get(query), searchResults);
+            return;
+        }
+        
+        searchResults.innerHTML = '<div class="search-loading">Buscando...</div>';
+        searchResults.style.display = 'block';
+        
+        const response = await fetch(`/diets/buscar-alimentos/?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        // Salvar no cache
+        alimentosCache.set(query, data.results);
+        
+        exibirResultadosBusca(data.results, searchResults);
+        
+    } catch (error) {
+        console.error('Erro ao buscar alimentos:', error);
+        searchResults.innerHTML = '<div class="search-error">Erro ao buscar alimentos</div>';
+    }
+}
+
+function exibirResultadosBusca(alimentos, searchResults) {
+    if (alimentos.length > 0) {
+        searchResults.innerHTML = alimentos.map(alimento => 
+            `<div class="search-result" onclick="selecionarAlimento(this, ${alimento.id}, '${alimento.nome}')">
+                <div class="result-name">${alimento.nome}</div>
+                <div class="result-info">${Math.round(alimento.calorias)} kcal/100g - ${alimento.grupo}</div>
+                <div class="result-macros">C:${alimento.carboidratos.toFixed(1)}g P:${alimento.proteinas.toFixed(1)}g G:${alimento.gorduras.toFixed(1)}g</div>
+            </div>`
+        ).join('');
+        searchResults.style.display = 'block';
+    } else {
+        searchResults.innerHTML = '<div class="search-no-results">Nenhum alimento encontrado</div>';
+        searchResults.style.display = 'block';
+    }
+}
+
+function selecionarAlimento(element, alimentoId, alimentoNome) {
+    const alimentoItem = element.closest('.alimento-item');
+    const input = alimentoItem.querySelector('.alimento-nome');
+    
+    input.value = alimentoNome;
+    input.dataset.alimentoId = alimentoId;
+    element.closest('.search-results').style.display = 'none';
+    
+    // Preencher quantidade padrão
+    const quantidadeInput = alimentoItem.querySelector('.quantidade-input');
+    quantidadeInput.value = 100;
+    
+    // Buscar dados completos do alimento para cálculos
+    buscarDadosAlimento(alimentoId, alimentoItem);
+}
+
+async function buscarDadosAlimento(alimentoId, alimentoItem) {
+    try {
+        // Buscar nos resultados do cache primeiro
+        for (let [query, results] of alimentosCache.entries()) {
+            const alimento = results.find(a => a.id == alimentoId);
+            if (alimento) {
+                alimentoItem.dataset.alimentoData = JSON.stringify(alimento);
+                atualizarMacrosAlimento(alimentoItem);
+                return;
+            }
+        }
+        
+        // Se não encontrou no cache, buscar no servidor
+        const response = await fetch(`/diets/buscar-alimentos/?q=id:${alimentoId}`);
+        const data = await response.json();
+        
+        if (data.results.length > 0) {
+            const alimento = data.results[0];
+            alimentoItem.dataset.alimentoData = JSON.stringify(alimento);
+            atualizarMacrosAlimento(alimentoItem);
+        }
+        
+    } catch (error) {
+        console.error('Erro ao buscar dados do alimento:', error);
+    }
+}
+
+function atualizarMacrosAlimento(alimentoItem) {
+    const alimentoData = alimentoItem.dataset.alimentoData;
+    const quantidade = parseFloat(alimentoItem.querySelector('.quantidade-input').value) || 0;
+    
+    if (!alimentoData) return;
+    
+    try {
+        const alimento = JSON.parse(alimentoData);
+        
+        // Calcular valores proporcionais
+        const fator = quantidade / 100;
+        const calorias = Math.round(alimento.calorias * fator);
+        const carb = Math.round(alimento.carboidratos * fator * 10) / 10;
+        const prot = Math.round(alimento.proteinas * fator * 10) / 10;
+        const gord = Math.round(alimento.gorduras * fator * 10) / 10;
+        
+        // Exibir valores
+        alimentoItem.querySelector('.macro-cal').textContent = calorias + ' kcal';
+        alimentoItem.querySelector('.macro-carb').textContent = carb + 'g C';
+        alimentoItem.querySelector('.macro-prot').textContent = prot + 'g P';
+        alimentoItem.querySelector('.macro-gord').textContent = gord + 'g G';
+        
+        recalcularRefeicao(alimentoItem.closest('.refeicao-item'));
+        
+    } catch (error) {
+        console.error('Erro ao calcular macros:', error);
+    }
+}
+
+function recalcularRefeicao(refeicaoItem) {
+    let totalCal = 0, totalCarb = 0, totalProt = 0, totalGord = 0;
+    
+    refeicaoItem.querySelectorAll('.alimento-item').forEach(item => {
+        const alimentoData = item.dataset.alimentoData;
+        const quantidade = parseFloat(item.querySelector('.quantidade-input').value) || 0;
+        
+        if (alimentoData) {
+            try {
+                const alimento = JSON.parse(alimentoData);
+                const fator = quantidade / 100;
+                totalCal += alimento.calorias * fator;
+                totalCarb += alimento.carboidratos * fator;
+                totalProt += alimento.proteinas * fator;
+                totalGord += alimento.gorduras * fator;
+            } catch (error) {
+                console.error('Erro ao calcular totais da refeição:', error);
+            }
+        }
+    });
+    
+    refeicaoItem.querySelector('.refeicao-calorias').textContent = Math.round(totalCal) + ' kcal';
+    refeicaoItem.querySelector('.refeicao-carb').textContent = Math.round(totalCarb * 10) / 10 + 'g';
+    refeicaoItem.querySelector('.refeicao-prot').textContent = Math.round(totalProt * 10) / 10 + 'g';
+    refeicaoItem.querySelector('.refeicao-gord').textContent = Math.round(totalGord * 10) / 10 + 'g';
+    
+    recalcularTotais();
+}
+
+function recalcularTotais() {
+    consumidoCalorias = 0;
+    consumidoCarb = 0;
+    consumidoProt = 0;
+    consumidoGord = 0;
+    
+    document.querySelectorAll('.refeicao-item').forEach(refeicao => {
+        refeicao.querySelectorAll('.alimento-item').forEach(item => {
+            const alimentoData = item.dataset.alimentoData;
+            const quantidade = parseFloat(item.querySelector('.quantidade-input').value) || 0;
+            
+            if (alimentoData) {
+                try {
+                    const alimento = JSON.parse(alimentoData);
+                    const fator = quantidade / 100;
+                    consumidoCalorias += alimento.calorias * fator;
+                    consumidoCarb += alimento.carboidratos * fator;
+                    consumidoProt += alimento.proteinas * fator;
+                    consumidoGord += alimento.gorduras * fator;
+                } catch (error) {
+                    console.error('Erro ao calcular totais gerais:', error);
+                }
+            }
+        });
+    });
+    
+    consumidoCalorias = Math.round(consumidoCalorias);
+    consumidoCarb = Math.round(consumidoCarb * 10) / 10;
+    consumidoProt = Math.round(consumidoProt * 10) / 10;
+    consumidoGord = Math.round(consumidoGord * 10) / 10;
+    
+    atualizarMetas();
+    atualizarCharts();
+}
+
+// ===== SUBSTITUIÇÕES AUTOMÁTICAS =====
+function gerarSubstituicoes() {
+    const container = document.getElementById('substituicoes-container');
+    const alimentosUsados = [];
+    
+    document.querySelectorAll('.alimento-nome[data-alimento-id]').forEach(input => {
+        const alimentoId = input.dataset.alimentoId;
+        const alimento = alimentosTACO.find(a => a.id == alimentoId);
+        if (alimento && !alimentosUsados.find(a => a.id === alimento.id)) {
+            alimentosUsados.push(alimento);
+        }
+    });
+    
+    if (alimentosUsados.length === 0) {
+        container.innerHTML = '<div class="empty-message"><i class="fas fa-info-circle"></i><p>Adicione alimentos nas refeições para gerar substituições automáticas</p></div>';
+        return;
+    }
+    
+    let html = '<div class="substituicoes-grid">';
+    
+    alimentosUsados.forEach(alimento => {
+        const substitutos = encontrarSubstitutos(alimento);
+        if (substitutos.length > 0) {
+            html += `
+                <div class="substituicao-card">
+                    <h5>${alimento.nome}</h5>
+                    <div class="substitutos-list">
+                        ${substitutos.map(sub => `
+                            <div class="substituto-item">
+                                <span>${sub.nome}</span>
+                                <small>${sub.razao}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function encontrarSubstitutos(alimento) {
+    const substitutos = [];
+    const tolerancia = 0.3; // 30% de tolerância
+    
+    alimentosTACO.forEach(candidato => {
+        if (candidato.id === alimento.id) return;
+        
+        const diffCal = Math.abs(candidato.calorias - alimento.calorias) / alimento.calorias;
+        const diffProt = Math.abs(candidato.proteinas - alimento.proteinas) / (alimento.proteinas || 1);
+        
+        if (diffCal <= tolerancia && diffProt <= tolerancia) {
+            const razaoEquivalencia = Math.round((alimento.calorias / candidato.calorias) * 100);
+            substitutos.push({
+                nome: candidato.nome,
+                razao: `${razaoEquivalencia}g para 100g`
+            });
+        }
+    });
+    
+    return substitutos.slice(0, 3);
+}
+
+// ===== GRÁFICOS =====
+function inicializarCharts() {
+    const ctxMacros = document.getElementById('macros-chart').getContext('2d');
+    const ctxRefeicoes = document.getElementById('refeicoes-chart').getContext('2d');
+    
+    macrosChart = new Chart(ctxMacros, {
+        type: 'doughnut',
+        data: {
+            labels: ['Carboidratos', 'Proteínas', 'Gorduras'],
+            datasets: [{
+                data: [0, 0, 0],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+    
+    refeicoesChart = new Chart(ctxRefeicoes, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Calorias',
+                data: [],
+                backgroundColor: '#36A2EB'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+function atualizarCharts() {
+    if (!macrosChart || !refeicoesChart) return;
+    
+    // Atualizar gráfico de macros
+    macrosChart.data.datasets[0].data = [consumidoCarb, consumidoProt, consumidoGord];
+    macrosChart.update();
+    
+    // Atualizar gráfico de refeições
+    const refeicoes = [];
+    const calorias = [];
+    
+    document.querySelectorAll('.refeicao-item').forEach(refeicao => {
+        const nome = refeicao.querySelector('.refeicao-nome').value || 'Refeição';
+        const calText = refeicao.querySelector('.refeicao-calorias').textContent;
+        const cal = parseInt(calText.replace(' kcal', '')) || 0;
+        
+        refeicoes.push(nome);
+        calorias.push(cal);
+    });
+    
+    refeicoesChart.data.labels = refeicoes;
+    refeicoesChart.data.datasets[0].data = calorias;
+    refeicoesChart.update();
+}
+
+// ===== GERADOR DE CARDÁPIO IA =====
+async function gerarCardapioIA() {
+    if (!pacienteSelecionado || metasCalorias === 0) {
+        alert('Selecione um paciente e calcule as necessidades calóricas primeiro.');
+        return;
+    }
+    
+    const loadingEl = document.getElementById('ai-loading');
+    loadingEl.style.display = 'block';
+    
+    const preferencias = {
+        vegetariano: document.getElementById('vegetariano').checked,
+        vegano: document.getElementById('vegano').checked,
+        semLactose: document.getElementById('sem-lactose').checked,
+        semGluten: document.getElementById('sem-gluten').checked,
+        numRefeicoes: document.getElementById('num-refeicoes').value,
+        metaCalorias: metasCalorias,
+        metaCarb: metasCarb,
+        metaProt: metasProt,
+        metaGord: metasGord
+    };
+    
+    try {
+        const response = await fetch('/diets/gerar-cardapio-ia/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(preferencias)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Limpar refeições existentes
+            document.getElementById('refeicoes-container').innerHTML = '';
+            refeicaoCounter = 0;
+            
+            // Adicionar refeições geradas
+            data.cardapio.forEach(refeicao => {
+                adicionarRefeicao();
+                const ultimaRefeicao = document.querySelector('.refeicao-item:last-child');
+                ultimaRefeicao.querySelector('.refeicao-nome').value = refeicao.nome;
+                ultimaRefeicao.querySelector('.refeicao-horario').value = refeicao.horario;
+                
+                // Adicionar alimentos
+                refeicao.alimentos.forEach((alimento, index) => {
+                    if (index > 0) adicionarAlimento(ultimaRefeicao.querySelector('.btn'));
+                    const alimentoItem = ultimaRefeicao.querySelectorAll('.alimento-item')[index];
+                    alimentoItem.querySelector('.alimento-nome').value = alimento.nome;
+                    alimentoItem.querySelector('.quantidade-input').value = alimento.quantidade;
+                    // Simular seleção para cálculos
+                    const alimentoTaco = alimentosTACO.find(a => a.nome.toLowerCase().includes(alimento.nome.toLowerCase()));
+                    if (alimentoTaco) {
+                        alimentoItem.querySelector('.alimento-nome').dataset.alimentoId = alimentoTaco.id;
+                        atualizarMacrosAlimento(alimentoItem);
+                    }
+                });
+            });
+            
+            alert('Cardápio gerado com sucesso!');
+        } else {
+            alert('Erro ao gerar cardápio: ' + data.message);
+        }
+    } catch (error) {
+        alert('Erro ao conectar com o serviço de IA: ' + error.message);
+    } finally {
+        loadingEl.style.display = 'none';
+    }
+}
+
+// ===== AÇÕES FINAIS =====
+function salvarPlano() {
+    if (!pacienteSelecionado) {
+        alert('Selecione um paciente primeiro.');
+        return;
+    }
+    
+    const refeicoes = [];
+    document.querySelectorAll('.refeicao-item').forEach(item => {
+        const nome = item.querySelector('.refeicao-nome').value;
+        const horario = item.querySelector('.refeicao-horario').value;
+        const alimentos = [];
+        
+        item.querySelectorAll('.alimento-item').forEach(alimentoItem => {
+            const alimentoNome = alimentoItem.querySelector('.alimento-nome').value;
+            const quantidade = alimentoItem.querySelector('.quantidade-input').value;
+            const unidade = alimentoItem.querySelector('.unidade-select').value;
+            
+            if (alimentoNome && quantidade) {
+                alimentos.push({
+                    nome: alimentoNome,
+                    quantidade: quantidade,
+                    unidade: unidade
+                });
+            }
+        });
+        
+        if (nome && alimentos.length > 0) {
+            refeicoes.push({ nome, horario, alimentos });
+        }
+    });
+    
+    if (refeicoes.length === 0) {
+        alert('Adicione pelo menos uma refeição com alimentos.');
+        return;
+    }
+    
+    // Preencher form oculto
+    document.getElementById('hidden-patient').value = pacienteSelecionado.id;
+    document.getElementById('hidden-name').value = `Plano Alimentar - ${pacienteSelecionado.nome}`;
+    document.getElementById('hidden-meals').value = JSON.stringify(refeicoes);
+    document.getElementById('hidden-meta-calorias').value = metasCalorias;
+    document.getElementById('hidden-meta-carboidratos').value = metasCarb;
+    document.getElementById('hidden-meta-proteinas').value = metasProt;
+    document.getElementById('hidden-meta-gorduras').value = metasGord;
+    
+    // Submeter formulário
+    document.getElementById('diet-form').submit();
+}
+
+function salvarRascunho() {
+    const rascunho = {
+        paciente: pacienteSelecionado,
+        metas: { calorias: metasCalorias, carb: metasCarb, prot: metasProt, gord: metasGord },
+        refeicoes: coletarDadosRefeicoes(),
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('plano-alimentar-rascunho', JSON.stringify(rascunho));
+    alert('Rascunho salvo com sucesso!');
+}
+
+function gerarPDF() {
+    if (!pacienteSelecionado || metasCalorias === 0) {
+        alert('Complete o plano antes de gerar o PDF.');
+        return;
+    }
+    
+    window.open(`/diets/pdf/${pacienteSelecionado.id}/?metas=${metasCalorias},${metasCarb},${metasProt},${metasGord}`, '_blank');
+}
+
+function coletarDadosRefeicoes() {
+    const refeicoes = [];
+    document.querySelectorAll('.refeicao-item').forEach(item => {
+        // Implementar coleta de dados das refeições
+    });
+    return refeicoes;
+}
+</script>
+
+<style>
+/* ===== ESTILOS ESPECÍFICOS DA PÁGINA ===== */
+
+/* Painel de metas fixo */
+.metas-fixas {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: var(--spacing-4);
+    box-shadow: var(--shadow-sm);
+}
+
+.metas-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.meta-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-1);
+}
+
+.meta-value {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+}
+
+.meta-value.consumido {
+    color: var(--accent);
+}
+
+.macros-progress {
+    display: flex;
+    gap: var(--spacing-4);
+}
+
+.macro-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: var(--text-sm);
+}
+
+.progress-bar {
+    width: 80px;
+    height: 8px;
+    background: var(--bg-hover);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin: var(--spacing-1) 0;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progress-fill.carb {
+    background: #3498db;
+}
+
+.progress-fill.prot {
+    background: #e74c3c;
+}
+
+.progress-fill.gord {
+    background: #f39c12;
+}
+
+/* Busca de alimentos */
+.alimento-search {
+    position: relative;
+    flex: 1;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.search-result {
+    padding: var(--spacing-3);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.2s ease;
+}
+
+.search-result:hover {
+    background: var(--bg-hover);
+}
+
+.result-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-1);
+}
+
+.result-info {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* Refeições */
+.refeicao-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-6);
+    margin-bottom: var(--spacing-4);
+}
+
+.refeicao-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-3);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.refeicao-info {
+    display: flex;
+    gap: var(--spacing-3);
+    flex: 1;
+}
+
+.refeicao-nome, .refeicao-horario {
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+}
+
+.alimento-item {
+    display: flex;
+    gap: var(--spacing-3);
+    align-items: center;
+    padding: var(--spacing-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-2);
+}
+
+.quantidade-input {
+    width: 80px;
+    padding: var(--spacing-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.alimento-macros {
+    display: flex;
+    gap: var(--spacing-2);
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .metas-content {
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+    
+    .refeicao-info {
+        flex-direction: column;
+        gap: var(--spacing-2);
+    }
+    
+    .alimento-item {
+        flex-direction: column;
+        gap: var(--spacing-2);
+    }
+}
+</style>
+
 {% endblock %}

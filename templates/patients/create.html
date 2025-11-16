@@ -1,17 +1,347 @@
-{% extends 'base.html' %}
+{% extends 'base_new_dashboard.html' %}
+{% load static %}
 
-{% block content %}
-<div class="container mx-auto mt-8">
-    <h1 class="text-2xl font-bold mb-4">Cadastrar Novo Paciente</h1>
+{% block title %}Novo Paciente - NutriXpert Pro{% endblock %}
 
-    <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+{% block head_extra %}
+<style>
+    /* Custom styles for form fields */
+    .form-field {
+        margin-bottom: 20px;
+    }
+    
+    .form-field label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+    
+    .form-field input[type="text"],
+    .form-field input[type="email"],
+    .form-field input[type="password"],
+    .form-field input[type="date"],
+    .form-field input[type="tel"],
+    .form-field textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: rgba(255,255,255,0.05);
+        color: var(--text-primary);
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-field input:focus,
+    .form-field textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    
+    .form-field textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    
+    .form-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        backdrop-filter: blur(20px);
+    }
+    
+    .form-section h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .form-section h3 i {
+        color: var(--accent);
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 32px;
+    }
+    
+    .btn-cancel {
+        padding: 12px 24px;
+        border: 1px solid var(--border);
+        background: var(--bg-hover);
+        color: var(--text-secondary);
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-cancel:hover {
+        border-color: var(--accent);
+        color: var(--text-primary);
+    }
+    
+    .btn-submit {
+        padding: 12px 24px;
+        background: var(--gradient-ai);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59,130,246,0.4);
+    }
+    
+    .progress-steps {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 32px;
+        padding: 20px;
+        background: var(--bg-card);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+    }
+    
+    .step {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .ai-hint {
+        background: rgba(139,92,246,0.1);
+        border: 1px solid rgba(139,92,246,0.2);
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--ai-accent);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block body_content %}
+<div class="dashboard">
+    <!-- Header -->
+    <div class="header">
+        <div class="user-info">
+            <div class="user-details">
+                <h1><i class="fas fa-user-plus"></i> Cadastrar Novo Paciente</h1>
+                <p>
+                    <i class="fas fa-info-circle"></i>
+                    Crie um perfil completo para acompanhamento nutricional
+                </p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'patients:list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Voltar aos Pacientes
+            </a>
+            <button class="btn btn-secondary" onclick="toggleTheme()" title="Alternar Tema">
+                <i class="fas fa-adjust"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="progress-steps">
+        <div class="step">
+            <i class="fas fa-user"></i>
+            Dados Pessoais
+        </div>
+        <div style="color: var(--text-muted);">→</div>
+        <div style="color: var(--text-muted); padding: 8px 16px;">
+            <i class="fas fa-check"></i>
+            Configuração Inicial
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form method="post" class="form-container">
         {% csrf_token %}
-        {{ form.as_p }}
-        <div class="flex items-center justify-between">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+        
+        <div class="form-grid">
+            <!-- Dados Pessoais -->
+            <div class="form-section">
+                <h3>
+                    <i class="fas fa-user"></i>
+                    Informações Pessoais
+                </h3>
+                
+                <div class="form-field">
+                    <label for="{{ form.patient_name.id_for_label }}">{{ form.patient_name.label }}</label>
+                    {{ form.patient_name }}
+                    <div class="ai-hint">
+                        <i class="fas fa-brain"></i>
+                        IA: Nome completo ajuda na identificação e relatórios personalizados
+                    </div>
+                </div>
+                
+                <div class="form-field">
+                    <label for="{{ form.patient_email.id_for_label }}">{{ form.patient_email.label }}</label>
+                    {{ form.patient_email }}
+                    <div class="ai-hint">
+                        <i class="fas fa-brain"></i>
+                        IA: Email será usado para envio automático de relatórios e lembretes
+                    </div>
+                </div>
+                
+                <div class="form-field">
+                    <label for="{{ form.birth_date.id_for_label }}">{{ form.birth_date.label }}</label>
+                    {{ form.birth_date }}
+                    <div class="ai-hint">
+                        <i class="fas fa-brain"></i>
+                        IA: Idade influencia cálculos metabólicos e recomendações nutricionais
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acesso e Segurança -->
+            <div class="form-section">
+                <h3>
+                    <i class="fas fa-lock"></i>
+                    Acesso e Segurança
+                </h3>
+                
+                <div class="form-field">
+                    <label for="{{ form.patient_password.id_for_label }}">{{ form.patient_password.label }}</label>
+                    {{ form.patient_password }}
+                    <div class="ai-hint">
+                        <i class="fas fa-shield-alt"></i>
+                        Senha segura para acesso ao portal do paciente
+                    </div>
+                </div>
+                
+                <div class="form-field">
+                    <label for="{{ form.patient_password_confirm.id_for_label }}">{{ form.patient_password_confirm.label }}</label>
+                    {{ form.patient_password_confirm }}
+                </div>
+            </div>
+
+            <!-- Contato -->
+            <div class="form-section">
+                <h3>
+                    <i class="fas fa-phone"></i>
+                    Informações de Contato
+                </h3>
+                
+                <div class="form-field">
+                    <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                    {{ form.phone }}
+                    <div class="ai-hint">
+                        <i class="fas fa-brain"></i>
+                        IA: Contato direto para lembretes automáticos via WhatsApp
+                    </div>
+                </div>
+                
+                <div class="form-field">
+                    <label for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+                    {{ form.address }}
+                </div>
+            </div>
+
+            <!-- Insights IA -->
+            <div class="form-section" style="border-left: 4px solid var(--ai-accent);">
+                <h3>
+                    <i class="fas fa-brain"></i>
+                    Insights IA Automáticos
+                </h3>
+                
+                <div style="padding: 16px; background: rgba(139,92,246,0.05); border-radius: 8px;">
+                    <h4 style="color: var(--ai-accent); font-weight: 600; margin-bottom: 12px;">
+                        <i class="fas fa-magic"></i>
+                        O que será configurado automaticamente:
+                    </h4>
+                    <ul style="list-style: none; padding: 0; color: var(--text-secondary); font-size: 14px;">
+                        <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: var(--success); margin-right: 8px;"></i>Perfil nutricional baseado na idade</li>
+                        <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: var(--success); margin-right: 8px;"></i>Lembretes personalizados por email</li>
+                        <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: var(--success); margin-right: 8px;"></i>Dashboard de acompanhamento</li>
+                        <li><i class="fas fa-check" style="color: var(--success); margin-right: 8px;"></i>Integração com dispositivos wearáveis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <a href="{% url 'patients:list' %}" class="btn-cancel">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-user-plus"></i>
                 Cadastrar Paciente
             </button>
         </div>
     </form>
 </div>
+
+<script>
+// Add form validation and UX improvements
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = document.querySelector('.btn-submit');
+    
+    // Add loading state to submit button
+    form.addEventListener('submit', function() {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
+        submitBtn.disabled = true;
+    });
+    
+    // Password confirmation validation
+    const password = document.getElementById('{{ form.patient_password.id_for_label }}');
+    const passwordConfirm = document.getElementById('{{ form.patient_password_confirm.id_for_label }}');
+    
+    if (password && passwordConfirm) {
+        passwordConfirm.addEventListener('blur', function() {
+            if (password.value !== passwordConfirm.value) {
+                passwordConfirm.style.borderColor = 'var(--danger)';
+                passwordConfirm.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.1)';
+            } else {
+                passwordConfirm.style.borderColor = 'var(--success)';
+                passwordConfirm.style.boxShadow = '0 0 0 3px rgba(16,185,129,0.1)';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

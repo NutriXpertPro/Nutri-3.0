@@ -1,0 +1,399 @@
+{% extends 'base_new_dashboard.html' %}
+{% load static %}
+
+{% block title %}Plano Alimentar{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/diets-plano.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/plano-alimentar.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="dieta-plano">
+    <!-- HEADER COMPACTO -->
+    <div class="card mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-gradient-to-br rounded-full flex items-center justify-center font-bold text-lg">
+                        MS
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-sm">Maria Silva</h2>
+                        <p class="text-xs text-muted">27a, F | 65kg, 165cm | Moderado</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2 text-xs px-3 py-1 muted rounded-lg">
+                    <span class="text-muted">TMB:</span>
+                    <span class="font-bold">1450</span>
+                    <span class="text-muted">|</span>
+                    <span class="text-muted">GCDT:</span>
+                    <span class="font-bold">2248</span>
+                    <span class="text-muted">|</span>
+                    <span class="text-muted">META:</span>
+                    <span class="font-bold accent">1910 kcal</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <select class="px-2 py-1 text-xs rounded-lg">
+                    <option value="balanced">Balanced</option>
+                    <option value="lowcarb">Low Carb</option>
+                    <option value="highprotein">High Protein</option>
+                    <option value="ketogenic">Ketogenic</option>
+                </select>
+                <select class="px-2 py-1 text-xs rounded-lg">
+                    <option value="mifflin">Mifflin-St Jeor</option>
+                    <option value="harris">Harris-Benedict</option>
+                    <option value="cunningham">Cunningham</option>
+                    <option value="who">OMS/FAO</option>
+                </select>
+                <button id="btn-recalcular" class="px-3 py-1 accent rounded-lg transition text-xs flex items-center gap-2">
+                    <i class="fas fa-calculator"></i> Recalcular
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <div class="font-bold text-blue-400">P: 143g</div>
+                    <div class="text-xs text-muted-foreground">(2.2g/kg)</div>
+                    <div class="text-xs font-bold flex items-center gap-0.5 text-accent">
+                        <i class="fas fa-check-circle w-3 h-3"></i>
+                        +5g
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="font-bold text-purple-400">C: 215g</div>
+                    <div class="text-xs text-muted-foreground">(3.3g/kg)</div>
+                    <div class="text-xs font-bold flex items-center gap-0.5 text-muted-foreground">
+                        <i class="fas fa-exclamation-circle w-3 h-3"></i>
+                        -12g
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="font-bold text-yellow-400">G: 53g</div>
+                    <div class="text-xs text-muted-foreground">(0.8g/kg)</div>
+                    <div class="text-xs font-bold flex items-center gap-0.5 text-accent">
+                        <i class="fas fa-check-circle w-3 h-3"></i>
+                        0g
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <!-- Donut Chart Placeholder -->
+                <div class="flex items-center gap-2">
+                    <div class="w-20 h-20 rounded-full border-8 border-blue-500 border-r-purple-500 border-b-yellow-500 border-l-blue-500"></div>
+                    <div class="text-xs space-y-0.5">
+                        <div class="flex items-center gap-1">
+                            <div class="w-2 h-2 bg-blue-500 rounded"></div>
+                            <span class="text-foreground">P:148g</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <div class="w-2 h-2 bg-purple-500 rounded"></div>
+                            <span class="text-foreground">C:203g</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <div class="w-2 h-2 bg-yellow-500 rounded"></div>
+                            <span class="text-foreground">G:53g</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-sm font-bold">
+                    <span class="text-accent">1895</span>
+                    <span class="text-muted-foreground"> / 1910 kcal</span>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button class="px-3 py-1 bg-card hover:bg-muted rounded-lg transition text-xs flex items-center gap-1 text-foreground border border-border">
+                    <i class="fas fa-save w-3 h-3"></i> Salvar
+                </button>
+                <button class="px-3 py-1 bg-accent hover:bg-accent/80 rounded-lg transition text-xs flex items-center gap-1 text-accent-foreground">
+                    <i class="fas fa-file-text w-3 h-3"></i> PDF
+                </button>
+                <button class="px-3 py-1 bg-green-600 hover:bg-green-500 rounded-lg transition text-xs flex items-center gap-1 text-white">
+                    <i class="fas fa-mobile w-3 h-3"></i> App
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABAS DE NAVEGAÇÃO -->
+    <div class="flex gap-2 border-b border-border mb-4">
+        <button id="aba-dieta" class="px-4 py-2 text-sm font-medium flex items-center gap-2 border-b-2 border-accent text-accent transition">
+            <i class="fas fa-calendar w-4 h-4"></i> Dieta
+        </button>
+        <button id="aba-contexto" class="px-4 py-2 text-sm font-medium flex items-center gap-2 border-b-2 border-transparent text-muted-foreground hover:text-foreground transition">
+            <i class="fas fa-clipboard-list w-4 h-4"></i> Contexto
+        </button>
+        <button id="aba-analise" class="px-4 py-2 text-sm font-medium flex items-center gap-2 border-b-2 border-transparent text-muted-foreground hover:text-foreground transition">
+            <i class="fas fa-chart-line w-4 h-4"></i> Análise
+        </button>
+        <button id="aba-historico" class="px-4 py-2 text-sm font-medium flex items-center gap-2 border-b-2 border-transparent text-muted-foreground hover:text-foreground transition">
+            <i class="fas fa-history w-4 h-4"></i> Histórico
+        </button>
+    </div>
+
+    <!-- CONTEÚDO DAS ABAS -->
+    <div id="conteudo-dieta" class="aba-conteudo">
+        <!-- Navegação de Dias + Templates -->
+        <div class="flex items-center justify-between mb-4 bg-card border border-border rounded-xl p-3">
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-muted-foreground mr-2">Dia da semana:</span>
+                <button data-dia="0" class="w-10 h-10 rounded-full font-bold text-xs bg-accent text-accent-foreground transition">SEG</button>
+                <button data-dia="1" class="w-10 h-10 rounded-full font-bold text-xs bg-muted text-muted-foreground hover:bg-card transition">TER</button>
+                <button data-dia="2" class="w-10 h-10 rounded-full font-bold text-xs bg-muted text-muted-foreground hover:bg-card transition">QUA</button>
+                <button data-dia="3" class="w-10 h-10 rounded-full font-bold text-xs bg-muted text-muted-foreground hover:bg-card transition">QUI</button>
+                <button data-dia="4" class="w-10 h-10 rounded-full font-bold text-xs bg-muted text-muted-foreground hover:bg-card transition">SEX</button>
+                <button data-dia="5" class="w-10 h-10 rounded-full font-bold text-xs bg-muted text-muted-foreground hover:bg-card transition">SAB</button>
+                <button data-dia="6" class="w-10 h-10 rounded-full font-bold text-xs bg-muted text-muted-foreground hover:bg-card transition">DOM</button>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-muted-foreground">Templates:</span>
+                <select class="bg-card border border-border rounded-lg px-3 py-1 text-xs focus:border-accent outline-none text-foreground">
+                    <option value="t1">Café Padrão</option>
+                </select>
+                <button class="px-3 py-1 bg-muted hover:bg-card rounded-lg transition text-xs flex items-center gap-1 text-foreground">
+                    <i class="fas fa-copy w-3 h-3"></i> Copiar dia
+                </button>
+            </div>
+        </div>
+
+        <!-- Refeições -->
+        <div class="space-y-4">
+            <!-- Café da Manhã -->
+            <div class="bg-card border border-border rounded-xl p-4 group">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-amber-500">1</div>
+                        <input type="text" value="Café da Manhã" class="text-lg font-bold bg-transparent border-b-2 border-transparent hover:border-accent focus:border-accent outline-none px-2 transition text-foreground">
+                        <input type="time" value="08:00" class="bg-muted px-2 py-1 rounded-lg border border-border text-xs focus:border-accent outline-none text-foreground">
+                        <button class="p-1 hover:bg-muted rounded transition flex items-center gap-1 text-xs text-muted-foreground">
+                            <i class="fas fa-chevron-right w-3 h-3"></i>
+                            Orientações
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="p-1.5 hover:bg-muted rounded-lg transition" title="Salvar como template">
+                            <i class="fas fa-cog w-4 h-4 text-muted-foreground"></i>
+                        </button>
+                        <button class="p-1.5 hover:bg-muted rounded-lg transition" title="Duplicar">
+                            <i class="fas fa-copy w-4 h-4 text-muted-foreground"></i>
+                        </button>
+                        <button class="p-1.5 hover:bg-red-500/20 rounded-lg transition" title="Remover">
+                            <i class="fas fa-trash w-4 h-4 text-red-500"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Add com Favoritos -->
+                <div class="mb-3">
+                    <div class="text-xs text-muted-foreground mb-2 flex items-center gap-2">
+                        <i class="fas fa-star w-3 h-3 text-yellow-500"></i>
+                        Alimentos favoritos:
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-2 py-1 bg-muted hover:bg-card rounded-full text-xs transition flex items-center gap-1 text-foreground">
+                            🍗 Frango, peito, grelhado
+                        </button>
+                        <button class="px-2 py-1 bg-muted hover:bg-card rounded-full text-xs transition flex items-center gap-1 text-foreground">
+                            🍚 Arroz integral, cozido
+                        </button>
+                        <button class="px-2 py-1 bg-muted hover:bg-card rounded-full text-xs transition flex items-center gap-1 text-foreground">
+                            🍌 Banana, prata
+                        </button>
+                        <button class="px-2 py-1 bg-muted hover:bg-card rounded-full text-xs transition flex items-center gap-1 text-foreground">
+                            🥚 Ovo, galinha, cozido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabela de Alimentos -->
+                <div class="overflow-x-auto mb-3">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-border">
+                                <th class="text-left py-2 text-xs text-muted-foreground w-2/5">Alimento</th>
+                                <th class="text-center py-2 text-xs text-muted-foreground">Qtd</th>
+                                <th class="text-center py-2 text-xs text-muted-foreground">Un</th>
+                                <th class="text-center py-2 text-xs text-muted-foreground">P</th>
+                                <th class="text-center py-2 text-xs text-muted-foreground">C</th>
+                                <th class="text-center py-2 text-xs text-muted-foreground">G</th>
+                                <th class="text-center py-2 text-xs text-muted-foreground">Kcal</th>
+                                <th class="text-center py-2 text-xs text-muted-foreground"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-border hover:bg-muted/30 transition">
+                                <td class="py-2 text-xs text-foreground">Pão, trigo, integral</td>
+                                <td class="text-center">
+                                    <input type="number" value="50" class="w-14 bg-muted border border-border rounded px-1 py-1 text-center text-xs focus:border-accent outline-none text-foreground">
+                                </td>
+                                <td class="text-center text-muted-foreground text-xs">g</td>
+                                <td class="text-center text-blue-400 font-semibold text-xs">4</td>
+                                <td class="text-center text-purple-400 font-semibold text-xs">25</td>
+                                <td class="text-center text-yellow-400 font-semibold text-xs">2</td>
+                                <td class="text-center text-green-400 font-bold text-xs">127</td>
+                                <td class="text-center">
+                                    <button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/20 rounded transition">
+                                        <i class="fas fa-trash w-3 h-3 text-red-500"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Linha de busca TACO -->
+                            <tr class="border-t-2 border-dashed border-border">
+                                <td class="py-2 relative" colspan="8">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-search w-4 h-4 text-muted-foreground absolute left-2 top-3.5"></i>
+                                        <input type="text" placeholder=" Buscar alimento na base TACO... (favoritos aparecem primeiro)" class="w-full pl-8 pr-2 py-2 bg-muted border border-border rounded-lg text-xs focus:border-accent outline-none text-foreground">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Totais da refeição -->
+                <div class="bg-muted/50 p-2 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-xs text-foreground">TOTAL REFEIÇÃO:</span>
+                        <div class="flex gap-3 text-xs">
+                            <span class="text-blue-400 font-bold">P: 4g</span>
+                            <span class="text-purple-400 font-bold">C: 25g</span>
+                            <span class="text-yellow-400 font-bold">G: 2g</span>
+                            <span class="text-green-400 font-bold">127 kcal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão Adicionar Refeição -->
+            <button id="btn-nova-refeicao" class="w-full py-4 border-2 border-dashed border-border hover:border-accent rounded-xl transition flex items-center justify-center gap-2 text-muted-foreground hover:text-accent font-semibold text-sm">
+                <i class="fas fa-plus w-5 h-5"></i> Adicionar Nova Refeição
+            </button>
+        </div>
+    </div>
+
+    <!-- Outras Abas (inicialmente ocultas) -->
+    <div id="conteudo-contexto" class="aba-conteudo hidden">
+        <div class="grid grid-cols-2 gap-6">
+            <div class="bg-card border border-border rounded-xl p-4">
+                <h3 class="text-sm font-bold mb-3 flex items-center gap-2 text-foreground">
+                    <i class="fas fa-exclamation-circle w-4 h-4 text-amber-500"></i>
+                    Restrições Alimentares
+                </h3>
+                <div class="space-y-2 mb-3">
+                    <div class="flex items-center justify-between bg-muted/50 px-3 py-2 rounded-lg">
+                        <span class="text-sm text-foreground">Lactose</span>
+                        <button class="text-red-500 hover:bg-red-500/20 p-1 rounded transition">
+                            <i class="fas fa-trash w-3 h-3"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" placeholder="Ex: Glúten, Amendoim..." class="flex-1 bg-muted border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none text-foreground">
+                    <button class="px-3 py-2 bg-accent hover:bg-accent/80 rounded-lg transition text-accent-foreground">
+                        <i class="fas fa-plus w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-card border border-border rounded-xl p-4">
+                <h3 class="text-sm font-bold mb-3 flex items-center gap-2 text-foreground">
+                    <i class="fas fa-file-text w-4 h-4 text-blue-500"></i>
+                    Orientações Gerais
+                </h3>
+                <div class="space-y-2 mb-3">
+                    <div class="flex items-center justify-between bg-muted/50 px-3 py-2 rounded-lg">
+                        <span class="text-sm text-foreground">💧 Beber 2L de água por dia</span>
+                        <button class="text-red-500 hover:bg-red-500/20 p-1 rounded transition">
+                            <i class="fas fa-trash w-3 h-3"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between bg-muted/50 px-3 py-2 rounded-lg">
+                        <span class="text-sm text-foreground">🚫 Evitar frituras</span>
+                        <button class="text-red-500 hover:bg-red-500/20 p-1 rounded transition">
+                            <i class="fas fa-trash w-3 h-3"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" placeholder="Ex: Mastigar bem os alimentos..." class="flex-1 bg-muted border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none text-foreground">
+                    <button class="px-3 py-2 bg-accent hover:bg-accent/80 rounded-lg transition text-accent-foreground">
+                        <i class="fas fa-plus w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="conteudo-analise" class="aba-conteudo hidden">
+        <div class="grid grid-cols-2 gap-6">
+            <div class="bg-card border border-border rounded-xl p-4">
+                <h3 class="text-sm font-bold mb-4 flex items-center gap-2 text-foreground">
+                    <i class="fas fa-chart-line w-4 h-4 text-blue-500"></i>
+                    Micronutrientes
+                </h3>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-foreground">Fibras</span>
+                            <span class="font-bold text-green-400">18 / 25 g</span>
+                        </div>
+                        <div class="w-full bg-muted rounded-full h-2">
+                            <div class="h-2 rounded-full bg-yellow-500 transition-all" style="width: 72%"></div>
+                        </div>
+                        <div class="text-xs text-muted-foreground mt-0.5">72% da meta</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-card border border-border rounded-xl p-4">
+                <h3 class="text-sm font-bold mb-4 flex items-center gap-2 text-foreground">
+                    <i class="fas fa-chart-bar w-4 h-4 text-purple-500"></i>
+                    Análise Semanal
+                </h3>
+                <div class="space-y-4">
+                    <div class="bg-muted/50 p-3 rounded-lg">
+                        <div class="text-xs text-muted-foreground mb-1">Aderência à Dieta</div>
+                        <div class="text-2xl font-bold text-green-400">85%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="conteudo-historico" class="aba-conteudo hidden">
+        <div class="space-y-6">
+            <div class="bg-card border border-border rounded-xl p-4">
+                <h3 class="text-sm font-bold mb-4 flex items-center gap-2 text-foreground">
+                    <i class="fas fa-history w-4 h-4 text-blue-500"></i>
+                    Dietas Anteriores
+                </h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between bg-muted/50 p-3 rounded-lg hover:bg-muted transition cursor-pointer">
+                        <div>
+                            <div class="font-semibold text-sm text-foreground">Cutting</div>
+                            <div class="text-xs text-muted-foreground">01/11/2025 • 1800 kcal/dia</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs px-2 py-1 bg-green-900/30 text-green-400 rounded">Concluída</span>
+                            <button class="p-1.5 hover:bg-card rounded transition">
+                                <i class="fas fa-edit w-3 h-3 text-muted-foreground"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

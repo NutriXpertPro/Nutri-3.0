@@ -1,0 +1,32 @@
+/* Importações padrão do Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Importando os estilos customizados do Design System */
+@import url('../css/tokens.css');
+@import url('../css/base.css');
+@import url('../css/components.css');
+@import url('../css/utilities.css');
+
+/* Estilos e camadas customizadas que já existiam */
+@theme {
+  --color-blue-600: #2563eb;
+  --color-blue-800: #1e40af;
+}
+
+body {
+  background: linear-gradient(to bottom right, var(--color-blue-600), var(--color-blue-800));
+}
+
+@layer utilities {
+  .btn-primary {
+    @apply bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition shadow-lg;
+  }
+  .btn-secondary {
+    @apply border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition;
+  }
+  .logo-fit {
+    @apply h-20 md:h-32 w-auto object-contain mx-auto mb-6;
+  }
+}

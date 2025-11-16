@@ -1,0 +1,76 @@
+{% comment %}
+COMPONENT: Modal
+Modal reutilizável do Design System
+
+USAGE:
+{% include 'components/modal.html' with id='myModal' title='Título do Modal' %}
+    <p>Conteúdo do modal aqui</p>
+{% endinclude %}
+
+PARAMS:
+- id: ID único do modal (required)
+- title: Título do modal (required)
+- size: sm|base|lg|xl (default: base)
+- close_button: true|false (default: true)
+- backdrop_close: true|false (default: true)
+- class: Classes CSS adicionais (optional)
+{% endcomment %}
+
+{% with size=size|default:'base' close_button=close_button|default:True backdrop_close=backdrop_close|default:True %}
+<div class="overlay {{ class|default:'' }}" id="{{ id }}"
+     {% if backdrop_close %}onclick="if(event.target === this) closeModal('{{ id }}')"{% endif %}>
+    <div class="modal {% if size == 'sm' %}max-w-md{% elif size == 'lg' %}max-w-4xl{% elif size == 'xl' %}max-w-6xl{% endif %}"
+         onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="modal-header">
+            <h2 class="modal-title">{{ title }}</h2>
+            {% if close_button %}
+            <button class="close-modal" onclick="closeModal('{{ id }}')">&times;</button>
+            {% endif %}
+        </div>
+        
+        <!-- Body -->
+        <div class="modal-body">
+            {{ content }}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Focus trap
+        const focusableElements = modal.querySelectorAll(
+            'a[href], button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])'
+        );
+        if (focusableElements.length > 0) {
+            focusableElements[0].focus();
+        }
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Fechar modal com ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const activeModal = document.querySelector('.overlay.active');
+        if (activeModal) {
+            closeModal(activeModal.id);
+        }
+    }
+});
+</script>
+{% endwith %}

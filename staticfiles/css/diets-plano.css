@@ -1,0 +1,245 @@
+/* DIETA PLANO - CSS ISOLADO APENAS PARA /diets/ */
+/* Este CSS está completamente isolado e não afeta outras páginas */
+/* Todas as regras usam o prefixo .dieta-plano para evitar conflitos */
+
+/* Variáveis de tema que se sincronizam com o dashboard */
+:root {
+  --dieta-bg: #0f172a;
+  --dieta-text: #f1f5f9;
+  --dieta-card: #1e293b;
+  --dieta-muted: #334155;
+  --dieta-muted-text: #94a3b8;
+  --dieta-border: #374151;
+  --dieta-accent: #3b82f6;
+}
+
+body.light-mode {
+  --dieta-bg: #ffffff;
+  --dieta-text: #1e293b;
+  --dieta-card: #f8fafc;
+  --dieta-muted: #f1f5f9;
+  --dieta-muted-text: #64748b;
+  --dieta-border: #e2e8f0;
+  --dieta-accent: #2563eb;
+}
+
+/* Container principal - APENAS afeta elementos dentro de .dieta-plano */
+.dieta-plano {
+  background-color: var(--dieta-bg);
+  color: var(--dieta-text);
+  min-height: 100vh;
+}
+
+/* Todos os estilos são específicos para .dieta-plano */
+.dieta-plano .card {
+  background-color: var(--dieta-card);
+  border: 1px solid var(--dieta-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.dieta-plano .muted {
+  background-color: var(--dieta-muted);
+  color: var(--dieta-muted-text);
+}
+
+.dieta-plano .accent {
+  background-color: var(--dieta-accent);
+  color: white;
+}
+
+.dieta-plano .accent:hover {
+  background-color: color-mix(in srgb, var(--dieta-accent) 80%, transparent);
+}
+
+.dieta-plano .border {
+  border-color: var(--dieta-border);
+}
+
+.dieta-plano .text-muted {
+  color: var(--dieta-muted-text);
+}
+
+/* Layout específico */
+.dieta-plano .flex { display: flex; }
+.dieta-plano .items-center { align-items: center; }
+.dieta-plano .justify-between { justify-content: space-between; }
+.dieta-plano .gap-2 { gap: 0.5rem; }
+.dieta-plano .gap-3 { gap: 0.75rem; }
+.dieta-plano .gap-4 { gap: 1rem; }
+.dieta-plano .gap-6 { gap: 1.5rem; }
+
+.dieta-plano .mb-3 { margin-bottom: 0.75rem; }
+.dieta-plano .mb-4 { margin-bottom: 1rem; }
+
+.dieta-plano .p-2 { padding: 0.5rem; }
+.dieta-plano .p-3 { padding: 0.75rem; }
+.dieta-plano .p-4 { padding: 1rem; }
+
+.dieta-plano .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.dieta-plano .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+
+.dieta-plano .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.dieta-plano .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.dieta-plano .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+
+.dieta-plano .rounded-lg { border-radius: 0.5rem; }
+.dieta-plano .rounded-xl { border-radius: 0.75rem; }
+.dieta-plano .rounded-full { border-radius: 9999px; }
+
+.dieta-plano .text-xs { font-size: 0.75rem; }
+.dieta-plano .text-sm { font-size: 0.875rem; }
+.dieta-plano .text-lg { font-size: 1.125rem; }
+.dieta-plano .text-2xl { font-size: 1.5rem; }
+
+.dieta-plano .font-bold { font-weight: 700; }
+.dieta-plano .font-semibold { font-weight: 600; }
+
+.dieta-plano .w-full { width: 100%; }
+.dieta-plano .w-10 { width: 2.5rem; }
+.dieta-plano .w-14 { width: 3.5rem; }
+.dieta-plano .w-20 { width: 5rem; }
+
+.dieta-plano .h-10 { height: 2.5rem; }
+.dieta-plano .h-20 { height: 5rem; }
+
+.dieta-plano .grid { display: grid; }
+.dieta-plano .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.dieta-plano .space-y-2 > * + * { margin-top: 0.5rem; }
+.dieta-plano .space-y-3 > * + * { margin-top: 0.75rem; }
+.dieta-plano .space-y-4 > * + * { margin-top: 1rem; }
+
+.dieta-plano .hidden { display: none; }
+
+.dieta-plano .border { border-width: 1px; }
+.dieta-plano .border-2 { border-width: 2px; }
+.dieta-plano .border-b { border-bottom-width: 1px; }
+.dieta-plano .border-b-2 { border-bottom-width: 2px; }
+.dieta-plano .border-dashed { border-style: dashed; }
+
+.dieta-plano .transition {
+  transition: all 0.15s ease;
+}
+
+/* Cores específicas para nutrientes */
+.dieta-plano .text-blue-400 { color: #60a5fa; }
+.dieta-plano .text-purple-400 { color: #c084fc; }
+.dieta-plano .text-yellow-400 { color: #facc15; }
+.dieta-plano .text-green-400 { color: #4ade80; }
+.dieta-plano .text-red-400 { color: #f87171; }
+.dieta-plano .text-amber-500 { color: #f59e0b; }
+
+.dieta-plano .bg-blue-500 { background-color: #3b82f6; }
+.dieta-plano .bg-purple-500 { background-color: #8b5cf6; }
+.dieta-plano .bg-yellow-500 { background-color: #eab308; }
+.dieta-plano .bg-green-500, .dieta-plano .bg-green-600 { background-color: #22c55e; }
+.dieta-plano .bg-red-500 { background-color: #ef4444; }
+.dieta-plano .bg-amber-500 { background-color: #f59e0b; }
+.dieta-plano .bg-emerald-500 { background-color: #10b981; }
+
+/* Gradientes */
+.dieta-plano .bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, #3b82f6, #9333ea);
+}
+
+/* Inputs e formulários */
+.dieta-plano input, 
+.dieta-plano select, 
+.dieta-plano textarea {
+  background-color: var(--dieta-muted);
+  border: 1px solid var(--dieta-border);
+  color: var(--dieta-text);
+  border-radius: 0.5rem;
+}
+
+.dieta-plano input:focus, 
+.dieta-plano select:focus, 
+.dieta-plano textarea:focus {
+  border-color: var(--dieta-accent);
+  outline: none;
+}
+
+/* Tabelas */
+.dieta-plano table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dieta-plano th {
+  text-align: left;
+  padding: 8px;
+  font-size: 0.75rem;
+  color: var(--dieta-muted-text);
+  border-bottom: 1px solid var(--dieta-border);
+}
+
+.dieta-plano td {
+  padding: 8px;
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--dieta-border);
+}
+
+.dieta-plano tr:hover {
+  background-color: color-mix(in srgb, var(--dieta-muted) 30%, transparent);
+}
+
+/* Abas */
+.dieta-plano .aba-ativa {
+  border-bottom-color: var(--dieta-accent);
+  color: var(--dieta-accent);
+}
+
+.dieta-plano .aba-inativa {
+  border-bottom-color: transparent;
+  color: var(--dieta-muted-text);
+}
+
+.dieta-plano .aba-inativa:hover {
+  color: var(--dieta-text);
+}
+
+/* Dropdown de busca */
+.dieta-plano .dropdown-busca {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background-color: var(--dieta-card);
+  border: 1px solid var(--dieta-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  z-index: 20;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.dieta-plano .dropdown-busca .item {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--dieta-border);
+  cursor: pointer;
+}
+
+.dieta-plano .dropdown-busca .item:hover {
+  background-color: var(--dieta-muted);
+}
+
+.dieta-plano .dropdown-busca .item:last-child {
+  border-bottom: none;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .dieta-plano .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .dieta-plano .flex {
+    flex-direction: column;
+  }
+  
+  .dieta-plano .gap-6 {
+    gap: 1rem;
+  }
+}

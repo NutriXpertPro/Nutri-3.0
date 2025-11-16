@@ -1,0 +1,67 @@
+{% comment %}
+COMPONENT: Stat Card
+Card de estatística do Design System
+
+USAGE:
+{% include 'components/stat_card.html' with label='Pacientes Ativos' value='125' icon='fas fa-users' trend='up' trend_value='12%' %}
+
+PARAMS:
+- label: Label da métrica (required)
+- value: Valor principal (required) 
+- icon: Classe do ícone Font Awesome (required)
+- icon_variant: default|success|warning|danger|ai (default: default)
+- trend: up|down|neutral (optional)
+- trend_value: Texto do indicador de tendência (optional)
+- trend_text: Texto adicional da tendência (optional)
+- footer_text: Texto no rodapé (optional)
+- ai_insight: Insight de IA (optional)
+- class: Classes CSS adicionais (optional)
+- onclick: Função JS ao clicar (optional)
+{% endcomment %}
+
+{% with icon_variant=icon_variant|default:'default' %}
+<div class="stat-card {% if onclick %}clickable{% endif %} {{ class|default:'' }}"
+     {% if onclick %}onclick="{{ onclick }}"{% endif %}>
+    
+    <div class="stat-header">
+        <div class="stat-icon {% if icon_variant != 'default' %}{{ icon_variant }}{% endif %}">
+            <i class="{{ icon }}"></i>
+        </div>
+        
+        {% if trend and trend_value %}
+        <div class="stat-trend {{ trend }}">
+            {% if trend == 'up' %}
+                <i class="fas fa-arrow-up"></i>
+            {% elif trend == 'down' %}
+                <i class="fas fa-arrow-down"></i>
+            {% elif trend == 'neutral' %}
+                <i class="fas fa-minus"></i>
+            {% endif %}
+            {{ trend_value }}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="stat-label">{{ label }}</div>
+    <div class="stat-value">{{ value }}</div>
+    
+    {% if footer_text or trend_text %}
+    <div class="stat-footer">
+        {% if trend_text %}
+            {% if trend == 'up' %}
+                <i class="fas fa-arrow-up text-success mr-1"></i>
+            {% elif trend == 'down' %}
+                <i class="fas fa-arrow-down text-danger mr-1"></i>
+            {% endif %}
+        {% endif %}
+        {{ footer_text|default:trend_text }}
+    </div>
+    {% endif %}
+    
+    {% if ai_insight %}
+    <div class="ai-insight">
+        <i class="fas fa-brain mr-1"></i>IA: {{ ai_insight }}
+    </div>
+    {% endif %}
+</div>
+{% endwith %}

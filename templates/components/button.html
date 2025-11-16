@@ -1,0 +1,51 @@
+{% comment %}
+COMPONENT: Button
+Botão reutilizável do Design System
+
+USAGE:
+{% include 'components/button.html' with variant='primary' size='base' text='Clique aqui' icon='fas fa-plus' %}
+
+PARAMS:
+- variant: primary|secondary|ai|ghost|success|warning|danger (default: primary)
+- size: sm|base|lg (default: base)  
+- text: Texto do botão (required)
+- icon: Classe do ícone Font Awesome (optional)
+- href: URL para links (optional - se fornecido, renderiza como <a>)
+- type: submit|button|reset (default: button, usado apenas se não for link)
+- disabled: true|false (default: false)
+- full_width: true|false (default: false)
+- id: ID do elemento (optional)
+- class: Classes CSS adicionais (optional)
+- onclick: Função JavaScript (optional)
+- data_attrs: Atributos data-* como dict (optional)
+{% endcomment %}
+
+{% load static %}
+
+{% with variant=variant|default:'primary' size=size|default:'base' type=type|default:'button' %}
+    {% if href %}
+        <a href="{{ href }}" 
+           class="btn btn-{{ variant }} {% if size != 'base' %}btn-{{ size }}{% endif %} {% if full_width %}w-full{% endif %} {{ class|default:'' }}"
+           {% if id %}id="{{ id }}"{% endif %}
+           {% if disabled %}aria-disabled="true" tabindex="-1"{% endif %}
+           {% if onclick %}onclick="{{ onclick }}"{% endif %}
+           {% if data_attrs %}{% for key, value in data_attrs.items %} data-{{ key }}="{{ value }}"{% endfor %}{% endif %}>
+            {% if icon %}
+                <i class="{{ icon }}"></i>
+            {% endif %}
+            {{ text }}
+        </a>
+    {% else %}
+        <button type="{{ type }}"
+                class="btn btn-{{ variant }} {% if size != 'base' %}btn-{{ size }}{% endif %} {% if full_width %}w-full{% endif %} {{ class|default:'' }}"
+                {% if id %}id="{{ id }}"{% endif %}
+                {% if disabled %}disabled{% endif %}
+                {% if onclick %}onclick="{{ onclick }}"{% endif %}
+                {% if data_attrs %}{% for key, value in data_attrs.items %} data-{{ key }}="{{ value }}"{% endfor %}{% endif %}>
+            {% if icon %}
+                <i class="{{ icon }}"></i>
+            {% endif %}
+            {{ text }}
+        </button>
+    {% endif %}
+{% endwith %}

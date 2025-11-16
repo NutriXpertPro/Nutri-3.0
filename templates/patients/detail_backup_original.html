@@ -1,0 +1,1117 @@
+﻿{% extends 'base_new_dashboard.html' %}
+{% load static %}
+
+{% block title %}{{ patient.user.name }} - Centro de Comando Nutricional{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+    /* Nutrition Command Center Styles - Adapted for Current Theme System */
+    .nutrition-dashboard {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        min-height: calc(100vh - 80px);
+    }
+
+    /* Header Section */
+    .command-header {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .command-header:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(59,130,246,0.2);
+    }
+
+    .patient-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .patient-subtitle {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 14px;
+        color: var(--text-muted);
+        flex-wrap: wrap;
+    }
+
+    .patient-subtitle span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .patient-subtitle .highlight {
+        color: var(--accent);
+        font-weight: 600;
+    }
+
+    /* View Toggle */
+    .view-toggle {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .view-btn {
+        padding: 12px 20px;
+        border: 1px solid var(--border);
+        background: var(--bg-hover);
+        color: var(--text-secondary);
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .view-btn.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+
+    .view-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(59,130,246,0.3);
+        border-color: var(--accent);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .btn-compare {
+        padding: 12px 20px;
+        background: var(--bg-hover);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-compare.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+
+    .btn-compare:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(59,130,246,0.2);
+        border-color: var(--accent);
+    }
+
+    .btn-ai-insights {
+        padding: 12px 20px;
+        background: var(--gradient-ai);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+        position: relative;
+    }
+
+    .btn-ai-insights:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 32px rgba(139,92,246,0.5);
+    }
+
+    /* Main Content Area */
+    .dashboard-content {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 32px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-content:hover {
+        border-color: var(--accent);
+        box-shadow: 0 12px 24px rgba(59,130,246,0.1);
+    }
+
+    .section-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .section-title i {
+        color: var(--accent);
+    }
+
+    /* Photo Section */
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .photo-card {
+        aspect-ratio: 3/4;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .photo-card:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    }
+
+    .photo-card.frontal {
+        background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    }
+
+    .photo-card.lateral {
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    }
+
+    .photo-card.posterior {
+        background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    }
+
+    .photo-card-content {
+        color: white;
+        font-weight: 600;
+    }
+
+    .photo-card-content i {
+        font-size: 48px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .photo-card-content .title {
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+
+    .photo-card-content .subtitle {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px;
+    }
+
+    .metric-card {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* CORRIGIDO: Hover Effect EXATO do Dashboard */
+    .metric-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient-ai);
+    }
+
+    .metric-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+
+    .metric-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+
+    .metric-trend {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .metric-trend.positive {
+        color: var(--success);
+    }
+
+    .metric-trend.negative {
+        color: var(--danger);
+    }
+
+    .metric-values {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+
+    .metric-current {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
+
+    /* Pulse animation nos números */
+    .metric-card:hover .metric-current {
+        animation: pulse-number 0.6s ease-in-out;
+    }
+
+    @keyframes pulse-number {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .metric-change {
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .metric-initial {
+        text-align: right;
+    }
+
+    .metric-initial .value {
+        font-size: 18px;
+        color: var(--text-secondary);
+    }
+
+    .metric-initial .label {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .metric-progress {
+        width: 100%;
+        height: 8px;
+        background: var(--bg-hover);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+
+    .metric-progress-bar {
+        height: 100%;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .metric-goal {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-align: center;
+    }
+
+    /* Charts Grid */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .chart-container {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .chart-container:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
+    }
+
+    .chart-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .chart-canvas {
+        width: 100%;
+        height: 300px;
+    }
+
+    /* Exams Section */
+    .exams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px;
+    }
+
+    .exam-card {
+        background: rgba(239,68,68,0.1);
+        border: 1px solid rgba(239,68,68,0.2);
+        border-radius: 16px;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .exam-card:hover {
+        border-color: #ef4444;
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(239, 68, 68, 0.3);
+    }
+
+    .exam-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .exam-title {
+        font-weight: 600;
+        color: var(--danger);
+    }
+
+    .exam-date {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .exam-indicators {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+    }
+
+    .exam-indicators div {
+        margin-bottom: 4px;
+    }
+
+    .exam-observations {
+        font-size: 12px;
+        color: var(--accent);
+        font-style: italic;
+    }
+
+    /* Diet History */
+    .diet-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
+
+    .diet-section {
+        background: rgba(16,185,129,0.1);
+        border: 1px solid rgba(16,185,129,0.2);
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .diet-section:hover {
+        border-color: #10b981;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(16, 185, 129, 0.2);
+    }
+
+    .diet-section-title {
+        font-weight: 600;
+        color: var(--success);
+        margin-bottom: 16px;
+    }
+
+    .diet-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .diet-item {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--success);
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    .diet-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 8px;
+    }
+
+    .diet-item-title {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-primary);
+    }
+
+    .diet-item-meta {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+
+    .diet-item-macros {
+        text-align: right;
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+
+    .diet-item-macros div {
+        margin-bottom: 2px;
+    }
+
+    .diet-item-notes {
+        font-size: 12px;
+        color: var(--accent);
+    }
+    /* Hidden/Visible States */
+    .hidden {
+        display: none !important;
+    }
+
+    .visible {
+        display: block !important;
+    }
+</style>
+{% endblock %}
+
+{% block body_content %}
+<div class="dashboard">
+    <!-- Command Header -->
+    <div class="command-header">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h1 class="patient-title">{{ patient.user.name }}</h1>
+                <div class="patient-subtitle">
+                    <span><i class="fas fa-user"></i> {{ patient.get_age }} anos</span>
+                    <span>•</span>
+                    <span><i class="fas fa-target"></i> {{ patient.goal|default:"Emagrecimento e Ganho Muscular" }}</span>
+                    <span>•</span>
+                    <span><i class="fas fa-calendar"></i> Início: <span class="highlight">{{ patient.start_date|date:"d/m/Y"|default:"15/01/2025" }}</span></span>
+                    <span>•</span>
+                    <span><i class="fas fa-chart-line"></i> <span class="highlight">12 consultas</span></span>
+                </div>
+                
+                <!-- View Toggle Buttons -->
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="switchView('dashboard')" id="btn-dashboard">
+                        <i class="fas fa-chart-pie"></i> Dashboard Analítico
+                    </button>
+                    <button class="view-btn" onclick="switchView('timeline')" id="btn-timeline">
+                        <i class="fas fa-history"></i> Timeline Evolutiva
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn-compare" onclick="toggleCompareMode()" id="btn-compare">
+                    <i class="fas fa-balance-scale"></i> Modo Comparação
+                </button>
+                <button class="btn-ai-insights" onclick="showAIInsights()">
+                    <i class="fas fa-brain"></i> IA Insights
+                </button>
+                <a href="{% url 'patients:edit' patient.id %}" class="btn btn-secondary">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+                <a href="{% url 'patients:list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboard-view" class="dashboard-content">
+        <h2 class="section-title">
+            <i class="fas fa-bolt"></i>
+            Dashboard Analítico - Visão Geral da Jornada
+        </h2>
+
+        <!-- Transformation Photos Section -->
+        <div style="margin-bottom: 32px;">
+            <h3 class="chart-title">
+                <i class="fas fa-camera"></i> Transformação Visual
+            </h3>
+            <div class="photo-grid">
+                <div class="photo-card frontal">
+                    <div class="photo-card-content">
+                        <i class="fas fa-camera"></i>
+                        <div class="title">FRONTAL</div>
+                        <div class="subtitle">Antes → Depois</div>
+                    </div>
+                </div>
+                <div class="photo-card lateral">
+                    <div class="photo-card-content">
+                        <i class="fas fa-camera"></i>
+                        <div class="title">LATERAL</div>
+                        <div class="subtitle">Antes → Depois</div>
+                    </div>
+                </div>
+                <div class="photo-card posterior">
+                    <div class="photo-card-content">
+                        <i class="fas fa-camera"></i>
+                        <div class="title">COSTAS</div>
+                        <div class="subtitle">Antes → Depois</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">
+                        <i class="fas fa-weight"></i> Peso
+                    </div>
+                    <div class="metric-trend negative">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-current">78<span style="font-size: 16px; color: var(--text-muted);">kg</span></div>
+                    <div class="metric-change negative" style="color: var(--success);">-7</div>
+                    <div class="metric-initial">
+                        <div class="value">85</div>
+                        <div class="label">inicial</div>
+                    </div>
+                </div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar" style="background: var(--success); width: 70%;"></div>
+                </div>
+                <div class="metric-goal">Meta: 72kg</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">
+                        <i class="fas fa-percentage"></i> Gordura
+                    </div>
+                    <div class="metric-trend negative">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-current">22.8<span style="font-size: 16px; color: var(--text-muted);">%</span></div>
+                    <div class="metric-change negative" style="color: var(--success);">-5.2</div>
+                    <div class="metric-initial">
+                        <div class="value">28</div>
+                        <div class="label">inicial</div>
+                    </div>
+                </div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar" style="background: var(--success); width: 65%;"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">
+                        <i class="fas fa-dumbbell"></i> Músculo
+                    </div>
+                    <div class="metric-trend positive">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-current">59.5<span style="font-size: 16px; color: var(--text-muted);">kg</span></div>
+                    <div class="metric-change positive" style="color: var(--success);">+1.5</div>
+                    <div class="metric-initial">
+                        <div class="value">58</div>
+                        <div class="label">inicial</div>
+                    </div>
+                </div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar" style="background: var(--success); width: 75%;"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">
+                        <i class="fas fa-calculator"></i> IMC
+                    </div>
+                    <div class="metric-trend negative">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-current">26.4</div>
+                    <div class="metric-change negative" style="color: var(--success);">-2.4</div>
+                    <div class="metric-initial">
+                        <div class="value">28.8</div>
+                        <div class="label">inicial</div>
+                    </div>
+                </div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar" style="background: var(--success); width: 60%;"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">
+                        <i class="fas fa-ruler"></i> Abdômen
+                    </div>
+                    <div class="metric-trend negative">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-current">85<span style="font-size: 16px; color: var(--text-muted);">cm</span></div>
+                    <div class="metric-change negative" style="color: var(--success);">-10</div>
+                    <div class="metric-initial">
+                        <div class="value">95</div>
+                        <div class="label">inicial</div>
+                    </div>
+                </div>
+                <div class="metric-progress">
+                    <div class="metric-progress-bar" style="background: var(--success); width: 80%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid">
+            <!-- Evolution Chart -->
+            <div class="chart-container">
+                <h3 class="chart-title">
+                    <i class="fas fa-chart-line"></i> Evolução de Composição Corporal
+                </h3>
+                <canvas id="evolutionChart" class="chart-canvas"></canvas>
+            </div>
+
+            <!-- Radar Chart -->
+            <div class="chart-container">
+                <h3 class="chart-title">
+                    <i class="fas fa-crosshairs"></i> Radar Corporal - Evolução de Medidas
+                </h3>
+                <canvas id="radarChart" class="chart-canvas"></canvas>
+            </div>
+
+        <!-- Lab Exams Section -->
+        <div style="margin-bottom: 32px;">
+            <h3 class="chart-title">
+                <i class="fas fa-flask"></i> Histórico de Exames Laboratoriais
+            </h3>
+            <div class="exams-grid">
+                <div class="exam-card">
+                    <div class="exam-header">
+                        <i class="fas fa-file-medical-alt"></i>
+                        <span class="exam-title">Hemograma Completo</span>
+                    </div>
+                    <div class="exam-date">
+                        <i class="fas fa-calendar"></i> 09/11/2025
+                    </div>
+                    <div class="exam-indicators">
+                        <div><strong>Hemoglobina:</strong> 13.5 g/dL (normal)</div>
+                        <div><strong>Colesterol:</strong> 180 mg/dL (normal)</div>
+                        <div><strong>Glicose:</strong> 85 mg/dL (normal)</div>
+                    </div>
+                    <div class="exam-observations">
+                        Todos os valores dentro da normalidade. Boa resposta ao protocolo nutricional.
+                    </div>
+                </div>
+
+                <div class="exam-card">
+                    <div class="exam-header">
+                        <i class="fas fa-file-medical-alt"></i>
+                        <span class="exam-title">Lipidograma + Glicemia</span>
+                    </div>
+                    <div class="exam-date">
+                        <i class="fas fa-calendar"></i> 09/10/2025
+                    </div>
+                    <div class="exam-indicators">
+                        <div><strong>Hemoglobina:</strong> 13.2 g/dL (normal)</div>
+                        <div><strong>Colesterol:</strong> 195 mg/dL (leve elevação)</div>
+                        <div><strong>Glicose:</strong> 92 mg/dL (normal)</div>
+                    </div>
+                    <div class="exam-observations">
+                        Ajuste na dieta para otimizar perfil lipídico.
+                    </div>
+                </div>
+
+                <div class="exam-card">
+                    <div class="exam-header">
+                        <i class="fas fa-file-medical-alt"></i>
+                        <span class="exam-title">Exames Iniciais</span>
+                    </div>
+                    <div class="exam-date">
+                        <i class="fas fa-calendar"></i> 15/01/2025
+                    </div>
+                    <div class="exam-indicators">
+                        <div><strong>Hemoglobina:</strong> 12.8 g/dL (leve anemia)</div>
+                        <div><strong>Colesterol:</strong> 220 mg/dL (elevado)</div>
+                        <div><strong>Glicose:</strong> 105 mg/dL (pré-diabetes)</div>
+                    </div>
+                    <div class="exam-observations">
+                        Baseline para monitoramento. Recomendado suplementação de ferro.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diet History Section -->
+        <div class="diet-grid">
+            <div class="diet-section">
+                <h4 class="diet-section-title">Evolução de Planos Nutricionais</h4>
+                <div class="diet-list">
+                    <div class="diet-item">
+                        <div class="diet-item-header">
+                            <div>
+                                <div class="diet-item-title">Plano Inicial de Emagrecimento (Low-Carb)</div>
+                                <div class="diet-item-meta">Início: 15/01/2025 • Low-Carb com Ciclagem</div>
+                                <div class="diet-item-meta">Duração: 3 meses</div>
+                            </div>
+                            <div class="diet-item-macros">
+                                <div>Cal: 1800kcal</div>
+                                <div>Prot: 150g</div>
+                                <div>Carbs: 100g</div>
+                                <div>Gord: 80g</div>
+                            </div>
+                        </div>
+                        <div class="diet-item-notes">Primeira dieta low-carb: Início com 100g carbs/dia para adaptação.</div>
+                    </div>
+
+                    <div class="diet-item">
+                        <div class="diet-item-header">
+                            <div>
+                                <div class="diet-item-title">Plano de Recarga Carboidratos</div>
+                                <div class="diet-item-meta">Início: 15/04/2025 • Carb Cycling (Alta/Baixa)</div>
+                                <div class="diet-item-meta">Duração: 2 meses</div>
+                            </div>
+                            <div class="diet-item-macros">
+                                <div>Cal: 2000kcal</div>
+                                <div>Prot: 160g</div>
+                                <div>Carbs: 200g</div>
+                                <div>Gord: 70g</div>
+                            </div>
+                        </div>
+                        <div class="diet-item-notes">Primeira recarga de carboidratos: Aumento para 200g nos dias de treino.</div>
+                    </div>
+
+                    <div class="diet-item">
+                        <div class="diet-item-header">
+                            <div>
+                                <div class="diet-item-title">Plano de Definição v1.0</div>
+                                <div class="diet-item-meta">Início: 15/06/2025 • Keto Adaptado com Refeeds</div>
+                                <div class="diet-item-meta">Duração: Ongoing</div>
+                            </div>
+                            <div class="diet-item-macros">
+                                <div>Cal: 1700kcal</div>
+                                <div>Prot: 170g</div>
+                                <div>Carbs: 50g</div>
+                                <div>Gord: 90g</div>
+                            </div>
+                        </div>
+                        <div class="diet-item-notes">Atual: Foco em definição muscular com refeeds semanais.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="diet-section">
+                <h4 class="diet-section-title">Evolução de Macros ao Longo do Tempo</h4>
+                <canvas id="macrosChart" style="width: 100%; height: 250px;"></canvas>
+            </div>
+        </div>
+        </div>
+
+    <!-- Timeline View -->
+    <div id="timeline-view" class="hidden">
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+            
+            <div class="consultation-card first-consultation" data-consultation-id="1">
+                <div class="consultation-header" onclick="toggleConsultationDetails(1)">
+                    <div class="consultation-main">
+                        <div class="consultation-left">
+                            <div class="consultation-dot first"></div>
+                            <div class="consultation-info">
+                                <div class="consultation-date">
+                                    <i class="fas fa-calendar"></i> 15/01/2025
+                                    <span class="consultation-badge">🎬 INÍCIO DA JORNADA</span>
+                                </div>
+                                <div class="consultation-meta">298 dias atrás • Consulta #1</div>
+                            </div>
+                        </div>
+                        <div class="consultation-right">
+                            <div class="consultation-weight">
+                                <div class="consultation-weight-value">85kg</div>
+                                <div class="consultation-weight-fat">28% gordura</div>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Nutrition Command Center JavaScript
+let compareMode = false;
+let selectedConsultations = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts
+    initializeCharts();
+    
+    // Apply saved theme (subordinate to dashboard)
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+    }
+});
+
+// View Switching Functions
+function switchView(viewName) {
+    const dashboardView = document.getElementById('dashboard-view');
+    const timelineView = document.getElementById('timeline-view');
+    const btnDashboard = document.getElementById('btn-dashboard');
+    const btnTimeline = document.getElementById('btn-timeline');
+    
+    if (viewName === 'dashboard') {
+        dashboardView.classList.remove('hidden');
+        timelineView.classList.add('hidden');
+        btnDashboard.classList.add('active');
+        btnTimeline.classList.remove('active');
+    } else if (viewName === 'timeline') {
+        dashboardView.classList.add('hidden');
+        timelineView.classList.remove('hidden');
+        btnDashboard.classList.remove('active');
+        btnTimeline.classList.add('active');
+    }
+}
+
+// Compare Mode Functions
+function toggleCompareMode() {
+    compareMode = !compareMode;
+    const btnCompare = document.getElementById('btn-compare');
+    
+    if (compareMode) {
+        btnCompare.classList.add('active');
+    } else {
+        btnCompare.classList.remove('active');
+        selectedConsultations = [];
+    }
+}
+
+// Timeline Functions
+function toggleConsultationDetails(consultationId) {
+    // Toggle functionality here
+}
+
+// AI Insights Function
+function showAIInsights() {
+    alert('🧠 IA Insights:\\n\\n• Progresso excepcional: -7kg em 10 meses\\n• Ganho muscular: +1.5kg (excelente)\\n• Tendência positiva em todos os marcadores\\n• Recomendação: Manter protocolo atual\\n• Próxima meta: Atingir 72kg em 3 meses');
+}
+
+// Charts Initialization
+function initializeCharts() {
+    // Evolution Chart
+    const evolutionCtx = document.getElementById('evolutionChart');
+    if (evolutionCtx) {
+        new Chart(evolutionCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out'],
+                datasets: [{
+                    label: 'Peso (kg)',
+                    data: [85, 83, 82, 81, 80, 79.5, 79, 78.5, 78.2, 78],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Gordura (%)',
+                    data: [28, 27, 26.5, 25.8, 25, 24.5, 24, 23.5, 23.2, 22.8],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Músculo (kg)',
+                    data: [58, 58.2, 58.5, 58.8, 59, 59.2, 59.3, 59.4, 59.45, 59.5],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary') }
+                    }
+                },
+                scales: {
+                    x: { 
+                        grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border') },
+                        ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted') }
+                    },
+                    y: { 
+                        grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border') },
+                        ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted') }
+                    }
+                }
+            }
+        });
+    }
+
+    // Radar Chart
+    const radarCtx = document.getElementById('radarChart');
+    if (radarCtx) {
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Braço', 'Coxa', 'Cintura', 'Quadril', 'Abdômen'],
+                datasets: [{
+                    label: 'Inicial',
+                    data: [32, 60, 85, 105, 95],
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                }, {
+                    label: 'Atual',
+                    data: [30, 56, 75, 98, 85],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary') }
+                    }
+                },
+                scales: {
+                    r: {
+                        grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border') },
+                        pointLabels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') },
+                        ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted') }
+                    }
+                }
+            }
+        });
+    
+    // Macros Chart
+    const macrosCtx = document.getElementById('macrosChart');
+    if (macrosCtx) {
+        new Chart(macrosCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Abr', 'Jun', 'Nov'],
+                datasets: [{
+                    label: 'Calorias',
+                    data: [1800, 2000, 1700, 1750],
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: '#3b82f6'
+                }, {
+                    label: 'Carboidratos',
+                    data: [100, 200, 50, 80],
+                    backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                    borderColor: '#10b981'
+                }, {
+                    label: 'Proteínas',
+                    data: [150, 160, 170, 165],
+                    backgroundColor: 'rgba(245, 158, 11, 0.6)',
+                    borderColor: '#f59e0b'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary') }
+                    }
+                },
+                scales: {
+                    x: { 
+                        grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border') },
+                        ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted') }
+                    },
+                    y: { 
+                        grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border') },
+                        ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted') }
+                    }
+                }
+            }
+        });
+    }    }
+}</script>
+{% endblock %}
+
+
+

@@ -91,12 +91,12 @@ Criar uma plataforma para nutricionistas que centralize _anamneses, **painel de 
 
 ### 2.8. Tecnologias Utilizadas  
 #### 2.8.1. _Front-end_: Django Templates com HTMX e Tailwind CSS, otimizado para dispositivos móveis, tablets e PCs, com suporte a templates responsivos.  
-#### 2.8.2. _Back-end_: Django com Python 3.x, para APIs otimizadas de baixa latência e processamento assíncrono.  
-#### 2.8.3. _Banco de Dados_: MariaDB (com Docker ou serviço gerenciado) e Django ORM para queries e segurança.  
+#### 2.8.2. _Back-end_: Django com Python 3.x e Django REST Framework para APIs otimizadas de baixa latência e processamento assíncrono.  
+#### 2.8.3. _Banco de Dados_: MariaDB (com Docker ou serviço gerenciado) e Django ORM para queries, migrações e segurança.  
 #### 2.8.4. _Armazenamento de Arquivos_: AWS S3 ou MinIO + CDN (Cloudflare/ImageKit).  
 #### 2.8.5. _Fila / Jobs_: Celery com Redis ou RQ para processamento de imagens e geração de thumbnails.  
 #### 2.8.6. _Gráficos_: Chart.js para geração de gráficos dinâmicos, integrados ao front-end.  
-#### 2.8.7. _CI/CD_: GitHub + GitHub Actions para deploy contínuo e migrações de banco de dados via Alembic ou Django migrations.
+#### 2.8.7. _CI/CD_: GitHub + GitHub Actions para deploy contínuo e migrações de banco de dados via Django migrations.
 
 ### 2.9. Interfaces e Usabilidade  
 #### 2.9.1. _Painel de Controle do Nutricionista_:

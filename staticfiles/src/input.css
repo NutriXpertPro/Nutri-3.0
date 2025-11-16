@@ -1,0 +1,24 @@
+/* Importando os estilos customizados do Design System */
+@import "../css/tokens.css";
+@import "../css/base.css";
+@import "../css/components.css";
+@import "../css/utilities.css";
+
+/* Importações padrão do Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos e camadas customizadas que já existiam */
+@theme {
+  --color-blue-600: #2563eb;
+  --color-blue-800: #1e40af;
+}
+
+body {
+  background: linear-gradient(to bottom right, var(--color-blue-600), var(--color-blue-800));
+}
+
+@layer utilities {
+  /* Custom utilities removed for debugging */
+}

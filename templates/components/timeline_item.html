@@ -1,0 +1,81 @@
+{% comment %}
+COMPONENT: Timeline Item
+Item de timeline para agendamentos
+
+USAGE:
+{% include 'components/timeline_item.html' with time='14:30' date='15/11' patient_name='João Silva' note='Consulta de retorno' %}
+
+PARAMS:
+- time: Horário (required)
+- date: Data (optional)
+- patient_name: Nome do paciente (required)
+- note: Observação/descrição (optional)
+- avatar_url: URL da foto do paciente (optional)
+- patient_id: ID do paciente para avatar padrão (optional)
+- tags: Lista de tags como [{'text': 'Online', 'type': 'online', 'icon': 'fas fa-video'}] (optional)
+- actions: Lista de ações como [{'icon': 'fas fa-phone', 'onclick': 'call()'}] (optional)
+- draggable: true|false (default: true)
+- onclick: Função JS ao clicar (optional)
+- class: Classes CSS adicionais (optional)
+{% endcomment %}
+
+{% with draggable=draggable|default:True %}
+<div class="timeline-item {{ class|default:'' }}"
+     {% if draggable %}draggable="true" ondragstart="drag(event)"{% endif %}
+     {% if onclick %}onclick="{{ onclick }}"{% endif %}>
+    
+    <!-- Avatar -->
+    <div class="timeline-avatar">
+        {% if avatar_url %}
+            <img src="{{ avatar_url }}" alt="{{ patient_name }}">
+        {% elif patient_id %}
+            <img src="https://i.pravatar.cc/40?u={{ patient_id }}" alt="{{ patient_name }}">
+        {% else %}
+            <img src="https://i.pravatar.cc/40?u={{ patient_name|slugify }}" alt="{{ patient_name }}">
+        {% endif %}
+    </div>
+    
+    <!-- Horário -->
+    <div class="timeline-time">
+        <div class="hour">{{ time }}</div>
+        {% if date %}
+            <div class="date">{{ date }}</div>
+        {% endif %}
+    </div>
+    
+    <!-- Conteúdo -->
+    <div class="timeline-content">
+        <div class="timeline-patient">{{ patient_name }}</div>
+        
+        {% if note %}
+            <div class="timeline-note">{{ note|truncatechars:40 }}</div>
+        {% endif %}
+        
+        {% if tags %}
+        <div class="timeline-tags">
+            {% for tag in tags %}
+                <span class="tag {{ tag.type|default:'default' }}">
+                    {% if tag.icon %}
+                        <i class="{{ tag.icon }}"></i>
+                    {% endif %}
+                    {{ tag.text }}
+                </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Ações -->
+    {% if actions %}
+    <div class="timeline-actions">
+        {% for action in actions %}
+            <button class="icon-btn {% if action.variant %}{{ action.variant }}{% endif %}"
+                    {% if action.onclick %}onclick="{{ action.onclick }}"{% endif %}
+                    {% if action.title %}title="{{ action.title }}"{% endif %}>
+                <i class="{{ action.icon }}"></i>
+            </button>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endwith %}
